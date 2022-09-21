@@ -1,9 +1,56 @@
-<html topmargin="0" leftmargin="0">
-	
-	<title>BoohGame</Title>
-	<body topmargin="0" leftmargin="0">
-	    <meta meta name="viewport" content="width=device-width, user-scalable=no" />
-	<iframe src="https://entregaaltern.bubbleapps.io/version-test/boogame" allow="microphone" align="left" width="100%" height="100%" frameborder="0" style="border:0">
-			</iframe>
-		</body>
-</Html>
+<html>
+  <body onload="openFullscreen()">
+
+<button onclick="openFullscreen();">Open Fullscreen</button>
+
+<script>
+var elem = document.documentElement;
+function openFullscreen() {
+  if (elem.requestFullscreen) {
+    elem.requestFullscreen();
+  } else if (elem.webkitRequestFullscreen) { /* Safari */
+    elem.webkitRequestFullscreen();
+  } else if (elem.msRequestFullscreen) { /* IE11 */
+    elem.msRequestFullscreen();
+  }
+}
+</script>
+	  
+   <div id="content">
+    <iframe src="https://entregaaltern.bubbleapps.io/version-test/boogame" 
+      allowtransparency="true" frameborder="0" scrolling="no" 
+      class="wistia_embed" name="wistia_embed" allowfullscreen 
+      mozallowfullscreen webkitallowfullscreen oallowfullscreen 
+       msallowfullscreen width="100%" height="100%"></iframe>
+</div>
+
+<style>
+body, html {
+     margin: 0;
+     padding: 0;
+     height: 100%;
+     overflow: hidden;
+   }
+
+   #content {
+     position:absolute;
+     left: 0;
+     right: 0;
+     bottom: 0;
+     top: 0
+   }
+
+body {
+    display: block;
+    width: 100vh;
+    height: 100vw;
+    border: none;
+    transform: translateY(100vh) rotate(-90deg);
+    transform-origin: top left;
+}
+   
+</style>
+</body>
+</html>
+
+
