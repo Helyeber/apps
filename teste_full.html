@@ -1,4 +1,9 @@
 <script>
+  <script>
+    window.onbeforeunload = function(e) {
+       return 'Dialog text here.';
+    };
+
 function ready() {
   const { type } = screen.orientation;
   console.log(`Fullscreen and locked to ${type}. Ready!`);
@@ -11,7 +16,7 @@ async function start() {
 }
 </script>
 <button onclick="start()">
-  Starteeeee
+  Startrek
 </button>
 
     <iframe src="https://entregaaltern.bubbleapps.io/version-test/boogame" allowfullscreen>
