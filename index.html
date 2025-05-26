@@ -1,9 +1,38 @@
-<html topmargin="0" leftmargin="0">
-	
-	<title>BCS</Title>
-	<body topmargin="0" leftmargin="0">
-	    <meta meta name="viewport" content="width=device-width, user-scalable=no" />
-<iframe src="https://dash.superagentes.ai/agents/cm9kbehkc007h44j7w2d4had8/iframe" allow="microphone" align="left" width="100%" height="100%" frameborder="0" style="border:0">
-			</iframe>
-		</body>
-</Html>
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, user-scalable=no" />
+    <meta name="theme-color" content="#000000" />
+    <title>BCS</title>
+
+    <!-- Manifesto do PWA -->
+    <link rel="manifest" href="manifest.json" />
+
+    <!-- Ícone para iOS -->
+    <link rel="apple-touch-icon" href="icon-192.png" />
+
+    <!-- Service Worker -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('service-worker.js');
+      }
+    </script>
+
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+      }
+      iframe {
+        border: none;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <iframe src="https://dash.superagentes.ai/agents/cm9kbehkc007h44j7w2d4had8/iframe" allow="microphone"></iframe>
+  </body>
+</html>
