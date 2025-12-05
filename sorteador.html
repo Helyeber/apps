@@ -3,27 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sorteador Profissional | Sistema de Sorteio</title>
+    <title>SORTEFLIX | Sorteios Cinematográficos</title>
     <style>
         /* ========================================= */
         /* === 1. VARIÁVEIS CSS (DESIGN SYSTEM) === */
         /* ========================================= */
         :root {
-            /* Cores Primárias */
-            --dark-bg: #0f1419;
-            --darker-bg: #0a0d12;
-            --primary-color: #0084ff;
-            --primary-dark: #0066cc;
-            --accent-color: #00bfff;
-            --success-color: #28a745;
-            --danger-color: #dc3545;
-            --warning-color: #ffc107;
-            
-            /* Cores Secundárias */
+            /* Cores Netflix/Neon */
+            --dark-bg: #0f0f0f;
+            --darker-bg: #000000;
+            --primary-red: #e50914;
+            --primary-red-dark: #b20710;
+            --accent-neon: #00d4ff;
             --text-primary: #ffffff;
-            --text-secondary: #b8c5d6;
-            --card-bg: #1a1f2e;
-            --border-color: #2a3142;
+            --text-secondary: #b3b3b3;
+            --card-bg: #1a1a1a;
+            --border-color: #333333;
             
             /* Tipografia */
             --font-display: 'Segoe UI', Tahoma, Geneva, sans-serif;
@@ -62,25 +57,26 @@
             text-align: center;
             padding: 25px 20px;
             width: 100%;
-            border-bottom: 1px solid var(--border-color);
-            background: rgba(10, 13, 18, 0.8);
+            border-bottom: 2px solid var(--primary-red);
+            background: rgba(0, 0, 0, 0.9);
             backdrop-filter: blur(10px);
         }
 
         h1 {
             font-size: clamp(1.8em, 4vw, 3em);
             font-family: var(--font-display);
-            font-weight: 700;
+            font-weight: 900;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--primary-color);
+            letter-spacing: 3px;
+            color: var(--primary-red);
+            text-shadow: 0 0 10px rgba(229, 9, 20, 0.5);
             margin-bottom: 12px;
         }
 
         #statusBar {
-            background: rgba(26, 31, 46, 0.6);
+            background: rgba(26, 26, 26, 0.8);
             padding: 15px 20px;
-            border-radius: 8px;
+            border-radius: 6px;
             border: 1px solid var(--border-color);
             margin-top: 12px;
             display: grid;
@@ -105,13 +101,14 @@
         }
 
         .status-value {
-            color: var(--accent-color);
+            color: var(--accent-neon);
             font-size: 1.1em;
             font-weight: 700;
+            text-shadow: 0 0 8px rgba(0, 212, 255, 0.3);
         }
 
         /* ========================================= */
-        /* === 3. MENU PRINCIPAL (AJUSTE MOBILE) === */
+        /* === 3. MENU PRINCIPAL === */
         /* ========================================= */
         .main-menu {
             display: flex;
@@ -124,8 +121,8 @@
         }
 
         .menu-btn {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-            border: 1px solid var(--primary-color);
+            background: linear-gradient(135deg, var(--primary-red), var(--primary-red-dark));
+            border: 1px solid var(--primary-red);
             color: white;
             padding: 12px 24px;
             font-size: 0.95em;
@@ -133,9 +130,9 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
             cursor: pointer;
-            border-radius: 6px;
+            border-radius: 4px;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(0, 132, 255, 0.2);
+            box-shadow: 0 2px 8px rgba(229, 9, 20, 0.3);
             position: relative;
             overflow: hidden;
         }
@@ -158,7 +155,7 @@
 
         .menu-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 132, 255, 0.4);
+            box-shadow: 0 4px 12px rgba(229, 9, 20, 0.5);
         }
 
         .menu-btn:active {
@@ -174,16 +171,15 @@
             transform: none;
         }
 
-        /* Ajuste Mobile para Botões do Menu Principal */
         @media (max-width: 768px) {
             .main-menu {
-                flex-direction: column; /* Empilha os botões */
+                flex-direction: column;
                 width: 90%;
                 max-width: 400px;
                 margin: 20px auto;
             }
             .menu-btn {
-                width: 100%; /* Tamanho igual */
+                width: 100%;
                 padding: 15px 24px;
                 font-size: 1em;
             }
@@ -198,7 +194,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.85);
             z-index: 1000;
             display: none;
             justify-content: center;
@@ -219,12 +215,12 @@
 
         .modal-content {
             background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
+            border: 2px solid var(--primary-red);
+            border-radius: 6px;
             padding: 30px;
             width: 100%;
             max-width: 700px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
             transform: scale(0.8) translateY(-50px);
             opacity: 0;
             transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -239,13 +235,14 @@
         }
 
         .modal-content h2 {
-            color: var(--primary-color);
+            color: var(--primary-red);
             font-size: 1.6em;
             margin-bottom: 20px;
             text-transform: uppercase;
             letter-spacing: 1px;
             border-bottom: 2px solid var(--border-color);
             padding-bottom: 12px;
+            text-shadow: 0 0 8px rgba(229, 9, 20, 0.2);
         }
 
         .close-btn {
@@ -253,8 +250,8 @@
             top: 15px;
             right: 15px;
             background: transparent;
-            border: 2px solid var(--danger-color);
-            color: var(--danger-color);
+            border: 2px solid #666;
+            color: #999;
             font-size: 1.8em;
             cursor: pointer;
             width: 40px;
@@ -269,8 +266,9 @@
         }
 
         .close-btn:hover {
-            background: var(--danger-color);
-            color: white;
+            background: #333;
+            color: var(--primary-red);
+            border-color: var(--primary-red);
         }
 
         /* ========================================= */
@@ -297,10 +295,10 @@
         select {
             width: 100%;
             padding: 11px 12px;
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.5);
             border: 1px solid var(--border-color);
             color: var(--text-primary);
-            border-radius: 6px;
+            border-radius: 4px;
             font-family: var(--font-body);
             font-size: 1em;
             transition: all 0.3s;
@@ -313,9 +311,9 @@
         textarea:focus,
         select:focus {
             outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(0, 132, 255, 0.1);
-            background: rgba(0, 132, 255, 0.05);
+            border-color: var(--primary-red);
+            box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.1);
+            background: rgba(229, 9, 20, 0.02);
         }
 
         textarea {
@@ -332,17 +330,17 @@
         /* === 6. BOTÕES DE AÇÃO === */
         /* ========================================= */
         .action-btn {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            background: linear-gradient(135deg, var(--primary-red), var(--primary-red-dark));
             color: white;
             border: none;
             padding: 11px 22px;
-            border-radius: 6px;
+            border-radius: 4px;
             cursor: pointer;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             transition: all 0.3s;
-            box-shadow: 0 2px 8px rgba(0, 132, 255, 0.2);
+            box-shadow: 0 2px 8px rgba(229, 9, 20, 0.3);
             margin-top: 8px;
             margin-right: 8px;
             font-size: 0.9em;
@@ -350,7 +348,7 @@
 
         .action-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 132, 255, 0.4);
+            box-shadow: 0 4px 12px rgba(229, 9, 20, 0.5);
         }
 
         .action-btn:active {
@@ -358,7 +356,7 @@
         }
 
         .delete-btn-list {
-            background: var(--danger-color);
+            background: #666;
             color: white;
             border: none;
             padding: 6px 12px;
@@ -370,18 +368,18 @@
         }
 
         .delete-btn-list:hover {
-            background: #c82333;
-            box-shadow: 0 2px 6px rgba(220, 53, 69, 0.3);
+            background: var(--primary-red);
+            box-shadow: 0 2px 6px rgba(229, 9, 20, 0.3);
         }
 
         .secondary-btn {
             background: transparent;
-            border: 1px solid var(--primary-color);
-            color: var(--primary-color);
+            border: 1px solid var(--primary-red);
+            color: var(--primary-red);
         }
 
         .secondary-btn:hover {
-            background: rgba(0, 132, 255, 0.1);
+            background: rgba(229, 9, 20, 0.1);
         }
 
         /* ========================================= */
@@ -394,8 +392,8 @@
         }
 
         th {
-            background: rgba(0, 132, 255, 0.1);
-            color: var(--primary-color);
+            background: rgba(229, 9, 20, 0.1);
+            color: var(--primary-red);
             padding: 10px;
             text-align: left;
             border-bottom: 2px solid var(--border-color);
@@ -411,10 +409,9 @@
         }
 
         tr:hover {
-            background: rgba(0, 132, 255, 0.05);
+            background: rgba(229, 9, 20, 0.05);
         }
 
-        /* Cards de Números */
         #registeredNumbersContainer {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -423,15 +420,15 @@
             max-height: 350px;
             overflow-y: auto;
             padding: 12px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 6px;
             border: 1px solid var(--border-color);
         }
 
         .number-card {
-            background: linear-gradient(135deg, rgba(0, 132, 255, 0.08), rgba(0, 191, 255, 0.08));
+            background: linear-gradient(135deg, rgba(229, 9, 20, 0.08), rgba(0, 212, 255, 0.08));
             border: 1px solid var(--border-color);
-            border-radius: 8px;
+            border-radius: 6px;
             padding: 12px;
             text-align: center;
             transition: all 0.3s;
@@ -441,15 +438,15 @@
 
         .number-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 4px 12px rgba(0, 132, 255, 0.2);
-            border-color: var(--primary-color);
+            box-shadow: 0 4px 12px rgba(229, 9, 20, 0.2);
+            border-color: var(--primary-red);
         }
 
         .number-display {
             display: block;
             font-size: 2em;
             font-weight: 700;
-            color: var(--accent-color);
+            color: var(--accent-neon);
             margin-bottom: 6px;
         }
 
@@ -462,12 +459,12 @@
         }
 
         /* ========================================= */
-        /* === 8. TELA DE SORTEIO (DRAW SCREEN) === */
+        /* === 8. TELA DE SORTEIO === */
         /* ========================================= */
         #drawScreen {
-            background: linear-gradient(135deg, rgba(10, 13, 18, 0.95), rgba(26, 31, 46, 0.95));
-            border: 2px solid var(--primary-color);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.95), rgba(26, 26, 26, 0.95));
+            border: 2px solid var(--primary-red);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
         }
 
         .draw-elements-container {
@@ -479,7 +476,7 @@
             padding: 30px 20px;
             min-height: 80vh;
             position: relative;
-            z-index: 10; /* Acima do video */
+            z-index: 10;
         }
 
         .draw-title {
@@ -487,11 +484,11 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 1px;
-            color: var(--primary-color);
+            color: var(--primary-red);
             text-align: center;
+            text-shadow: 0 0 10px rgba(229, 9, 20, 0.3);
         }
 
-        /* Video Background */
         #drawBackgroundVideo {
             position: absolute;
             top: 0;
@@ -500,10 +497,15 @@
             height: 100%;
             object-fit: cover;
             z-index: 1;
-            opacity: 0.15; /* Suaviza o video */
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
         }
 
-        /* === Seletor de Prêmio === */
+        #drawBackgroundVideo.active {
+            opacity: 0.12;
+        }
+
         .prize-selector-wrapper {
             width: 100%;
             max-width: 450px;
@@ -520,42 +522,43 @@
             width: 100%;
             padding: 12px;
             font-size: 1em;
-            background: rgba(0, 0, 0, 0.4);
+            background: rgba(0, 0, 0, 0.5);
             border: 1px solid var(--border-color);
             color: var(--text-primary);
-            border-radius: 6px;
+            border-radius: 4px;
             cursor: pointer;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
         }
 
         #prizeSelector:focus {
             outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(0, 132, 255, 0.1);
+            border-color: var(--primary-red);
+            box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.1);
         }
 
-        /* === Exibição do Prêmio === */
         .prize-display {
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 15px;
             padding: 20px;
-            background: rgba(0, 132, 255, 0.05);
+            background: rgba(229, 9, 20, 0.05);
             border: 1px solid var(--border-color);
-            border-radius: 10px;
+            border-radius: 6px;
             width: 100%;
             max-width: 450px;
             z-index: 10;
+            min-height: 250px;
         }
 
         #drawPrizeName {
             font-size: 1.6em;
-            color: var(--primary-color);
+            color: var(--primary-red);
             text-transform: uppercase;
             letter-spacing: 1px;
             text-align: center;
             font-weight: 700;
+            text-shadow: 0 0 8px rgba(229, 9, 20, 0.2);
         }
 
         #prizeImage {
@@ -563,22 +566,21 @@
             max-width: 280px;
             height: 180px;
             object-fit: contain;
-            border-radius: 8px;
+            border-radius: 4px;
             border: 1px solid var(--border-color);
             background: rgba(0, 0, 0, 0.3);
         }
 
-        /* === Slot Machine (Roleta 3D) === */
         .slot-machine-container {
             width: 100%;
             max-width: 380px;
             height: 220px;
-            background: linear-gradient(135deg, #000, #1a1a2e);
-            border: 3px solid var(--primary-color);
-            border-radius: 12px;
+            background: linear-gradient(135deg, #000, #1a1a1a);
+            border: 3px solid var(--primary-red);
+            border-radius: 6px;
             overflow: hidden;
             position: relative;
-            box-shadow: 0 8px 24px rgba(0, 132, 255, 0.15);
+            box-shadow: 0 8px 24px rgba(229, 9, 20, 0.2);
             perspective: 1000px;
             z-index: 10;
         }
@@ -590,7 +592,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(90deg, transparent, rgba(0, 132, 255, 0.05), transparent);
+            background: linear-gradient(90deg, transparent, rgba(229, 9, 20, 0.05), transparent);
             pointer-events: none;
             z-index: 5;
         }
@@ -603,8 +605,8 @@
             justify-content: center;
             font-size: 7em;
             font-weight: 900;
-            color: var(--accent-color);
-            text-shadow: 0 2px 8px rgba(0, 132, 255, 0.3);
+            color: var(--accent-neon);
+            text-shadow: 0 2px 8px rgba(0, 212, 255, 0.3);
             transition: transform 0.1s linear;
             line-height: 1;
         }
@@ -631,11 +633,11 @@
 
         @keyframes winner-glow {
             0%, 100% { 
-                text-shadow: 0 2px 8px rgba(0, 132, 255, 0.3);
+                text-shadow: 0 2px 8px rgba(0, 212, 255, 0.3);
                 filter: brightness(1);
             }
             50% { 
-                text-shadow: 0 4px 16px rgba(0, 132, 255, 0.5);
+                text-shadow: 0 4px 16px rgba(0, 212, 255, 0.5);
                 filter: brightness(1.1);
             }
         }
@@ -647,27 +649,29 @@
             position: fixed;
             top: 50%;
             left: 50%;
-            z-index: 1002;
+            z-index: 2000;
             transform: translate(-50%, -50%) scale(0.3) rotateY(90deg);
             width: 90%;
             max-width: 850px;
             padding: 40px 30px;
-            background: linear-gradient(135deg, #ffffff, #f5f5f5);
-            color: #000;
+            background: linear-gradient(135deg, #1a1a1a, #0f0f0f);
+            color: var(--text-primary);
             text-align: center;
             font-family: var(--font-display);
-            border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            border-radius: 6px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
             opacity: 0;
             pointer-events: none;
-            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-            border: 2px solid var(--primary-color);
+            transition: none;
+            border: 3px solid var(--primary-red);
+            display: none;
         }
 
         #winnerBanner.show {
             opacity: 1;
             transform: translate(-50%, -50%) scale(1) rotateY(0deg);
             pointer-events: auto;
+            display: block;
             animation: banner-pulse 0.6s ease-in-out;
         }
 
@@ -683,14 +687,15 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             margin-bottom: 15px;
-            color: var(--primary-color);
+            color: var(--primary-red);
+            text-shadow: 0 0 8px rgba(229, 9, 20, 0.3);
         }
 
         #bannerWinnerName {
             font-size: 2.2em;
             font-weight: 900;
-            color: #000;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            color: var(--accent-neon);
+            text-shadow: 0 0 12px rgba(0, 212, 255, 0.4);
             animation: winner-name-bounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
             margin-bottom: 15px;
         }
@@ -701,12 +706,20 @@
             100% { transform: scale(1) rotateX(0deg); }
         }
 
+        #bannerTimer {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: var(--accent-neon);
+            margin: 15px 0;
+            text-shadow: 0 0 8px rgba(0, 212, 255, 0.2);
+        }
+
         #bannerCloseBtn {
-            background: var(--danger-color);
+            background: linear-gradient(135deg, var(--primary-red), var(--primary-red-dark));
             color: white;
             border: none;
             padding: 10px 20px;
-            border-radius: 6px;
+            border-radius: 4px;
             cursor: pointer;
             font-weight: 600;
             text-transform: uppercase;
@@ -714,11 +727,17 @@
             transition: all 0.3s;
             margin-top: 15px;
             font-size: 0.9em;
+            box-shadow: 0 2px 8px rgba(229, 9, 20, 0.3);
         }
 
-        #bannerCloseBtn:hover {
-            background: #c82333;
+        #bannerCloseBtn:hover:not(:disabled) {
             transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(229, 9, 20, 0.5);
+        }
+
+        #bannerCloseBtn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         /* ========================================= */
@@ -731,14 +750,14 @@
             width: 100%;
             height: 100%;
             pointer-events: none;
-            z-index: 1001;
+            z-index: 1999;
         }
 
         .confetti-piece {
             position: fixed;
             width: 8px;
             height: 8px;
-            background: var(--primary-color);
+            background: var(--primary-red);
             pointer-events: none;
             animation: confetti-fall 3s ease-in forwards;
         }
@@ -760,9 +779,9 @@
             min-height: 30px;
             margin: 12px 0;
             padding: 10px 12px;
-            border-radius: 6px;
-            border-left: 4px solid var(--primary-color);
-            background: rgba(0, 132, 255, 0.1);
+            border-radius: 4px;
+            border-left: 4px solid var(--primary-red);
+            background: rgba(229, 9, 20, 0.1);
             display: none;
             font-size: 0.95em;
         }
@@ -771,16 +790,16 @@
         /* === 12. UPLOAD DE IMAGEM === */
         /* ========================================= */
         .image-upload-section {
-            background: rgba(0, 132, 255, 0.05);
+            background: rgba(229, 9, 20, 0.05);
             border: 1px dashed var(--border-color);
-            border-radius: 8px;
+            border-radius: 4px;
             padding: 15px;
             margin-bottom: 15px;
             text-align: center;
         }
 
         .image-upload-section h4 {
-            color: var(--primary-color);
+            color: var(--primary-red);
             margin-bottom: 12px;
             font-size: 0.95em;
             text-transform: uppercase;
@@ -796,11 +815,11 @@
         }
 
         .upload-option-btn {
-            background: rgba(0, 132, 255, 0.2);
-            border: 1px solid var(--primary-color);
-            color: var(--primary-color);
+            background: rgba(229, 9, 20, 0.2);
+            border: 1px solid var(--primary-red);
+            color: var(--primary-red);
             padding: 8px 16px;
-            border-radius: 6px;
+            border-radius: 4px;
             cursor: pointer;
             font-weight: 600;
             font-size: 0.85em;
@@ -808,11 +827,11 @@
         }
 
         .upload-option-btn:hover {
-            background: rgba(0, 132, 255, 0.4);
+            background: rgba(229, 9, 20, 0.4);
         }
 
         .upload-option-btn.active {
-            background: var(--primary-color);
+            background: var(--primary-red);
             color: white;
         }
 
@@ -823,7 +842,7 @@
         .preview-image {
             max-width: 150px;
             max-height: 100px;
-            border-radius: 6px;
+            border-radius: 4px;
             margin: 10px 0;
             border: 1px solid var(--border-color);
         }
@@ -837,7 +856,7 @@
         }
 
         /* ========================================= */
-        /* === 13. RESPONSIVIDADE (Ajustes Finais) === */
+        /* === 13. RESPONSIVIDADE === */
         /* ========================================= */
         @media (max-width: 768px) {
             h1 {
@@ -855,14 +874,10 @@
                 padding: 12px 15px;
             }
 
-            .status-item {
-                padding: 6px;
-            }
-
             .modal-content {
                 padding: 20px;
                 max-width: 95%;
-                border-radius: 8px;
+                border-radius: 6px;
             }
 
             .modal-content h2 {
@@ -904,7 +919,7 @@
             #winnerBanner {
                 max-width: 95%;
                 padding: 30px 20px;
-                border-radius: 10px;
+                border-radius: 6px;
             }
 
             #bannerPrizeName {
@@ -940,18 +955,6 @@
                 padding: 10px 12px;
             }
 
-            .status-item {
-                padding: 4px;
-            }
-
-            .status-label {
-                font-size: 0.75em;
-            }
-
-            .status-value {
-                font-size: 1em;
-            }
-
             .main-menu {
                 gap: 8px;
                 margin: 15px 12px;
@@ -967,13 +970,6 @@
             .modal-content {
                 padding: 18px;
                 max-width: 100%;
-                border-radius: 8px;
-            }
-
-            .modal-content h2 {
-                font-size: 1.1em;
-                margin-bottom: 12px;
-                padding-bottom: 10px;
             }
 
             .form-group {
@@ -982,7 +978,6 @@
 
             label {
                 font-size: 0.8em;
-                margin-bottom: 4px;
             }
 
             input[type="text"],
@@ -997,59 +992,30 @@
             .action-btn {
                 padding: 10px 16px;
                 font-size: 0.8em;
-                margin-top: 6px;
-                margin-right: 6px;
             }
 
             #registeredNumbersContainer {
                 grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
                 gap: 8px;
                 max-height: 250px;
-                padding: 10px;
-            }
-
-            .number-card {
-                padding: 8px;
             }
 
             .number-display {
                 font-size: 1.3em;
-                margin-bottom: 4px;
-            }
-
-            .name-display {
-                font-size: 0.8em;
             }
 
             .draw-elements-container {
                 gap: 15px;
                 padding: 15px 12px;
-                min-height: auto;
             }
 
             .draw-title {
                 font-size: 1.1em;
-                letter-spacing: 0.5px;
-            }
-
-            .prize-selector-wrapper {
-                max-width: 100%;
-            }
-
-            .prize-display {
-                gap: 12px;
-                padding: 15px;
-                max-width: 100%;
-            }
-
-            #drawPrizeName {
-                font-size: 1.2em;
             }
 
             .slot-machine-container {
                 height: 150px;
                 border-width: 2px;
-                max-width: 100%;
             }
 
             .slot-roller {
@@ -1063,51 +1029,25 @@
 
             #winnerBanner {
                 padding: 25px 18px;
-                border-radius: 8px;
+                border-radius: 6px;
                 max-width: 98%;
             }
 
             #bannerPrizeName {
                 font-size: 1em;
-                margin-bottom: 10px;
             }
 
             #bannerWinnerName {
                 font-size: 1.4em;
-                margin-bottom: 10px;
+            }
+
+            #bannerTimer {
+                font-size: 1em;
             }
 
             #bannerCloseBtn {
                 padding: 8px 16px;
                 font-size: 0.8em;
-                margin-top: 10px;
-            }
-
-            table {
-                font-size: 0.8em;
-            }
-
-            th, td {
-                padding: 6px;
-            }
-
-            .image-upload-section {
-                padding: 12px;
-                margin-bottom: 12px;
-            }
-
-            .image-upload-options {
-                gap: 8px;
-            }
-
-            .upload-option-btn {
-                padding: 7px 12px;
-                font-size: 0.75em;
-            }
-
-            .preview-image {
-                max-width: 120px;
-                max-height: 80px;
             }
         }
     </style>
@@ -1117,11 +1057,11 @@
     <!-- === HEADER === -->
     <!-- ========================================= -->
     <div class="header">
-        <h1>SORTEADOR PROFISSIONAL</h1>
+        <h1>SORTEFLIX</h1>
         <div id="statusBar">
             <div class="status-item">
                 <span class="status-label">Sorteio</span>
-                <span class="status-value" id="statusDrawName">Grande Sorteio</span>
+                <span class="status-value" id="statusDrawName">Sorteio</span>
             </div>
             <div class="status-item">
                 <span class="status-label">Proximo Premio</span>
@@ -1142,7 +1082,7 @@
         <button class="menu-btn" onclick="openModal('registerModal')">Registrar Numeros</button>
         <button class="menu-btn" id="startDrawBtn" onclick="openDrawScreen()">SORTEAR</button>
         <button class="menu-btn" onclick="openModal('rankingModal')">Historico</button>
-        <button class="menu-btn" onclick="resetAllData()" style="background: linear-gradient(135deg, #dc3545, #c82333); border-color: #dc3545;">Zerar Dados</button>
+        <button class="menu-btn" onclick="resetAllData()" style="background: linear-gradient(135deg, #666, #555); border-color: #666;">Zerar Dados</button>
     </div>
 
     <!-- ========================================= -->
@@ -1186,7 +1126,7 @@
             <button class="action-btn" onclick="addPrize()">Adicionar Premio</button>
             <button class="action-btn secondary-btn" onclick="closeModal()">Finalizar</button>
 
-            <h3 style="color: var(--primary-color); margin-top: 20px; margin-bottom: 12px; text-transform: uppercase; font-size: 1.1em;">Premios Cadastrados:</h3>
+            <h3 style="color: var(--primary-red); margin-top: 20px; margin-bottom: 12px; text-transform: uppercase; font-size: 1.1em;">Premios Cadastrados:</h3>
             <table>
                 <thead>
                     <tr>
@@ -1223,7 +1163,7 @@
             <button class="action-btn" onclick="registerNumber()">Registrar</button>
             <button class="action-btn secondary-btn" onclick="closeModal()">Finalizar</button>
 
-            <h3 style="color: var(--primary-color); margin-top: 20px; margin-bottom: 12px; text-transform: uppercase; font-size: 1.1em;">Numeros Registrados:</h3>
+            <h3 style="color: var(--primary-red); margin-top: 20px; margin-bottom: 12px; text-transform: uppercase; font-size: 1.1em;">Numeros Registrados:</h3>
             <div id="registeredNumbersContainer"></div>
         </div>
     </div>
@@ -1232,16 +1172,17 @@
     <!-- === MODAL: TELA DE SORTEIO === -->
     <!-- ========================================= -->
     <div id="drawScreen" class="modal-backdrop">
-        <video id="drawBackgroundVideo" autoplay loop muted playsinline>
+        <video id="drawBackgroundVideo" playsinline>
             <source src="https://cdnl.iconscout.com/lottie/premium/preview-watermark/bitcoin-animation-gif-download-10879642.mp4" type="video/mp4">
-            Seu navegador não suporta o elemento de vídeo.
         </video>
         <div class="draw-elements-container">
             <h2 class="draw-title">SORTEIO EM ANDAMENTO</h2>
 
             <div class="prize-selector-wrapper">
                 <label for="prizeSelector">Escolha o Premio a Sortear:</label>
-                <select id="prizeSelector" onchange="updateDrawDisplayBySelection()"></select>
+                <select id="prizeSelector" onchange="handlePrizeSelectorChange()">
+                    <option value="">Selecione um premio...</option>
+                </select>
             </div>
 
             <div class="prize-display">
@@ -1256,8 +1197,8 @@
             </div>
 
             <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; width: 100%;">
-                <button class="action-btn" id="drawActionBtn" onclick="startDraw()">SORTEAR</button>
-                <button class="action-btn" id="closeDrawBtn" onclick="closeModal()" style="display: none; background: linear-gradient(135deg, #dc3545, #c82333); border-color: #dc3545;">Fechar</button>
+                <button class="action-btn" id="drawActionBtn" onclick="startDraw()" disabled>SORTEAR</button>
+                <button class="action-btn" id="closeDrawBtn" onclick="closeModal()" style="display: none; background: linear-gradient(135deg, #666, #555); border-color: #666;">Fechar</button>
             </div>
         </div>
     </div>
@@ -1290,7 +1231,8 @@
     <div id="winnerBanner">
         <div id="bannerPrizeName">PARABENS! VOCE GANHOU!</div>
         <div id="bannerWinnerName">--</div>
-        <button id="bannerCloseBtn" onclick="closeWinnerBanner()">Fechar</button>
+        <div id="bannerTimer">Fechando em: 10s</div>
+        <button id="bannerCloseBtn" onclick="closeWinnerBanner()" disabled>Fechar</button>
     </div>
 
     <!-- ========================================= -->
@@ -1317,15 +1259,16 @@
         const DRAW_DURATION_MS = 4500;
         const SLOT_REFRESH_MS = 80;
         const MUSIC_FADE_IN_MS = 500;
-        const MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10MB para upload
-        const TARGET_IMAGE_WIDTH = 300; // Largura alvo para redimensionamento
+        const MAX_IMAGE_SIZE = 10 * 1024 * 1024;
+        const TARGET_IMAGE_WIDTH = 300;
+        const BANNER_TIMER_DURATION = 10;
 
         // ========================================= 
         // === ESTADO GLOBAL ===
         // =========================================
         let appData = {
             config: {
-                name: 'Grande Sorteio',
+                name: 'Sorteio',
                 prizes: [] 
             },
             registered: [],
@@ -1335,6 +1278,9 @@
         let drawInterval;
         let currentUploadMode = 'url';
         let fadeInterval;
+        let bannerTimerInterval;
+        let bannerTimeRemaining = BANNER_TIMER_DURATION;
+        let selectedPrizeId = null;
 
         // ========================================= 
         // === ELEMENTOS DO DOM ===
@@ -1355,6 +1301,8 @@
         const winnerBanner = document.getElementById('winnerBanner');
         const bannerPrizeName = document.getElementById('bannerPrizeName');
         const bannerWinnerName = document.getElementById('bannerWinnerName');
+        const bannerTimer = document.getElementById('bannerTimer');
+        const bannerCloseBtn = document.getElementById('bannerCloseBtn');
         const confettiContainer = document.getElementById('confettiContainer');
         const fileInput = document.getElementById('fileInput');
         const previewImage = document.getElementById('previewImage');
@@ -1422,7 +1370,6 @@
                         let width = img.width;
                         let height = img.height;
 
-                        // Redimensionar se a largura for maior que a largura alvo
                         if (width > TARGET_IMAGE_WIDTH) {
                             height *= TARGET_IMAGE_WIDTH / width;
                             width = TARGET_IMAGE_WIDTH;
@@ -1432,7 +1379,6 @@
                         canvas.height = height;
                         ctx.drawImage(img, 0, 0, width, height);
 
-                        // Tentar compressão JPEG com qualidade 0.8
                         const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
                         resolve(compressedDataUrl);
                     };
@@ -1453,11 +1399,9 @@
 
             try {
                 const base64Data = await resizeImage(file);
+                const finalSize = (base64Data.length * 0.75) - 2;
                 
-                // Verificar o tamanho final (em bytes)
-                const finalSize = (base64Data.length * 0.75) - 2; // Aproximação do tamanho em bytes
-                
-                if (finalSize > 500 * 1024) { // Se ainda for maior que 500KB após compressão
+                if (finalSize > 500 * 1024) {
                     showTemporaryMessage(document.getElementById('configMessage'), `Imagem comprimida, mas ainda grande (${(finalSize / 1024).toFixed(0)}KB). Pode causar lentidao.`, 'warning');
                 } else {
                     showTemporaryMessage(document.getElementById('configMessage'), `Imagem carregada e comprimida para ${(finalSize / 1024).toFixed(0)}KB.`, 'success', 3000);
@@ -1478,7 +1422,7 @@
         // =========================================
         window.loadData = function() {
             try {
-                const storedData = localStorage.getItem('darkNeonSorteadorData');
+                const storedData = localStorage.getItem('sorteflixData');
                 if (storedData) {
                     appData = JSON.parse(storedData);
                     appData.config.prizes = appData.config.prizes.map(p => ({
@@ -1495,7 +1439,7 @@
 
         window.saveData = function() {
             try {
-                localStorage.setItem('darkNeonSorteadorData', JSON.stringify(appData));
+                localStorage.setItem('sorteflixData', JSON.stringify(appData));
             } catch (e) { 
                 console.error("Erro ao salvar dados:", e); 
                 if (e.name === 'QuotaExceededError') {
@@ -1508,13 +1452,14 @@
 
         window.resetAllData = function() {
             if (confirm("ATENCAO: Deseja realmente ZERAR todos os dados do sorteador (Configuracoes, Numeros e Historico)?")) {
-                localStorage.removeItem('darkNeonSorteadorData');
+                localStorage.removeItem('sorteflixData');
                 appData = {
-                    config: { name: 'Grande Sorteio', prizes: [] },
+                    config: { name: 'Sorteio', prizes: [] },
                     registered: [],
                     history: [],
                     images: {}
                 };
+                selectedPrizeId = null;
                 updateUI();
                 alert("Dados resetados com sucesso!");
             }
@@ -1531,7 +1476,6 @@
             const targetModal = document.getElementById(modalId);
             if (!targetModal) return;
 
-            // Garante que o banner do vencedor esteja escondido ao abrir outro modal
             winnerBanner.classList.remove('show'); 
             confettiContainer.innerHTML = '';
             
@@ -1539,10 +1483,7 @@
 
             if (modalId === 'drawScreen') {
                 populatePrizeSelector();
-                updateDrawDisplayBySelection();
-                drawBackgroundVideo.play().catch(e => console.warn("Video background nao pode tocar:", e));
-            } else {
-                drawBackgroundVideo.pause();
+                resetDrawDisplay();
             }
             
             if (modalId === 'configModal') {
@@ -1561,12 +1502,17 @@
             });
             winnerBanner.classList.remove('show'); 
             confettiContainer.innerHTML = '';
+            drawBackgroundVideo.classList.remove('active');
             drawBackgroundVideo.pause();
+            clearInterval(bannerTimerInterval);
             updateUI(); 
         }
 
         window.closeWinnerBanner = function() {
-            winnerBanner.classList.remove('show');
+            if (!bannerCloseBtn.disabled) {
+                winnerBanner.classList.remove('show');
+                clearInterval(bannerTimerInterval);
+            }
         }
 
         function updateUI() {
@@ -1598,16 +1544,15 @@
                 return showTemporaryMessage(configMessage, 'O nome do premio e obrigatorio.', 'error'); 
             }
             
-            // Determinar qual imagem usar
             if (currentUploadMode === 'file' && window.tempImageData) {
                 const imageId = generateUUID();
                 appData.images[imageId] = window.tempImageData;
-                imageUrl = imageId; // Armazenar ID em vez de URL
+                imageUrl = imageId;
             } else if (currentUploadMode === 'url') {
                 imageUrl = prizeImageUrlInput.value.trim();
             }
             
-            appData.config.name = drawNameInput.value.trim() || 'Grande Sorteio';
+            appData.config.name = drawNameInput.value.trim() || 'Sorteio';
             
             appData.config.prizes.push({ 
                 id: generateUUID(), 
@@ -1633,7 +1578,6 @@
             if (!prize) return;
 
             if (confirm(`Deseja deletar o premio: "${prize.name}"?`)) {
-                // Se a imagem for um ID (upload local), remover do armazenamento
                 if (appData.images[prize.imageUrl]) {
                     delete appData.images[prize.imageUrl];
                 }
@@ -1770,7 +1714,7 @@
         // === SORTEIO CINEMATOGRÁFICO ===
         // =========================================
         function populatePrizeSelector() {
-            prizeSelector.innerHTML = '';
+            prizeSelector.innerHTML = '<option value="">Selecione um premio...</option>';
             const remainingPrizes = getRemainingPrizes();
 
             if (remainingPrizes.length === 0) {
@@ -1782,44 +1726,55 @@
             remainingPrizes.forEach((prize, index) => {
                 const option = document.createElement('option');
                 option.value = prize.id;
-                option.textContent = `${prize.name} (${index + 1}o na fila)`;
+                option.textContent = `${prize.name}`;
                 prizeSelector.appendChild(option);
             });
-            drawActionBtn.disabled = false;
         }
-        
-        window.updateDrawDisplayBySelection = function() {
-            const selectedId = prizeSelector.value;
-            const selectedPrize = findPrizeById(selectedId);
 
+        function resetDrawDisplay() {
+            selectedPrizeId = null;
+            prizeSelector.value = '';
+            drawPrizeName.textContent = 'Selecione um premio...';
+            prizeImageElement.src = NO_IMAGE_PLACEHOLDER;
+            numberDisplay.textContent = '--';
+            numberDisplay.className = 'number-display-rolling';
+            drawActionBtn.textContent = 'SORTEAR';
+            drawActionBtn.disabled = true;
+            closeDrawBtn.style.display = 'none';
             winnerBanner.classList.remove('show');
+        }
 
-            if (selectedPrize) {
-                drawPrizeName.textContent = selectedPrize.name;
-                
-                // Verificar se a imagem é um ID local ou URL
-                let imageUrl = NO_IMAGE_PLACEHOLDER;
-                if (selectedPrize.imageUrl) {
-                    if (appData.images[selectedPrize.imageUrl]) {
-                        imageUrl = appData.images[selectedPrize.imageUrl];
-                    } else if (selectedPrize.imageUrl.startsWith('http')) {
-                        imageUrl = selectedPrize.imageUrl;
-                    }
-                }
-                
-                prizeImageElement.src = imageUrl;
-                prizeImageElement.alt = selectedPrize.name;
-                
-                numberDisplay.textContent = '--';
-                numberDisplay.className = 'number-display-rolling';
-                drawActionBtn.textContent = 'SORTEAR'; 
-                drawActionBtn.disabled = false;
-                closeDrawBtn.style.display = 'none';
-            } else {
+        window.handlePrizeSelectorChange = function() {
+            selectedPrizeId = prizeSelector.value;
+
+            if (!selectedPrizeId) {
                 drawPrizeName.textContent = 'Selecione um premio...';
-                prizeImageElement.src = NO_IMAGE_PLACEHOLDER; 
+                prizeImageElement.src = NO_IMAGE_PLACEHOLDER;
                 drawActionBtn.disabled = true;
+                return;
             }
+
+            const selectedPrize = findPrizeById(selectedPrizeId);
+            if (!selectedPrize) {
+                drawActionBtn.disabled = true;
+                return;
+            }
+
+            drawPrizeName.textContent = selectedPrize.name;
+            
+            let imageUrl = NO_IMAGE_PLACEHOLDER;
+            if (selectedPrize.imageUrl) {
+                if (appData.images[selectedPrize.imageUrl]) {
+                    imageUrl = appData.images[selectedPrize.imageUrl];
+                } else if (selectedPrize.imageUrl.startsWith('http')) {
+                    imageUrl = selectedPrize.imageUrl;
+                }
+            }
+            
+            prizeImageElement.src = imageUrl;
+            prizeImageElement.alt = selectedPrize.name;
+            
+            drawActionBtn.disabled = false;
         }
 
         window.openDrawScreen = function() {
@@ -1836,15 +1791,17 @@
         }
 
         window.startDraw = function() {
-            if (drawActionBtn.textContent === 'SORTEIO ENCERRADO') return;
-            
-            const selectedId = prizeSelector.value;
-            const prizeToDraw = findPrizeById(selectedId);
+            if (!selectedPrizeId) {
+                alert("Por favor, selecione um premio antes de sortear.");
+                return;
+            }
+
+            const prizeToDraw = findPrizeById(selectedPrizeId);
             
             if (!prizeToDraw || prizeToDraw.sorteado) {
-                 alert("Por favor, selecione um premio valido e ainda nao sorteado.");
-                 drawActionBtn.disabled = false;
-                 return;
+                alert("Por favor, selecione um premio valido e ainda nao sorteado.");
+                drawActionBtn.disabled = false;
+                return;
             }
             if (appData.registered.length === 0) {
                 alert("Nao ha participantes restantes!");
@@ -1857,12 +1814,15 @@
             drawActionBtn.disabled = true;
             drawActionBtn.textContent = 'SORTEANDO...';
             
+            drawBackgroundVideo.classList.add('active');
+            drawBackgroundVideo.play().catch(e => console.warn("Video nao pode tocar:", e));
+            
             playMusicWithFadeIn();
             
             drawInterval = setInterval(animateNumberRoll, SLOT_REFRESH_MS);
 
             setTimeout(() => {
-                stopDraw(selectedId, prizeToDraw.name);
+                stopDraw(selectedPrizeId, prizeToDraw.name);
             }, DRAW_DURATION_MS);
         }
         
@@ -1880,7 +1840,9 @@
         function stopDraw(prizeId, prizeName) {
             clearInterval(drawInterval);
             
-            // Correção da música: Pausa e reseta o tempo
+            drawBackgroundVideo.classList.remove('active');
+            drawBackgroundVideo.pause();
+            
             drawMusic.pause();
             drawMusic.currentTime = 0;
             
@@ -1899,36 +1861,29 @@
             
             prizeDrawn.sorteado = true;
             
-            // 1. Exibe o Ganhador no Slot com animação
             numberDisplay.textContent = String(winner.number).padStart(2, '0');
             numberDisplay.className = 'number-display-rolling winner-final';
             
-            // 2. EXIBE O POPUP DO VENCEDOR (FIXO)
-            bannerPrizeName.textContent = `PARABENS! VOCE GANHOU!`;
-            bannerWinnerName.innerHTML = `<strong>${winner.name}</strong><br>Numero ${String(winner.number).padStart(2, '0')}<br><span style="font-size: 0.8em; color: #0084ff;">${prizeName.toUpperCase()}</span>`;
+            startBannerTimer();
             
-            // **CORREÇÃO CRÍTICA:** A tela do vencedor não fechará mais automaticamente.
-            // A classe 'show' é adicionada e só é removida pelo botão 'Fechar' do banner.
+            bannerPrizeName.textContent = `PARABENS! VOCE GANHOU!`;
+            bannerWinnerName.innerHTML = `<strong>${winner.name}</strong><br>Numero ${String(winner.number).padStart(2, '0')}<br><span style="font-size: 0.8em; color: var(--accent-neon);">${prizeName.toUpperCase()}</span>`;
             winnerBanner.classList.add('show');
             
-            // 3. Simula a explosão de Confetti
             createConfetti(150); 
 
-            // 4. Salva e Atualiza
             appData.history.unshift({ prizeName: prizeDrawn.name, winner: winner });
             appData.registered.splice(randomIndex, 1);
             saveData();
+            
+            resetDrawDisplay();
             
             const remainingPrizesCount = getRemainingPrizes().length;
 
             if (remainingPrizesCount > 0) {
                 drawActionBtn.textContent = 'PROXIMA RODADA';
                 drawActionBtn.disabled = false;
-                // Atualiza o seletor de prêmios após um pequeno delay para que o usuário veja o vencedor
-                setTimeout(() => {
-                    populatePrizeSelector(); 
-                    updateDrawDisplayBySelection();
-                }, 1500); 
+                drawActionBtn.style.display = 'block';
             } else {
                 drawActionBtn.textContent = 'SORTEIO ENCERRADO';
                 drawActionBtn.disabled = true;
@@ -1938,9 +1893,28 @@
             closeDrawBtn.style.display = 'block';
             updateUI();
         }
+
+        function startBannerTimer() {
+            bannerTimeRemaining = BANNER_TIMER_DURATION;
+            bannerCloseBtn.disabled = true;
+            
+            bannerTimer.textContent = `Fechando em: ${bannerTimeRemaining}s`;
+            
+            clearInterval(bannerTimerInterval);
+            bannerTimerInterval = setInterval(() => {
+                bannerTimeRemaining--;
+                bannerTimer.textContent = `Fechando em: ${bannerTimeRemaining}s`;
+                
+                if (bannerTimeRemaining <= 0) {
+                    clearInterval(bannerTimerInterval);
+                    bannerCloseBtn.disabled = false;
+                    bannerTimer.textContent = 'Voce pode fechar agora';
+                }
+            }, 1000);
+        }
         
         function createConfetti(count) {
-            const colors = ['#0084ff', '#00bfff', '#28a745', '#ffc107', '#dc3545'];
+            const colors = ['#e50914', '#00d4ff', '#28a745', '#ffc107', '#dc3545'];
             confettiContainer.innerHTML = '';
 
             for (let i = 0; i < count; i++) {
@@ -1966,13 +1940,11 @@
         // === ÁUDIO ===
         // =========================================
         function playMusicWithFadeIn() {
-            // Garante que o áudio seja carregado e resetado
             drawMusic.load(); 
             drawMusic.volume = 0;
             
             drawMusic.play().catch(e => {
                 console.warn("Musica nao pode tocar (restricao do navegador):", e);
-                // Se falhar, tenta tocar sem fade-in na próxima vez
             });
 
             clearInterval(fadeInterval);
