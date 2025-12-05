@@ -3,34 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎰 SORTEADOR CINEMATOGRÁFICO | CASSINO NEON 🎰</title>
+    <title>SorteFlix</title>
     <style>
         /* ========================================= */
         /* === 1. VARIÁVEIS CSS (DESIGN SYSTEM) === */
         /* ========================================= */
         :root {
             /* Cores Primárias */
-            --dark-bg: #0a0e27;
-            --darker-bg: #050812;
-            --neon-cyan: #00d4ff;
-            --neon-purple: #b700ff;
-            --neon-pink: #ff006e;
-            --neon-gold: #ffd700;
-            --neon-green: #39ff14;
+            --dark-bg: #0f1419;
+            --darker-bg: #0a0d12;
+            --primary-color: #0084ff;
+            --primary-dark: #0066cc;
+            --accent-color: #00bfff;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
             
             /* Cores Secundárias */
-            --text-primary: #e0f7ff;
-            --text-secondary: #a8d8ff;
-            --card-bg: #0f1935;
-            --accent-light: #00ffff;
-            
-            /* Sombras e Efeitos */
-            --glow-cyan: 0 0 10px #00d4ff, 0 0 20px #00d4ff, 0 0 30px #00d4ff;
-            --glow-purple: 0 0 10px #b700ff, 0 0 20px #b700ff;
-            --glow-gold: 0 0 15px #ffd700, 0 0 25px #ffd700;
+            --text-primary: #ffffff;
+            --text-secondary: #b8c5d6;
+            --card-bg: #1a1f2e;
+            --border-color: #2a3142;
             
             /* Tipografia */
-            --font-display: 'Courier New', monospace;
+            --font-display: 'Segoe UI', Tahoma, Geneva, sans-serif;
             --font-body: 'Segoe UI', Tahoma, Geneva, sans-serif;
         }
 
@@ -48,28 +44,13 @@
 
         body {
             font-family: var(--font-body);
-            background: linear-gradient(135deg, var(--darker-bg) 0%, var(--dark-bg) 50%, #1a0a3a 100%);
+            background: linear-gradient(135deg, var(--darker-bg) 0%, var(--dark-bg) 100%);
             color: var(--text-primary);
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
             position: relative;
-        }
-
-        /* === Efeito de Fundo Animado === */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 20% 50%, rgba(0, 212, 255, 0.05) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(183, 0, 255, 0.05) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: 0;
         }
 
         /* ========================================= */
@@ -79,65 +60,54 @@
             position: relative;
             z-index: 10;
             text-align: center;
-            padding: 30px 20px;
+            padding: 25px 20px;
             width: 100%;
-            border-bottom: 2px solid var(--neon-cyan);
-            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
-            background: rgba(10, 14, 39, 0.8);
+            border-bottom: 1px solid var(--border-color);
+            background: rgba(10, 13, 18, 0.8);
             backdrop-filter: blur(10px);
         }
 
         h1 {
-            font-size: clamp(2em, 5vw, 4em);
+            font-size: clamp(1.8em, 4vw, 3em);
             font-family: var(--font-display);
-            font-weight: 900;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 3px;
-            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple), var(--neon-pink));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
-            animation: pulse-title 2s ease-in-out infinite;
-            margin-bottom: 10px;
-        }
-
-        @keyframes pulse-title {
-            0%, 100% { filter: drop-shadow(0 0 10px var(--neon-cyan)); }
-            50% { filter: drop-shadow(0 0 20px var(--neon-purple)); }
+            letter-spacing: 2px;
+            color: var(--primary-color);
+            margin-bottom: 12px;
         }
 
         #statusBar {
-            background: rgba(15, 25, 53, 0.9);
-            padding: 15px 25px;
+            background: rgba(26, 31, 46, 0.6);
+            padding: 15px 20px;
             border-radius: 8px;
-            border: 1px solid var(--neon-cyan);
-            margin-top: 15px;
+            border: 1px solid var(--border-color);
+            margin-top: 12px;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            font-size: 0.95em;
-            box-shadow: var(--glow-cyan);
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            font-size: 0.9em;
         }
 
         .status-item {
             text-align: center;
-            padding: 10px;
+            padding: 8px;
         }
 
         .status-label {
-            color: var(--neon-purple);
-            font-weight: bold;
+            color: var(--text-secondary);
+            font-weight: 600;
             display: block;
-            margin-bottom: 5px;
-            font-size: 0.85em;
+            margin-bottom: 4px;
+            font-size: 0.8em;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .status-value {
-            color: var(--neon-gold);
-            font-size: 1.2em;
-            font-weight: bold;
+            color: var(--accent-color);
+            font-size: 1.1em;
+            font-weight: 700;
         }
 
         /* ========================================= */
@@ -146,26 +116,26 @@
         .main-menu {
             display: flex;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 12px;
             justify-content: center;
-            margin: 40px 20px;
+            margin: 25px 20px;
             position: relative;
             z-index: 10;
         }
 
         .menu-btn {
-            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
-            border: 2px solid var(--neon-cyan);
-            color: var(--darker-bg);
-            padding: 15px 30px;
-            font-size: 1em;
-            font-weight: bold;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            border: 1px solid var(--primary-color);
+            color: white;
+            padding: 12px 24px;
+            font-size: 0.95em;
+            font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
             cursor: pointer;
-            border-radius: 10px;
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            box-shadow: var(--glow-cyan);
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 132, 255, 0.2);
             position: relative;
             overflow: hidden;
         }
@@ -177,7 +147,7 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.15);
             transition: left 0.3s;
             z-index: -1;
         }
@@ -187,14 +157,18 @@
         }
 
         .menu-btn:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 0 30px var(--neon-cyan), 0 0 50px var(--neon-purple);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 132, 255, 0.4);
+        }
+
+        .menu-btn:active {
+            transform: translateY(0);
         }
 
         .menu-btn:disabled {
             background: linear-gradient(135deg, #444, #333);
-            border-color: #666;
-            color: #999;
+            border-color: #555;
+            color: #888;
             cursor: not-allowed;
             box-shadow: none;
             transform: none;
@@ -209,7 +183,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.95);
+            background: rgba(0, 0, 0, 0.7);
             z-index: 1000;
             display: none;
             justify-content: center;
@@ -229,16 +203,16 @@
         }
 
         .modal-content {
-            background: linear-gradient(135deg, var(--card-bg), #1a2a4a);
-            border: 2px solid var(--neon-cyan);
-            border-radius: 15px;
-            padding: 40px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 30px;
             width: 100%;
-            max-width: 800px;
-            box-shadow: 0 0 40px var(--neon-cyan), inset 0 0 20px rgba(0, 212, 255, 0.1);
+            max-width: 700px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
             transform: scale(0.8) translateY(-50px);
             opacity: 0;
-            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
             position: relative;
             max-height: 90vh;
             overflow-y: auto;
@@ -250,14 +224,13 @@
         }
 
         .modal-content h2 {
-            color: var(--neon-gold);
-            font-size: 1.8em;
+            color: var(--primary-color);
+            font-size: 1.6em;
             margin-bottom: 20px;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            text-shadow: 0 0 10px var(--neon-gold);
-            border-bottom: 2px solid var(--neon-purple);
-            padding-bottom: 15px;
+            letter-spacing: 1px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 12px;
         }
 
         .close-btn {
@@ -265,53 +238,54 @@
             top: 15px;
             right: 15px;
             background: transparent;
-            border: 2px solid var(--neon-pink);
-            color: var(--neon-pink);
-            font-size: 2em;
+            border: 2px solid var(--danger-color);
+            color: var(--danger-color);
+            font-size: 1.8em;
             cursor: pointer;
-            width: 45px;
-            height: 45px;
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 50%;
             transition: all 0.3s;
             z-index: 10;
+            line-height: 1;
         }
 
         .close-btn:hover {
-            background: var(--neon-pink);
-            color: var(--darker-bg);
-            box-shadow: 0 0 20px var(--neon-pink);
+            background: var(--danger-color);
+            color: white;
         }
 
         /* ========================================= */
         /* === 5. INPUTS E FORMULÁRIOS === */
         /* ========================================= */
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
         label {
             display: block;
-            color: var(--neon-cyan);
-            font-weight: bold;
-            margin-bottom: 8px;
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-bottom: 6px;
             text-transform: uppercase;
-            font-size: 0.9em;
-            letter-spacing: 1px;
+            font-size: 0.85em;
+            letter-spacing: 0.5px;
         }
 
         input[type="text"],
         input[type="number"],
+        input[type="file"],
         textarea,
         select {
             width: 100%;
-            padding: 12px 15px;
-            background: rgba(0, 0, 0, 0.5);
-            border: 2px solid var(--neon-purple);
+            padding: 11px 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
             color: var(--text-primary);
-            border-radius: 8px;
+            border-radius: 6px;
             font-family: var(--font-body);
             font-size: 1em;
             transition: all 0.3s;
@@ -320,41 +294,48 @@
 
         input[type="text"]:focus,
         input[type="number"]:focus,
+        input[type="file"]:focus,
         textarea:focus,
         select:focus {
             outline: none;
-            border-color: var(--neon-cyan);
-            box-shadow: 0 0 15px var(--neon-cyan), inset 0 0 10px rgba(0, 212, 255, 0.1);
-            background: rgba(0, 212, 255, 0.05);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 132, 255, 0.1);
+            background: rgba(0, 132, 255, 0.05);
         }
 
         textarea {
             resize: vertical;
-            min-height: 80px;
+            min-height: 70px;
+        }
+
+        input[type="file"] {
+            padding: 8px;
+            cursor: pointer;
         }
 
         /* ========================================= */
         /* === 6. BOTÕES DE AÇÃO === */
         /* ========================================= */
         .action-btn {
-            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
-            color: var(--darker-bg);
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
             border: none;
-            padding: 12px 25px;
-            border-radius: 8px;
+            padding: 11px 22px;
+            border-radius: 6px;
             cursor: pointer;
-            font-weight: bold;
+            font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
             transition: all 0.3s;
-            box-shadow: var(--glow-cyan);
-            margin-top: 10px;
-            margin-right: 10px;
+            box-shadow: 0 2px 8px rgba(0, 132, 255, 0.2);
+            margin-top: 8px;
+            margin-right: 8px;
+            font-size: 0.9em;
         }
 
         .action-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 0 25px var(--neon-cyan), 0 0 40px var(--neon-purple);
+            box-shadow: 0 4px 12px rgba(0, 132, 255, 0.4);
         }
 
         .action-btn:active {
@@ -362,20 +343,30 @@
         }
 
         .delete-btn-list {
-            background: var(--neon-pink);
+            background: var(--danger-color);
             color: white;
             border: none;
             padding: 6px 12px;
-            border-radius: 5px;
+            border-radius: 4px;
             cursor: pointer;
-            font-weight: bold;
+            font-weight: 600;
             transition: all 0.3s;
-            font-size: 0.9em;
+            font-size: 0.85em;
         }
 
         .delete-btn-list:hover {
-            background: #ff1493;
-            box-shadow: 0 0 15px var(--neon-pink);
+            background: #c82333;
+            box-shadow: 0 2px 6px rgba(220, 53, 69, 0.3);
+        }
+
+        .secondary-btn {
+            background: transparent;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .secondary-btn:hover {
+            background: rgba(0, 132, 255, 0.1);
         }
 
         /* ========================================= */
@@ -384,75 +375,74 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin-top: 15px;
         }
 
         th {
-            background: rgba(0, 212, 255, 0.1);
-            color: var(--neon-gold);
-            padding: 12px;
+            background: rgba(0, 132, 255, 0.1);
+            color: var(--primary-color);
+            padding: 10px;
             text-align: left;
-            border-bottom: 2px solid var(--neon-cyan);
-            font-weight: bold;
+            border-bottom: 2px solid var(--border-color);
+            font-weight: 600;
             text-transform: uppercase;
-            font-size: 0.9em;
+            font-size: 0.85em;
         }
 
         td {
-            padding: 12px;
-            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+            padding: 10px;
+            border-bottom: 1px solid var(--border-color);
             color: var(--text-secondary);
         }
 
         tr:hover {
-            background: rgba(0, 212, 255, 0.05);
+            background: rgba(0, 132, 255, 0.05);
         }
 
         /* Cards de Números */
         #registeredNumbersContainer {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-            max-height: 400px;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+            max-height: 350px;
             overflow-y: auto;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
-            border: 1px solid var(--neon-purple);
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
         }
 
         .number-card {
-            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(183, 0, 255, 0.1));
-            border: 2px solid var(--neon-cyan);
-            border-radius: 10px;
-            padding: 15px;
+            background: linear-gradient(135deg, rgba(0, 132, 255, 0.08), rgba(0, 191, 255, 0.08));
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
             text-align: center;
             transition: all 0.3s;
             cursor: pointer;
-            box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
         }
 
         .number-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 0 20px var(--neon-cyan), 0 0 30px var(--neon-purple);
-            border-color: var(--neon-gold);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 132, 255, 0.2);
+            border-color: var(--primary-color);
         }
 
         .number-display {
             display: block;
-            font-size: 2.5em;
-            font-weight: bold;
-            color: var(--neon-gold);
-            text-shadow: 0 0 10px var(--neon-gold);
-            margin-bottom: 8px;
+            font-size: 2em;
+            font-weight: 700;
+            color: var(--accent-color);
+            margin-bottom: 6px;
         }
 
         .name-display {
             display: block;
             color: var(--text-secondary);
-            font-size: 0.95em;
-            margin-bottom: 8px;
+            font-size: 0.9em;
+            margin-bottom: 6px;
             word-break: break-word;
         }
 
@@ -460,9 +450,9 @@
         /* === 8. TELA DE SORTEIO (DRAW SCREEN) === */
         /* ========================================= */
         #drawScreen {
-            background: linear-gradient(135deg, rgba(10, 14, 39, 0.95), rgba(26, 10, 58, 0.95));
-            border: 3px solid var(--neon-gold);
-            box-shadow: 0 0 50px var(--neon-gold), inset 0 0 30px rgba(255, 215, 0, 0.1);
+            background: linear-gradient(135deg, rgba(10, 13, 18, 0.95), rgba(26, 31, 46, 0.95));
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
         }
 
         .draw-elements-container {
@@ -470,38 +460,48 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 30px;
-            padding: 40px 20px;
+            gap: 25px;
+            padding: 30px 20px;
             min-height: 80vh;
+        }
+
+        .draw-title {
+            font-size: 1.8em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--primary-color);
+            text-align: center;
         }
 
         /* === Seletor de Prêmio === */
         .prize-selector-wrapper {
             width: 100%;
-            max-width: 500px;
+            max-width: 450px;
             text-align: center;
         }
 
         .prize-selector-wrapper label {
             display: block;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         #prizeSelector {
             width: 100%;
-            padding: 15px;
-            font-size: 1.1em;
-            background: rgba(0, 0, 0, 0.6);
-            border: 2px solid var(--neon-cyan);
-            color: var(--neon-gold);
-            border-radius: 10px;
+            padding: 12px;
+            font-size: 1em;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: 6px;
             cursor: pointer;
-            box-shadow: 0 0 15px var(--neon-cyan);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
         }
 
         #prizeSelector:focus {
             outline: none;
-            box-shadow: 0 0 25px var(--neon-cyan), 0 0 40px var(--neon-purple);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 132, 255, 0.1);
         }
 
         /* === Exibição do Prêmio === */
@@ -509,45 +509,45 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 20px;
-            padding: 30px;
-            background: rgba(0, 212, 255, 0.05);
-            border: 2px solid var(--neon-purple);
-            border-radius: 15px;
+            gap: 15px;
+            padding: 20px;
+            background: rgba(0, 132, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
             width: 100%;
-            max-width: 500px;
+            max-width: 450px;
         }
 
         #drawPrizeName {
-            font-size: 2em;
-            color: var(--neon-gold);
-            text-shadow: 0 0 15px var(--neon-gold);
+            font-size: 1.6em;
+            color: var(--primary-color);
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
             text-align: center;
+            font-weight: 700;
         }
 
         #prizeImage {
             width: 100%;
-            max-width: 300px;
-            height: 200px;
+            max-width: 280px;
+            height: 180px;
             object-fit: contain;
-            border-radius: 10px;
-            border: 3px solid var(--neon-cyan);
-            box-shadow: 0 0 20px var(--neon-cyan);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: rgba(0, 0, 0, 0.3);
         }
 
         /* === Slot Machine (Roleta 3D) === */
         .slot-machine-container {
             width: 100%;
-            max-width: 400px;
-            height: 250px;
+            max-width: 380px;
+            height: 220px;
             background: linear-gradient(135deg, #000, #1a1a2e);
-            border: 5px solid var(--neon-gold);
-            border-radius: 20px;
+            border: 3px solid var(--primary-color);
+            border-radius: 12px;
             overflow: hidden;
             position: relative;
-            box-shadow: 0 0 40px var(--neon-gold), inset 0 0 30px rgba(0, 0, 0, 0.8);
+            box-shadow: 0 8px 24px rgba(0, 132, 255, 0.15);
             perspective: 1000px;
         }
 
@@ -558,7 +558,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+            background: linear-gradient(90deg, transparent, rgba(0, 132, 255, 0.05), transparent);
             pointer-events: none;
             z-index: 5;
         }
@@ -569,10 +569,10 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 8em;
+            font-size: 7em;
             font-weight: 900;
-            color: var(--neon-gold);
-            text-shadow: 0 0 20px var(--neon-gold), 0 0 40px var(--neon-purple);
+            color: var(--accent-color);
+            text-shadow: 0 2px 8px rgba(0, 132, 255, 0.3);
             transition: transform 0.1s linear;
             line-height: 1;
         }
@@ -582,34 +582,34 @@
         }
 
         @keyframes roll-animation {
-            0% { transform: translateY(-20px) rotateX(20deg); opacity: 0.7; }
+            0% { transform: translateY(-15px) rotateX(20deg); opacity: 0.7; }
             50% { transform: translateY(0) rotateX(0deg); opacity: 1; }
-            100% { transform: translateY(20px) rotateX(-20deg); opacity: 0.7; }
+            100% { transform: translateY(15px) rotateX(-20deg); opacity: 0.7; }
         }
 
         .winner-final {
-            animation: winner-bounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), winner-glow 1s ease-in-out infinite;
+            animation: winner-bounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), winner-glow 1.2s ease-in-out infinite;
         }
 
         @keyframes winner-bounce {
             0% { transform: scale(0.5) rotateX(180deg); opacity: 0; }
-            50% { transform: scale(1.1) rotateX(0deg); }
+            50% { transform: scale(1.05) rotateX(0deg); }
             100% { transform: scale(1) rotateX(0deg); opacity: 1; }
         }
 
         @keyframes winner-glow {
             0%, 100% { 
-                text-shadow: 0 0 20px var(--neon-gold), 0 0 40px var(--neon-purple);
+                text-shadow: 0 2px 8px rgba(0, 132, 255, 0.3);
                 filter: brightness(1);
             }
             50% { 
-                text-shadow: 0 0 40px var(--neon-gold), 0 0 60px var(--neon-pink), 0 0 80px var(--neon-purple);
-                filter: brightness(1.2);
+                text-shadow: 0 4px 16px rgba(0, 132, 255, 0.5);
+                filter: brightness(1.1);
             }
         }
 
         /* ========================================= */
-        /* === 9. BANNER DO VENCEDOR === */
+        /* === 9. BANNER DO VENCEDOR (FIXO) === */
         /* ========================================= */
         #winnerBanner {
             position: fixed;
@@ -618,60 +618,75 @@
             z-index: 1002;
             transform: translate(-50%, -50%) scale(0.3) rotateY(90deg);
             width: 90%;
-            max-width: 900px;
-            padding: 50px 40px;
-            background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700);
+            max-width: 850px;
+            padding: 40px 30px;
+            background: linear-gradient(135deg, #ffffff, #f5f5f5);
             color: #000;
             text-align: center;
             font-family: var(--font-display);
-            border-radius: 20px;
-            box-shadow: 0 0 60px #ffd700, 0 0 100px rgba(255, 215, 0, 0.5);
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
             opacity: 0;
             pointer-events: none;
-            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-            border: 4px solid #ff6b00;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 2px solid var(--primary-color);
         }
 
         #winnerBanner.show {
             opacity: 1;
             transform: translate(-50%, -50%) scale(1) rotateY(0deg);
             pointer-events: auto;
-            animation: banner-pulse 0.8s ease-in-out;
+            animation: banner-pulse 0.6s ease-in-out;
         }
 
         @keyframes banner-pulse {
             0% { transform: translate(-50%, -50%) scale(0.3) rotateY(90deg); }
-            50% { transform: translate(-50%, -50%) scale(1.1) rotateY(0deg); }
+            50% { transform: translate(-50%, -50%) scale(1.05) rotateY(0deg); }
             100% { transform: translate(-50%, -50%) scale(1) rotateY(0deg); }
         }
 
         #bannerPrizeName {
-            font-size: 1.8em;
-            font-weight: bold;
+            font-size: 1.5em;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 20px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-            animation: text-shimmer 1s ease-in-out infinite;
-        }
-
-        @keyframes text-shimmer {
-            0%, 100% { text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); }
-            50% { text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.5); }
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            color: var(--primary-color);
         }
 
         #bannerWinnerName {
-            font-size: 2.5em;
+            font-size: 2.2em;
             font-weight: 900;
-            color: #ff6b00;
-            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
-            animation: winner-name-bounce 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            color: #000;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            animation: winner-name-bounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            margin-bottom: 15px;
         }
 
         @keyframes winner-name-bounce {
             0% { transform: scale(0) rotateX(180deg); }
-            50% { transform: scale(1.1) rotateX(0deg); }
+            50% { transform: scale(1.05) rotateX(0deg); }
             100% { transform: scale(1) rotateX(0deg); }
+        }
+
+        #bannerCloseBtn {
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s;
+            margin-top: 15px;
+            font-size: 0.9em;
+        }
+
+        #bannerCloseBtn:hover {
+            background: #c82333;
+            transform: translateY(-2px);
         }
 
         /* ========================================= */
@@ -689,9 +704,9 @@
 
         .confetti-piece {
             position: fixed;
-            width: 10px;
-            height: 10px;
-            background: var(--neon-gold);
+            width: 8px;
+            height: 8px;
+            background: var(--primary-color);
             pointer-events: none;
             animation: confetti-fall 3s ease-in forwards;
         }
@@ -711,112 +726,376 @@
         /* ========================================= */
         .message-box {
             min-height: 30px;
-            margin: 15px 0;
-            padding: 12px 15px;
+            margin: 12px 0;
+            padding: 10px 12px;
+            border-radius: 6px;
+            border-left: 4px solid var(--primary-color);
+            background: rgba(0, 132, 255, 0.1);
+            display: none;
+            font-size: 0.95em;
+        }
+
+        /* ========================================= */
+        /* === 12. UPLOAD DE IMAGEM === */
+        /* ========================================= */
+        .image-upload-section {
+            background: rgba(0, 132, 255, 0.05);
+            border: 1px dashed var(--border-color);
             border-radius: 8px;
-            border-left: 4px solid var(--neon-cyan);
-            background: rgba(0, 212, 255, 0.1);
+            padding: 15px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .image-upload-section h4 {
+            color: var(--primary-color);
+            margin-bottom: 12px;
+            font-size: 0.95em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .image-upload-options {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+
+        .upload-option-btn {
+            background: rgba(0, 132, 255, 0.2);
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85em;
+            transition: all 0.3s;
+        }
+
+        .upload-option-btn:hover {
+            background: rgba(0, 132, 255, 0.4);
+        }
+
+        .upload-option-btn.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        #fileInput {
             display: none;
         }
 
+        .preview-image {
+            max-width: 150px;
+            max-height: 100px;
+            border-radius: 6px;
+            margin: 10px 0;
+            border: 1px solid var(--border-color);
+        }
+
+        .url-input-group {
+            display: none;
+        }
+
+        .url-input-group.active {
+            display: block;
+        }
+
         /* ========================================= */
-        /* === 12. RESPONSIVIDADE === */
+        /* === 13. RESPONSIVIDADE === */
         /* ========================================= */
         @media (max-width: 768px) {
             h1 {
-                font-size: 2em;
-            }
-
-            #statusBar {
-                grid-template-columns: 1fr;
-                gap: 10px;
-            }
-
-            .menu-btn {
-                padding: 12px 20px;
-                font-size: 0.9em;
-            }
-
-            .modal-content {
-                padding: 25px;
-            }
-
-            #registeredNumbersContainer {
-                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            }
-
-            .slot-machine-container {
-                height: 200px;
-            }
-
-            .slot-roller {
-                font-size: 6em;
-            }
-
-            #winnerBanner {
-                max-width: 95%;
-                padding: 30px 20px;
-            }
-
-            #bannerPrizeName {
-                font-size: 1.3em;
-            }
-
-            #bannerWinnerName {
-                font-size: 2em;
-            }
-        }
-
-        @media (max-width: 480px) {
-            h1 {
-                font-size: 1.5em;
+                font-size: 1.6em;
                 letter-spacing: 1px;
             }
 
             .header {
-                padding: 20px 15px;
+                padding: 18px 15px;
+            }
+
+            #statusBar {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                gap: 10px;
+                padding: 12px 15px;
+            }
+
+            .status-item {
+                padding: 6px;
             }
 
             .main-menu {
                 gap: 10px;
-                margin: 20px 10px;
+                margin: 18px 15px;
             }
 
             .menu-btn {
-                padding: 10px 15px;
-                font-size: 0.8em;
+                padding: 10px 18px;
+                font-size: 0.85em;
+                flex: 1;
+                min-width: 140px;
             }
 
             .modal-content {
                 padding: 20px;
                 max-width: 95%;
+                border-radius: 8px;
+            }
+
+            .modal-content h2 {
+                font-size: 1.3em;
+                margin-bottom: 15px;
             }
 
             #registeredNumbersContainer {
-                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
                 gap: 10px;
+                max-height: 300px;
+            }
+
+            .number-card {
+                padding: 10px;
+            }
+
+            .number-display {
+                font-size: 1.6em;
+            }
+
+            .draw-elements-container {
+                gap: 20px;
+                padding: 20px 15px;
+                min-height: auto;
+            }
+
+            .draw-title {
+                font-size: 1.4em;
+            }
+
+            .slot-machine-container {
+                height: 180px;
+                border-width: 2px;
+                max-width: 100%;
+            }
+
+            .slot-roller {
+                font-size: 5em;
+            }
+
+            #prizeImage {
+                max-width: 240px;
+                height: 150px;
+            }
+
+            #winnerBanner {
+                max-width: 95%;
+                padding: 30px 20px;
+                border-radius: 10px;
+            }
+
+            #bannerPrizeName {
+                font-size: 1.2em;
+            }
+
+            #bannerWinnerName {
+                font-size: 1.8em;
+            }
+
+            table {
+                font-size: 0.9em;
+            }
+
+            th, td {
+                padding: 8px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.3em;
+                letter-spacing: 0.5px;
+            }
+
+            .header {
+                padding: 15px 12px;
+            }
+
+            #statusBar {
+                grid-template-columns: 1fr;
+                gap: 8px;
+                padding: 10px 12px;
+            }
+
+            .status-item {
+                padding: 4px;
+            }
+
+            .status-label {
+                font-size: 0.75em;
+            }
+
+            .status-value {
+                font-size: 1em;
+            }
+
+            .main-menu {
+                gap: 8px;
+                margin: 15px 12px;
+            }
+
+            .menu-btn {
+                padding: 10px 14px;
+                font-size: 0.75em;
+                flex: 1;
+                min-width: 110px;
+            }
+
+            .modal-content {
+                padding: 18px;
+                max-width: 100%;
+                border-radius: 8px;
+            }
+
+            .modal-content h2 {
+                font-size: 1.1em;
+                margin-bottom: 12px;
+                padding-bottom: 10px;
+            }
+
+            .form-group {
+                margin-bottom: 14px;
+            }
+
+            label {
+                font-size: 0.8em;
+                margin-bottom: 4px;
+            }
+
+            input[type="text"],
+            input[type="number"],
+            input[type="file"],
+            textarea,
+            select {
+                padding: 10px;
+                font-size: 16px;
+            }
+
+            .action-btn {
+                padding: 10px 16px;
+                font-size: 0.8em;
+                margin-top: 6px;
+                margin-right: 6px;
+            }
+
+            #registeredNumbersContainer {
+                grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+                gap: 8px;
+                max-height: 250px;
+                padding: 10px;
+            }
+
+            .number-card {
+                padding: 8px;
+            }
+
+            .number-display {
+                font-size: 1.3em;
+                margin-bottom: 4px;
+            }
+
+            .name-display {
+                font-size: 0.8em;
+            }
+
+            .draw-elements-container {
+                gap: 15px;
+                padding: 15px 12px;
+                min-height: auto;
+            }
+
+            .draw-title {
+                font-size: 1.1em;
+                letter-spacing: 0.5px;
+            }
+
+            .prize-selector-wrapper {
+                max-width: 100%;
+            }
+
+            .prize-display {
+                gap: 12px;
+                padding: 15px;
+                max-width: 100%;
+            }
+
+            #drawPrizeName {
+                font-size: 1.2em;
             }
 
             .slot-machine-container {
                 height: 150px;
-                border-width: 3px;
+                border-width: 2px;
+                max-width: 100%;
             }
 
             .slot-roller {
                 font-size: 4em;
             }
 
+            #prizeImage {
+                max-width: 200px;
+                height: 120px;
+            }
+
             #winnerBanner {
-                padding: 25px 15px;
-                border-radius: 15px;
+                padding: 25px 18px;
+                border-radius: 8px;
+                max-width: 98%;
             }
 
             #bannerPrizeName {
-                font-size: 1.1em;
+                font-size: 1em;
+                margin-bottom: 10px;
             }
 
             #bannerWinnerName {
-                font-size: 1.5em;
+                font-size: 1.4em;
+                margin-bottom: 10px;
+            }
+
+            #bannerCloseBtn {
+                padding: 8px 16px;
+                font-size: 0.8em;
+                margin-top: 10px;
+            }
+
+            table {
+                font-size: 0.8em;
+            }
+
+            th, td {
+                padding: 6px;
+            }
+
+            .image-upload-section {
+                padding: 12px;
+                margin-bottom: 12px;
+            }
+
+            .image-upload-options {
+                gap: 8px;
+            }
+
+            .upload-option-btn {
+                padding: 7px 12px;
+                font-size: 0.75em;
+            }
+
+            .preview-image {
+                max-width: 120px;
+                max-height: 80px;
             }
         }
     </style>
@@ -826,18 +1105,18 @@
     <!-- === HEADER === -->
     <!-- ========================================= -->
     <div class="header">
-        <h1>🎰 SORTEADOR CINEMATOGRÁFICO 🎰</h1>
+        <h1>SORTEFLIX</h1>
         <div id="statusBar">
             <div class="status-item">
                 <span class="status-label">Sorteio</span>
                 <span class="status-value" id="statusDrawName">Grande Sorteio</span>
             </div>
             <div class="status-item">
-                <span class="status-label">Próximo Prêmio</span>
+                <span class="status-label">Proximo Premio</span>
                 <span class="status-value" id="statusNextPrize">Nenhum</span>
             </div>
             <div class="status-item">
-                <span class="status-label">Prêmios Restantes</span>
+                <span class="status-label">Premios Restantes</span>
                 <span class="status-value" id="statusRemainingRounds">0</span>
             </div>
         </div>
@@ -847,11 +1126,11 @@
     <!-- === MENU PRINCIPAL === -->
     <!-- ========================================= -->
     <div class="main-menu">
-        <button class="menu-btn" onclick="openModal('configModal')">⚙️ Configurar Prêmios</button>
-        <button class="menu-btn" onclick="openModal('registerModal')">📝 Registrar Números</button>
-        <button class="menu-btn" id="startDrawBtn" onclick="openDrawScreen()">🎬 SORTEAR</button>
-        <button class="menu-btn" onclick="openModal('rankingModal')">🏆 Histórico</button>
-        <button class="menu-btn" onclick="resetAllData()" style="background: linear-gradient(135deg, #ff4444, #ff0000); border-color: #ff4444;">🔄 Zerar Dados</button>
+        <button class="menu-btn" onclick="openModal('configModal')">Configurar Premios</button>
+        <button class="menu-btn" onclick="openModal('registerModal')">Registrar Numeros</button>
+        <button class="menu-btn" id="startDrawBtn" onclick="openDrawScreen()">SORTEAR</button>
+        <button class="menu-btn" onclick="openModal('rankingModal')">Historico</button>
+        <button class="menu-btn" onclick="resetAllData()" style="background: linear-gradient(135deg, #dc3545, #c82333); border-color: #dc3545;">Zerar Dados</button>
     </div>
 
     <!-- ========================================= -->
@@ -859,35 +1138,49 @@
     <!-- ========================================= -->
     <div id="configModal" class="modal-backdrop">
         <div class="modal-content">
-            <button class="close-btn" onclick="closeModal()">✕</button>
-            <h2>⚙️ Configurar Prêmios</h2>
+            <button class="close-btn" onclick="closeModal()">x</button>
+            <h2>Configurar Premios</h2>
             
             <div class="form-group">
                 <label for="drawNameInput">Nome do Sorteio:</label>
-                <input type="text" id="drawNameInput" placeholder="Ex: Grande Sorteio Neon">
+                <input type="text" id="drawNameInput" placeholder="Ex: Grande Sorteio">
             </div>
 
             <div class="form-group">
-                <label for="prizeNameInput">Nome do Prêmio:</label>
+                <label for="prizeNameInput">Nome do Premio:</label>
                 <input type="text" id="prizeNameInput" placeholder="Ex: Notebook Gamer">
             </div>
 
-            <div class="form-group">
-                <label for="prizeImageUrlInput">URL da Imagem do Prêmio:</label>
-                <input type="text" id="prizeImageUrlInput" placeholder="https://exemplo.com/imagem.jpg">
+            <div class="image-upload-section">
+                <h4>Imagem do Premio</h4>
+                <div class="image-upload-options">
+                    <button class="upload-option-btn active" onclick="switchUploadMode('url')">URL</button>
+                    <button class="upload-option-btn" onclick="switchUploadMode('file')">Upload</button>
+                </div>
+
+                <div id="urlInputGroup" class="url-input-group active">
+                    <label for="prizeImageUrlInput">URL da Imagem:</label>
+                    <input type="text" id="prizeImageUrlInput" placeholder="https://exemplo.com/imagem.jpg">
+                </div>
+
+                <div id="fileInputGroup" class="url-input-group">
+                    <input type="file" id="fileInput" accept="image/*" onchange="handleImageUpload(event)">
+                    <button class="action-btn secondary-btn" onclick="document.getElementById('fileInput').click()">Selecionar Arquivo</button>
+                    <img id="previewImage" class="preview-image" style="display: none;">
+                </div>
             </div>
 
-            <button class="action-btn" onclick="addPrize()">➕ Adicionar Prêmio</button>
+            <button class="action-btn" onclick="addPrize()">Adicionar Premio</button>
             <div id="configMessage" class="message-box"></div>
 
-            <h3 style="color: var(--neon-cyan); margin-top: 30px; margin-bottom: 15px; text-transform: uppercase;">Prêmios Cadastrados:</h3>
+            <h3 style="color: var(--primary-color); margin-top: 20px; margin-bottom: 12px; text-transform: uppercase; font-size: 1.1em;">Premios Cadastrados:</h3>
             <table>
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>Nome do Prêmio</th>
+                        <th>Nome do Premio</th>
                         <th>Imagem</th>
-                        <th>Ação</th>
+                        <th>Acao</th>
                     </tr>
                 </thead>
                 <tbody id="prizesTableBody"></tbody>
@@ -900,23 +1193,23 @@
     <!-- ========================================= -->
     <div id="registerModal" class="modal-backdrop">
         <div class="modal-content">
-            <button class="close-btn" onclick="closeModal()">✕</button>
-            <h2>📝 Registrar Números da Sorte</h2>
+            <button class="close-btn" onclick="closeModal()">x</button>
+            <h2>Registrar Numeros da Sorte</h2>
 
             <div class="form-group">
-                <label for="luckyNumberInput">Número (1-100):</label>
+                <label for="luckyNumberInput">Numero (1-100):</label>
                 <input type="number" id="luckyNumberInput" min="1" max="100" placeholder="Ex: 42">
             </div>
 
             <div class="form-group">
                 <label for="ownerNameInput">Nome do Participante:</label>
-                <input type="text" id="ownerNameInput" placeholder="Ex: João Silva">
+                <input type="text" id="ownerNameInput" placeholder="Ex: Joao Silva">
             </div>
 
-            <button class="action-btn" onclick="registerNumber()">✅ Registrar</button>
+            <button class="action-btn" onclick="registerNumber()">Registrar</button>
             <div id="registrationMessage" class="message-box"></div>
 
-            <h3 style="color: var(--neon-cyan); margin-top: 30px; margin-bottom: 15px; text-transform: uppercase;">Números Registrados:</h3>
+            <h3 style="color: var(--primary-color); margin-top: 20px; margin-bottom: 12px; text-transform: uppercase; font-size: 1.1em;">Numeros Registrados:</h3>
             <div id="registeredNumbersContainer"></div>
         </div>
     </div>
@@ -926,16 +1219,16 @@
     <!-- ========================================= -->
     <div id="drawScreen" class="modal-backdrop">
         <div class="draw-elements-container">
-            <h2 style="color: var(--neon-gold); font-size: 2.5em; text-shadow: 0 0 20px var(--neon-gold); text-transform: uppercase; letter-spacing: 2px;">🎰 SORTEIO EM ANDAMENTO 🎰</h2>
+            <h2 class="draw-title">SORTEIO EM ANDAMENTO</h2>
 
             <div class="prize-selector-wrapper">
-                <label for="prizeSelector">Escolha o Prêmio a Sortear:</label>
+                <label for="prizeSelector">Escolha o Premio a Sortear:</label>
                 <select id="prizeSelector" onchange="updateDrawDisplayBySelection()"></select>
             </div>
 
             <div class="prize-display">
-                <div id="drawPrizeName">Selecione um prêmio...</div>
-                <img id="prizeImage" src="" alt="Imagem do Prêmio">
+                <div id="drawPrizeName">Selecione um premio...</div>
+                <img id="prizeImage" src="" alt="Imagem do Premio">
             </div>
 
             <div class="slot-machine-container">
@@ -944,9 +1237,9 @@
                 </div>
             </div>
 
-            <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center;">
-                <button class="action-btn" id="drawActionBtn" onclick="startDraw()">🎬 SORTEAR</button>
-                <button class="action-btn" id="closeDrawBtn" onclick="closeModal()" style="display: none; background: linear-gradient(135deg, var(--neon-pink), #ff1493);">❌ Fechar</button>
+            <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; width: 100%;">
+                <button class="action-btn" id="drawActionBtn" onclick="startDraw()">SORTEAR</button>
+                <button class="action-btn" id="closeDrawBtn" onclick="closeModal()" style="display: none; background: linear-gradient(135deg, #dc3545, #c82333); border-color: #dc3545;">Fechar</button>
             </div>
         </div>
     </div>
@@ -956,14 +1249,14 @@
     <!-- ========================================= -->
     <div id="rankingModal" class="modal-backdrop">
         <div class="modal-content">
-            <button class="close-btn" onclick="closeModal()">✕</button>
-            <h2>🏆 Histórico de Sorteios</h2>
+            <button class="close-btn" onclick="closeModal()">x</button>
+            <h2>Historico de Sorteios</h2>
 
             <table>
                 <thead>
                     <tr>
-                        <th>Posição</th>
-                        <th>Número</th>
+                        <th>Posicao</th>
+                        <th>Numero</th>
                         <th>Ganhador</th>
                     </tr>
                 </thead>
@@ -977,8 +1270,9 @@
     <!-- ========================================= -->
     <div id="confettiContainer"></div>
     <div id="winnerBanner">
-        <div id="bannerPrizeName">🎉 PARABÉNS! VOCÊ GANHOU! 🎉</div>
+        <div id="bannerPrizeName">PARABENS! VOCE GANHOU!</div>
         <div id="bannerWinnerName">--</div>
+        <button id="bannerCloseBtn" onclick="closeWinnerBanner()">Fechar</button>
     </div>
 
     <!-- ========================================= -->
@@ -992,7 +1286,7 @@
     <!-- === PLACEHOLDER DE IMAGEM (BASE64) === -->
     <!-- ========================================= -->
     <script>
-        const NO_IMAGE_PLACEHOLDER = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzExMTEyMiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LXNpemU9IjI0IiBmaWxsPSIjNjY2IiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5TZW0gSW1hZ2VtPC90ZXh0Pjwvc3ZnPg==';
+        const NO_IMAGE_PLACEHOLDER = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzE1MTkyMyIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LXNpemU9IjIwIiBmaWxsPSIjNjY2IiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiPkltYWdlbSBuYW8gZGlzcG9uaXZlbDwvdGV4dD48L3N2Zz4=';
     </script>
 
     <!-- ========================================= -->
@@ -1002,22 +1296,25 @@
         // ========================================= 
         // === CONSTANTES ===
         // =========================================
-        const DRAW_DURATION_MS = 4500; // 4.5 segundos de sorteio
-        const SLOT_REFRESH_MS = 80; // Velocidade da rolagem
-        const MUSIC_FADE_IN_MS = 500; // Fade in da música
+        const DRAW_DURATION_MS = 4500;
+        const SLOT_REFRESH_MS = 80;
+        const MUSIC_FADE_IN_MS = 500;
+        const MAX_IMAGE_SIZE = 500 * 1024; // 500KB
 
         // ========================================= 
         // === ESTADO GLOBAL ===
         // =========================================
         let appData = {
             config: {
-                name: 'Grande Sorteio Neon',
+                name: 'Grande Sorteio',
                 prizes: [] 
             },
             registered: [],
-            history: []
+            history: [],
+            images: {} // Armazenar imagens em Base64
         };
         let drawInterval;
+        let currentUploadMode = 'url';
 
         // ========================================= 
         // === ELEMENTOS DO DOM ===
@@ -1039,6 +1336,8 @@
         const bannerPrizeName = document.getElementById('bannerPrizeName');
         const bannerWinnerName = document.getElementById('bannerWinnerName');
         const confettiContainer = document.getElementById('confettiContainer');
+        const fileInput = document.getElementById('fileInput');
+        const previewImage = document.getElementById('previewImage');
 
         // ========================================= 
         // === FUNÇÕES UTILITÁRIAS ===
@@ -1060,13 +1359,56 @@
 
         window.showTemporaryMessage = function(element, message, type, duration = 5000) {
             let color;
-            if (type === 'success') { color = '#39ff14'; } 
-            else if (type === 'error') { color = '#ff006e'; } 
-            else { color = '#00d4ff'; }
+            if (type === 'success') { color = '#28a745'; } 
+            else if (type === 'error') { color = '#dc3545'; } 
+            else { color = '#0084ff'; }
 
             element.innerHTML = `<span style="color: ${color};">${message}</span>`;
             element.style.display = 'block';
             setTimeout(() => { element.style.display = 'none'; }, duration);
+        }
+
+        // ========================================= 
+        // === UPLOAD DE IMAGEM ===
+        // =========================================
+        window.switchUploadMode = function(mode) {
+            currentUploadMode = mode;
+            const urlGroup = document.getElementById('urlInputGroup');
+            const fileGroup = document.getElementById('fileInputGroup');
+            const buttons = document.querySelectorAll('.upload-option-btn');
+
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (mode === 'url') {
+                urlGroup.classList.add('active');
+                fileGroup.classList.remove('active');
+            } else {
+                urlGroup.classList.remove('active');
+                fileGroup.classList.add('active');
+            }
+        }
+
+        window.handleImageUpload = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (file.size > MAX_IMAGE_SIZE) {
+                showTemporaryMessage(document.getElementById('configMessage'), 'Arquivo muito grande (máximo 500KB)', 'error');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64Data = e.target.result;
+                previewImage.src = base64Data;
+                previewImage.style.display = 'block';
+                
+                // Armazenar temporariamente para usar ao adicionar prêmio
+                window.tempImageData = base64Data;
+                showTemporaryMessage(document.getElementById('configMessage'), 'Imagem carregada com sucesso', 'success', 3000);
+            };
+            reader.readAsDataURL(file);
         }
 
         // ========================================= 
@@ -1083,6 +1425,7 @@
                         imageUrl: p.imageUrl,
                         sorteado: p.sorteado || false
                     }));
+                    appData.images = appData.images || {};
                 }
             } catch (e) { console.error("Erro ao carregar dados:", e); }
             updateUI();
@@ -1093,20 +1436,25 @@
                 localStorage.setItem('darkNeonSorteadorData', JSON.stringify(appData));
             } catch (e) { 
                 console.error("Erro ao salvar dados:", e); 
-                alert("Erro de armazenamento.");
+                if (e.name === 'QuotaExceededError') {
+                    alert("Armazenamento local cheio. Tente remover alguns premios com imagens grandes.");
+                } else {
+                    alert("Erro de armazenamento.");
+                }
             }
         }
 
         window.resetAllData = function() {
-            if (confirm("ATENÇÃO: Deseja realmente ZERAR todos os dados do sorteador (Configurações, Números e Histórico)?")) {
+            if (confirm("ATENCAO: Deseja realmente ZERAR todos os dados do sorteador (Configuracoes, Numeros e Historico)?")) {
                 localStorage.removeItem('darkNeonSorteadorData');
                 appData = {
-                    config: { name: 'Grande Sorteio Neon', prizes: [] },
+                    config: { name: 'Grande Sorteio', prizes: [] },
                     registered: [],
-                    history: []
+                    history: [],
+                    images: {}
                 };
                 updateUI();
-                alert("Dados resetados com sucesso! 🚀");
+                alert("Dados resetados com sucesso!");
             }
         }
 
@@ -1134,6 +1482,8 @@
             if (modalId === 'configModal') {
                 updatePrizesTable();
                 document.getElementById('drawNameInput').value = appData.config.name;
+                previewImage.style.display = 'none';
+                window.tempImageData = null;
             }
             if (modalId === 'registerModal') updateNumbersTable();
             if (modalId === 'rankingModal') updateRankingTable();
@@ -1148,6 +1498,10 @@
             updateUI(); 
         }
 
+        window.closeWinnerBanner = function() {
+            winnerBanner.classList.remove('show');
+        }
+
         function updateUI() {
             const remainingPrizes = getRemainingPrizes().length;
             const nextPrize = getRemainingPrizes()[0] ? getRemainingPrizes()[0].name : 'Nenhum';
@@ -1158,7 +1512,7 @@
             
             const canStart = remainingPrizes > 0 && appData.registered.length > 0;
             document.getElementById('startDrawBtn').disabled = !canStart;
-            document.getElementById('startDrawBtn').textContent = remainingPrizes > 0 ? '🎬 SORTEAR' : 'SORTEIO ENCERRADO';
+            document.getElementById('startDrawBtn').textContent = remainingPrizes > 0 ? 'SORTEAR' : 'SORTEIO ENCERRADO';
         }
 
         // ========================================= 
@@ -1171,13 +1525,22 @@
             const configMessage = document.getElementById('configMessage');
 
             const name = prizeNameInput.value.trim();
-            const imageUrl = prizeImageUrlInput.value.trim();
+            let imageUrl = '';
 
             if (!name) {
-                return showTemporaryMessage(configMessage, 'O nome do prêmio é obrigatório.', 'error'); 
+                return showTemporaryMessage(configMessage, 'O nome do premio e obrigatorio.', 'error'); 
             }
             
-            appData.config.name = drawNameInput.value.trim() || 'Grande Sorteio Neon';
+            // Determinar qual imagem usar
+            if (currentUploadMode === 'file' && window.tempImageData) {
+                const imageId = generateUUID();
+                appData.images[imageId] = window.tempImageData;
+                imageUrl = imageId; // Armazenar ID em vez de URL
+            } else if (currentUploadMode === 'url') {
+                imageUrl = prizeImageUrlInput.value.trim();
+            }
+            
+            appData.config.name = drawNameInput.value.trim() || 'Grande Sorteio';
             
             appData.config.prizes.push({ 
                 id: generateUUID(), 
@@ -1190,8 +1553,11 @@
 
             prizeNameInput.value = '';
             prizeImageUrlInput.value = '';
+            previewImage.style.display = 'none';
+            fileInput.value = '';
+            window.tempImageData = null;
 
-            showTemporaryMessage(configMessage, `✅ Prêmio "${name}" adicionado!`, 'success', 3000);
+            showTemporaryMessage(configMessage, `Premio "${name}" adicionado com sucesso!`, 'success', 3000);
             updateUI();
         }
         
@@ -1199,7 +1565,11 @@
             const prize = findPrizeById(id);
             if (!prize) return;
 
-            if (confirm(`Deseja deletar o prêmio: "${prize.name}"?`)) {
+            if (confirm(`Deseja deletar o premio: "${prize.name}"?`)) {
+                // Se a imagem for um ID (upload local), remover do armazenamento
+                if (appData.images[prize.imageUrl]) {
+                    delete appData.images[prize.imageUrl];
+                }
                 appData.config.prizes = appData.config.prizes.filter(p => p.id !== id);
                 saveData();
                 updatePrizesTable();
@@ -1213,7 +1583,7 @@
             const allPrizes = appData.config.prizes;
 
             if (allPrizes.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #666;">Nenhum prêmio cadastrado</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #666;">Nenhum premio cadastrado</td></tr>';
                 return;
             }
 
@@ -1221,9 +1591,11 @@
                 const row = tbody.insertRow();
                 row.insertCell(0).textContent = index + 1;
                 const nameCell = row.insertCell(1);
-                nameCell.textContent = prize.name + (prize.sorteado ? ' ✅ (Sorteado)' : '');
+                nameCell.textContent = prize.name + (prize.sorteado ? ' (Sorteado)' : '');
                 nameCell.style.color = prize.sorteado ? '#888' : 'var(--text-primary)';
-                row.insertCell(2).textContent = prize.imageUrl ? '✓ Sim' : '✗ Não';
+                
+                const hasImage = prize.imageUrl && (prize.imageUrl.startsWith('http') || appData.images[prize.imageUrl]);
+                row.insertCell(2).textContent = hasImage ? 'Sim' : 'Nao';
                 
                 const actionCell = row.insertCell(3);
                 const deleteBtn = document.createElement('button');
@@ -1242,15 +1614,15 @@
             const name = ownerNameInput.value.trim();
 
             if (isNaN(number) || number < 1 || number > 100) {
-                return showTemporaryMessage(registrationMessage, '❌ Número inválido (1 a 100).', 'error');
+                return showTemporaryMessage(registrationMessage, 'Numero invalido (1 a 100).', 'error');
             }
             if (!name) {
-                return showTemporaryMessage(registrationMessage, '❌ O nome é obrigatório.', 'error');
+                return showTemporaryMessage(registrationMessage, 'O nome e obrigatorio.', 'error');
             }
 
             const existingEntry = appData.registered.find(entry => entry.number === number);
             if (existingEntry) {
-                return showTemporaryMessage(registrationMessage, `❌ O Nº ${String(number).padStart(2, '0')} já foi escolhido por ${existingEntry.name}.`, 'error');
+                return showTemporaryMessage(registrationMessage, `O No ${String(number).padStart(2, '0')} ja foi escolhido por ${existingEntry.name}.`, 'error');
             }
 
             appData.registered.push({ number: number, name: name });
@@ -1260,12 +1632,12 @@
 
             luckyNumberInput.value = '';
             ownerNameInput.value = '';
-            showTemporaryMessage(registrationMessage, `✅ Nº ${String(number).padStart(2, '0')} registrado para ${name}!`, 'success', 3000);
+            showTemporaryMessage(registrationMessage, `No ${String(number).padStart(2, '0')} registrado para ${name}!`, 'success', 3000);
             updateUI();
         }
 
         window.deleteNumber = function(numberToDelete) {
-            if (confirm(`Deseja deletar o número ${String(numberToDelete).padStart(2, '0')}?`)) {
+            if (confirm(`Deseja deletar o numero ${String(numberToDelete).padStart(2, '0')}?`)) {
                 appData.registered = appData.registered.filter(entry => entry.number !== numberToDelete);
                 saveData();
                 updateNumbersTable();
@@ -1277,7 +1649,7 @@
             registeredNumbersContainer.innerHTML = '';
 
             if (appData.registered.length === 0) {
-                registeredNumbersContainer.innerHTML = '<p style="color:#666; text-align:center; padding: 20px; grid-column: 1/-1;">Nenhum número registrado.</p>';
+                registeredNumbersContainer.innerHTML = '<p style="color:#666; text-align:center; padding: 20px; grid-column: 1/-1;">Nenhum numero registrado.</p>';
                 return;
             }
 
@@ -1294,7 +1666,7 @@
                 nameSpan.textContent = entry.name;
 
                 const deleteBtn = document.createElement('button');
-                deleteBtn.textContent = '✕';
+                deleteBtn.textContent = 'x';
                 deleteBtn.className = 'delete-btn-list';
                 deleteBtn.title = `Deletar ${entry.name}`;
                 deleteBtn.onclick = () => deleteNumber(entry.number);
@@ -1321,7 +1693,7 @@
 
             appData.history.forEach((item, index) => {
                 const row = tbody.insertRow();
-                row.insertCell(0).textContent = `${index + 1}º - ${item.prizeName}`;
+                row.insertCell(0).textContent = `${index + 1}o - ${item.prizeName}`;
                 row.insertCell(1).textContent = String(item.winner.number).padStart(2, '0');
                 row.insertCell(2).textContent = item.winner.name;
             });
@@ -1335,7 +1707,7 @@
             const remainingPrizes = getRemainingPrizes();
 
             if (remainingPrizes.length === 0) {
-                prizeSelector.innerHTML = '<option value="">Nenhum prêmio restante</option>';
+                prizeSelector.innerHTML = '<option value="">Nenhum premio restante</option>';
                 drawActionBtn.disabled = true;
                 return;
             }
@@ -1343,7 +1715,7 @@
             remainingPrizes.forEach((prize, index) => {
                 const option = document.createElement('option');
                 option.value = prize.id;
-                option.textContent = `${prize.name} (${index + 1}º na fila)`;
+                option.textContent = `${prize.name} (${index + 1}o na fila)`;
                 prizeSelector.appendChild(option);
             });
             drawActionBtn.disabled = false;
@@ -1357,16 +1729,27 @@
 
             if (selectedPrize) {
                 drawPrizeName.textContent = selectedPrize.name;
-                prizeImageElement.src = selectedPrize.imageUrl || NO_IMAGE_PLACEHOLDER; 
+                
+                // Verificar se a imagem é um ID local ou URL
+                let imageUrl = NO_IMAGE_PLACEHOLDER;
+                if (selectedPrize.imageUrl) {
+                    if (appData.images[selectedPrize.imageUrl]) {
+                        imageUrl = appData.images[selectedPrize.imageUrl];
+                    } else if (selectedPrize.imageUrl.startsWith('http')) {
+                        imageUrl = selectedPrize.imageUrl;
+                    }
+                }
+                
+                prizeImageElement.src = imageUrl;
                 prizeImageElement.alt = selectedPrize.name;
                 
                 numberDisplay.textContent = '--';
                 numberDisplay.className = 'number-display-rolling';
-                drawActionBtn.textContent = '🎬 SORTEAR'; 
+                drawActionBtn.textContent = 'SORTEAR'; 
                 drawActionBtn.disabled = false;
                 closeDrawBtn.style.display = 'none';
             } else {
-                drawPrizeName.textContent = 'Selecione um prêmio...';
+                drawPrizeName.textContent = 'Selecione um premio...';
                 prizeImageElement.src = NO_IMAGE_PLACEHOLDER; 
                 drawActionBtn.disabled = true;
             }
@@ -1374,11 +1757,11 @@
 
         window.openDrawScreen = function() {
             if (getRemainingPrizes().length === 0) {
-                alert("Configure os prêmios ou zere o histórico para sortear novamente!");
+                alert("Configure os premios ou zere o historico para sortear novamente!");
                 return;
             }
             if (appData.registered.length === 0) {
-                alert("Registre os números da sorte antes de iniciar o sorteio!");
+                alert("Registre os numeros da sorte antes de iniciar o sorteio!");
                 return;
             }
             
@@ -1392,12 +1775,12 @@
             const prizeToDraw = findPrizeById(selectedId);
             
             if (!prizeToDraw || prizeToDraw.sorteado) {
-                 alert("Por favor, selecione um prêmio válido e ainda não sorteado.");
+                 alert("Por favor, selecione um premio valido e ainda nao sorteado.");
                  drawActionBtn.disabled = false;
                  return;
             }
             if (appData.registered.length === 0) {
-                alert("Não há participantes restantes!");
+                alert("Nao ha participantes restantes!");
                 drawActionBtn.disabled = false;
                 return;
             }
@@ -1405,7 +1788,7 @@
             winnerBanner.classList.remove('show');
             confettiContainer.innerHTML = '';
             drawActionBtn.disabled = true;
-            drawActionBtn.textContent = '⏳ SORTEANDO...';
+            drawActionBtn.textContent = 'SORTEANDO...';
             
             playMusicWithFadeIn();
             
@@ -1423,7 +1806,6 @@
                 const rollingNumber = available[randomIndex].number;
                 numberDisplay.textContent = String(rollingNumber).padStart(2, '0');
                 
-                // Efeito 3D mais suave
                 numberDisplay.style.transform = `translateY(${Math.random() * 15 - 7.5}px) rotateX(${Math.random() * 8 - 4}deg) scale(${0.95 + Math.random() * 0.1})`;
             }
         }
@@ -1452,14 +1834,13 @@
             numberDisplay.textContent = String(winner.number).padStart(2, '0');
             numberDisplay.className = 'number-display-rolling winner-final';
             
-            // 2. EXIBE O POPUP DO VENCEDOR COM ANIMAÇÃO
-            bannerPrizeName.textContent = `🎉 PARABÉNS! VOCÊ GANHOU! 🎉`;
-            bannerWinnerName.innerHTML = `<strong>${winner.name}</strong><br>Nº ${String(winner.number).padStart(2, '0')}<br><span style="font-size: 0.8em; color: #ff6b00;">${prizeName.toUpperCase()}</span>`;
+            // 2. EXIBE O POPUP DO VENCEDOR (FIXO - SEM FECHAR AUTOMATICAMENTE)
+            bannerPrizeName.textContent = `PARABENS! VOCE GANHOU!`;
+            bannerWinnerName.innerHTML = `<strong>${winner.name}</strong><br>Numero ${String(winner.number).padStart(2, '0')}<br><span style="font-size: 0.8em; color: #0084ff;">${prizeName.toUpperCase()}</span>`;
             winnerBanner.classList.add('show');
-            winnerBanner.onclick = () => winnerBanner.classList.remove('show');
             
             // 3. Simula a explosão de Confetti
-            createConfetti(200); 
+            createConfetti(150); 
 
             // 4. Salva e Atualiza
             appData.history.unshift({ prizeName: prizeDrawn.name, winner: winner });
@@ -1469,16 +1850,16 @@
             const remainingPrizesCount = getRemainingPrizes().length;
 
             if (remainingPrizesCount > 0) {
-                drawActionBtn.textContent = '🎬 PRÓXIMA RODADA';
+                drawActionBtn.textContent = 'PROXIMA RODADA';
                 drawActionBtn.disabled = false;
                 setTimeout(() => {
                     populatePrizeSelector(); 
                     updateDrawDisplayBySelection();
                 }, 1500); 
             } else {
-                drawActionBtn.textContent = '✅ SORTEIO ENCERRADO';
+                drawActionBtn.textContent = 'SORTEIO ENCERRADO';
                 drawActionBtn.disabled = true;
-                prizeSelector.innerHTML = '<option value="">Nenhum prêmio restante</option>';
+                prizeSelector.innerHTML = '<option value="">Nenhum premio restante</option>';
             }
             
             closeDrawBtn.style.display = 'block';
@@ -1486,7 +1867,7 @@
         }
         
         function createConfetti(count) {
-            const colors = ['#00d4ff', '#b700ff', '#ff006e', '#ffd700', '#39ff14'];
+            const colors = ['#0084ff', '#00bfff', '#28a745', '#ffc107', '#dc3545'];
             confettiContainer.innerHTML = '';
 
             for (let i = 0; i < count; i++) {
@@ -1495,7 +1876,6 @@
                 
                 piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
                 
-                // Posição inicial próxima ao centro
                 piece.style.left = `${(window.innerWidth / 2) + (Math.random() * 200 - 100)}px`;
                 piece.style.top = `${(window.innerHeight / 2) + (Math.random() * 200 - 100)}px`;
                 piece.style.setProperty('--final-x', `${(Math.random() * window.innerWidth) - window.innerWidth/4}px`);
@@ -1514,7 +1894,7 @@
         // =========================================
         function playMusicWithFadeIn() {
             drawMusic.volume = 0;
-            drawMusic.play().catch(e => console.warn("Música não pôde tocar (restrição do navegador):", e));
+            drawMusic.play().catch(e => console.warn("Musica nao pode tocar (restricao do navegador):", e));
 
             const step = 0.05;
             const intervalTime = (MUSIC_FADE_IN_MS / (1 / step));
