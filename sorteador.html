@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SorteFlix</title>
+    <title>Sorteador Profissional | Sistema de Sorteio</title>
     <style>
         /* ========================================= */
         /* === 1. VARIÁVEIS CSS (DESIGN SYSTEM) === */
@@ -111,7 +111,7 @@
         }
 
         /* ========================================= */
-        /* === 3. MENU PRINCIPAL === */
+        /* === 3. MENU PRINCIPAL (AJUSTE MOBILE) === */
         /* ========================================= */
         .main-menu {
             display: flex;
@@ -172,6 +172,21 @@
             cursor: not-allowed;
             box-shadow: none;
             transform: none;
+        }
+
+        /* Ajuste Mobile para Botões do Menu Principal */
+        @media (max-width: 768px) {
+            .main-menu {
+                flex-direction: column; /* Empilha os botões */
+                width: 90%;
+                max-width: 400px;
+                margin: 20px auto;
+            }
+            .menu-btn {
+                width: 100%; /* Tamanho igual */
+                padding: 15px 24px;
+                font-size: 1em;
+            }
         }
 
         /* ========================================= */
@@ -463,6 +478,8 @@
             gap: 25px;
             padding: 30px 20px;
             min-height: 80vh;
+            position: relative;
+            z-index: 10; /* Acima do video */
         }
 
         .draw-title {
@@ -474,11 +491,24 @@
             text-align: center;
         }
 
+        /* Video Background */
+        #drawBackgroundVideo {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 1;
+            opacity: 0.15; /* Suaviza o video */
+        }
+
         /* === Seletor de Prêmio === */
         .prize-selector-wrapper {
             width: 100%;
             max-width: 450px;
             text-align: center;
+            z-index: 10;
         }
 
         .prize-selector-wrapper label {
@@ -516,6 +546,7 @@
             border-radius: 10px;
             width: 100%;
             max-width: 450px;
+            z-index: 10;
         }
 
         #drawPrizeName {
@@ -549,6 +580,7 @@
             position: relative;
             box-shadow: 0 8px 24px rgba(0, 132, 255, 0.15);
             perspective: 1000px;
+            z-index: 10;
         }
 
         .slot-machine-container::before {
@@ -805,7 +837,7 @@
         }
 
         /* ========================================= */
-        /* === 13. RESPONSIVIDADE === */
+        /* === 13. RESPONSIVIDADE (Ajustes Finais) === */
         /* ========================================= */
         @media (max-width: 768px) {
             h1 {
@@ -827,18 +859,6 @@
                 padding: 6px;
             }
 
-            .main-menu {
-                gap: 10px;
-                margin: 18px 15px;
-            }
-
-            .menu-btn {
-                padding: 10px 18px;
-                font-size: 0.85em;
-                flex: 1;
-                min-width: 140px;
-            }
-
             .modal-content {
                 padding: 20px;
                 max-width: 95%;
@@ -854,14 +874,6 @@
                 grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
                 gap: 10px;
                 max-height: 300px;
-            }
-
-            .number-card {
-                padding: 10px;
-            }
-
-            .number-display {
-                font-size: 1.6em;
             }
 
             .draw-elements-container {
@@ -1105,7 +1117,7 @@
     <!-- === HEADER === -->
     <!-- ========================================= -->
     <div class="header">
-        <h1>SORTEFLIX</h1>
+        <h1>SORTEADOR PROFISSIONAL</h1>
         <div id="statusBar">
             <div class="status-item">
                 <span class="status-label">Sorteio</span>
@@ -1154,8 +1166,8 @@
             <div class="image-upload-section">
                 <h4>Imagem do Premio</h4>
                 <div class="image-upload-options">
-                    <button class="upload-option-btn active" onclick="switchUploadMode('url')">URL</button>
-                    <button class="upload-option-btn" onclick="switchUploadMode('file')">Upload</button>
+                    <button class="upload-option-btn active" onclick="switchUploadMode(event, 'url')">URL</button>
+                    <button class="upload-option-btn" onclick="switchUploadMode(event, 'file')">Upload</button>
                 </div>
 
                 <div id="urlInputGroup" class="url-input-group active">
@@ -1170,8 +1182,9 @@
                 </div>
             </div>
 
-            <button class="action-btn" onclick="addPrize()">Adicionar Premio</button>
             <div id="configMessage" class="message-box"></div>
+            <button class="action-btn" onclick="addPrize()">Adicionar Premio</button>
+            <button class="action-btn secondary-btn" onclick="closeModal()">Finalizar</button>
 
             <h3 style="color: var(--primary-color); margin-top: 20px; margin-bottom: 12px; text-transform: uppercase; font-size: 1.1em;">Premios Cadastrados:</h3>
             <table>
@@ -1206,8 +1219,9 @@
                 <input type="text" id="ownerNameInput" placeholder="Ex: Joao Silva">
             </div>
 
-            <button class="action-btn" onclick="registerNumber()">Registrar</button>
             <div id="registrationMessage" class="message-box"></div>
+            <button class="action-btn" onclick="registerNumber()">Registrar</button>
+            <button class="action-btn secondary-btn" onclick="closeModal()">Finalizar</button>
 
             <h3 style="color: var(--primary-color); margin-top: 20px; margin-bottom: 12px; text-transform: uppercase; font-size: 1.1em;">Numeros Registrados:</h3>
             <div id="registeredNumbersContainer"></div>
@@ -1218,6 +1232,10 @@
     <!-- === MODAL: TELA DE SORTEIO === -->
     <!-- ========================================= -->
     <div id="drawScreen" class="modal-backdrop">
+        <video id="drawBackgroundVideo" autoplay loop muted playsinline>
+            <source src="https://cdnl.iconscout.com/lottie/premium/preview-watermark/bitcoin-animation-gif-download-10879642.mp4" type="video/mp4">
+            Seu navegador não suporta o elemento de vídeo.
+        </video>
         <div class="draw-elements-container">
             <h2 class="draw-title">SORTEIO EM ANDAMENTO</h2>
 
@@ -1299,7 +1317,8 @@
         const DRAW_DURATION_MS = 4500;
         const SLOT_REFRESH_MS = 80;
         const MUSIC_FADE_IN_MS = 500;
-        const MAX_IMAGE_SIZE = 500 * 1024; // 500KB
+        const MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10MB para upload
+        const TARGET_IMAGE_WIDTH = 300; // Largura alvo para redimensionamento
 
         // ========================================= 
         // === ESTADO GLOBAL ===
@@ -1311,10 +1330,11 @@
             },
             registered: [],
             history: [],
-            images: {} // Armazenar imagens em Base64
+            images: {}
         };
         let drawInterval;
         let currentUploadMode = 'url';
+        let fadeInterval;
 
         // ========================================= 
         // === ELEMENTOS DO DOM ===
@@ -1338,6 +1358,7 @@
         const confettiContainer = document.getElementById('confettiContainer');
         const fileInput = document.getElementById('fileInput');
         const previewImage = document.getElementById('previewImage');
+        const drawBackgroundVideo = document.getElementById('drawBackgroundVideo');
 
         // ========================================= 
         // === FUNÇÕES UTILITÁRIAS ===
@@ -1369,9 +1390,9 @@
         }
 
         // ========================================= 
-        // === UPLOAD DE IMAGEM ===
+        // === UPLOAD DE IMAGEM (COMPRESSÃO) ===
         // =========================================
-        window.switchUploadMode = function(mode) {
+        window.switchUploadMode = function(event, mode) {
             currentUploadMode = mode;
             const urlGroup = document.getElementById('urlInputGroup');
             const fileGroup = document.getElementById('fileInputGroup');
@@ -1389,26 +1410,67 @@
             }
         }
 
-        window.handleImageUpload = function(event) {
+        function resizeImage(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+
+                        let width = img.width;
+                        let height = img.height;
+
+                        // Redimensionar se a largura for maior que a largura alvo
+                        if (width > TARGET_IMAGE_WIDTH) {
+                            height *= TARGET_IMAGE_WIDTH / width;
+                            width = TARGET_IMAGE_WIDTH;
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        // Tentar compressão JPEG com qualidade 0.8
+                        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                        resolve(compressedDataUrl);
+                    };
+                    img.src = e.target.result;
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        window.handleImageUpload = async function(event) {
             const file = event.target.files[0];
             if (!file) return;
 
             if (file.size > MAX_IMAGE_SIZE) {
-                showTemporaryMessage(document.getElementById('configMessage'), 'Arquivo muito grande (máximo 500KB)', 'error');
-                return;
+                showTemporaryMessage(document.getElementById('configMessage'), 'Arquivo muito grande (max 10MB). Tentando compressao...', 'warning');
             }
 
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const base64Data = e.target.result;
+            try {
+                const base64Data = await resizeImage(file);
+                
+                // Verificar o tamanho final (em bytes)
+                const finalSize = (base64Data.length * 0.75) - 2; // Aproximação do tamanho em bytes
+                
+                if (finalSize > 500 * 1024) { // Se ainda for maior que 500KB após compressão
+                    showTemporaryMessage(document.getElementById('configMessage'), `Imagem comprimida, mas ainda grande (${(finalSize / 1024).toFixed(0)}KB). Pode causar lentidao.`, 'warning');
+                } else {
+                    showTemporaryMessage(document.getElementById('configMessage'), `Imagem carregada e comprimida para ${(finalSize / 1024).toFixed(0)}KB.`, 'success', 3000);
+                }
+
                 previewImage.src = base64Data;
                 previewImage.style.display = 'block';
-                
-                // Armazenar temporariamente para usar ao adicionar prêmio
                 window.tempImageData = base64Data;
-                showTemporaryMessage(document.getElementById('configMessage'), 'Imagem carregada com sucesso', 'success', 3000);
-            };
-            reader.readAsDataURL(file);
+
+            } catch (error) {
+                console.error("Erro ao processar imagem:", error);
+                showTemporaryMessage(document.getElementById('configMessage'), 'Erro ao processar imagem. Tente uma menor ou use URL.', 'error');
+            }
         }
 
         // ========================================= 
@@ -1469,6 +1531,7 @@
             const targetModal = document.getElementById(modalId);
             if (!targetModal) return;
 
+            // Garante que o banner do vencedor esteja escondido ao abrir outro modal
             winnerBanner.classList.remove('show'); 
             confettiContainer.innerHTML = '';
             
@@ -1477,6 +1540,9 @@
             if (modalId === 'drawScreen') {
                 populatePrizeSelector();
                 updateDrawDisplayBySelection();
+                drawBackgroundVideo.play().catch(e => console.warn("Video background nao pode tocar:", e));
+            } else {
+                drawBackgroundVideo.pause();
             }
             
             if (modalId === 'configModal') {
@@ -1495,6 +1561,7 @@
             });
             winnerBanner.classList.remove('show'); 
             confettiContainer.innerHTML = '';
+            drawBackgroundVideo.pause();
             updateUI(); 
         }
 
@@ -1812,6 +1879,8 @@
 
         function stopDraw(prizeId, prizeName) {
             clearInterval(drawInterval);
+            
+            // Correção da música: Pausa e reseta o tempo
             drawMusic.pause();
             drawMusic.currentTime = 0;
             
@@ -1834,9 +1903,12 @@
             numberDisplay.textContent = String(winner.number).padStart(2, '0');
             numberDisplay.className = 'number-display-rolling winner-final';
             
-            // 2. EXIBE O POPUP DO VENCEDOR (FIXO - SEM FECHAR AUTOMATICAMENTE)
+            // 2. EXIBE O POPUP DO VENCEDOR (FIXO)
             bannerPrizeName.textContent = `PARABENS! VOCE GANHOU!`;
             bannerWinnerName.innerHTML = `<strong>${winner.name}</strong><br>Numero ${String(winner.number).padStart(2, '0')}<br><span style="font-size: 0.8em; color: #0084ff;">${prizeName.toUpperCase()}</span>`;
+            
+            // **CORREÇÃO CRÍTICA:** A tela do vencedor não fechará mais automaticamente.
+            // A classe 'show' é adicionada e só é removida pelo botão 'Fechar' do banner.
             winnerBanner.classList.add('show');
             
             // 3. Simula a explosão de Confetti
@@ -1852,6 +1924,7 @@
             if (remainingPrizesCount > 0) {
                 drawActionBtn.textContent = 'PROXIMA RODADA';
                 drawActionBtn.disabled = false;
+                // Atualiza o seletor de prêmios após um pequeno delay para que o usuário veja o vencedor
                 setTimeout(() => {
                     populatePrizeSelector(); 
                     updateDrawDisplayBySelection();
@@ -1893,13 +1966,20 @@
         // === ÁUDIO ===
         // =========================================
         function playMusicWithFadeIn() {
+            // Garante que o áudio seja carregado e resetado
+            drawMusic.load(); 
             drawMusic.volume = 0;
-            drawMusic.play().catch(e => console.warn("Musica nao pode tocar (restricao do navegador):", e));
+            
+            drawMusic.play().catch(e => {
+                console.warn("Musica nao pode tocar (restricao do navegador):", e);
+                // Se falhar, tenta tocar sem fade-in na próxima vez
+            });
 
+            clearInterval(fadeInterval);
             const step = 0.05;
             const intervalTime = (MUSIC_FADE_IN_MS / (1 / step));
 
-            const fadeInterval = setInterval(() => {
+            fadeInterval = setInterval(() => {
                 if (drawMusic.volume < 0.8) {
                     drawMusic.volume = Math.min(0.8, drawMusic.volume + step);
                 } else {
