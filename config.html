@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuração ERP - ALPHALUMI</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <style>
+        /* Variáveis CSS para o tema (Dark Mode por padrão) */
+        :root {
+            --cor-principal: #17a2b8; /* Ciano/Azul claro para destaque */
+            --cor-secundaria: #adb5bd; /* Cinza claro para botões secundários */
+            --cor-fundo: #2c3e50; /* Fundo escuro principal (Azul petróleo) */
+            --cor-card-fundo: #34495e; /* Fundo de cards/contêineres */
+            --cor-texto: #ecf0f1; /* Texto claro */
+            --cor-borda: #495e73; /* Borda sutil */
+            --fonte-padrao: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --tamanho-fonte-base: 14px;
+        }
+
+        /* Estilos Globais e Reset */
+        body {
+            font-family: var(--fonte-padrao);
+            background-color: var(--cor-fundo);
+            color: var(--cor-texto);
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s, color 0.3s;
+            font-size: var(--tamanho-fonte-base);
+            min-height: 100vh;
+        }
+
+        /* Estrutura Principal */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background-color: var(--cor-card-fundo);
+            padding: 15px 20px;
+            border-bottom: 2px solid var(--cor-principal);
+            margin-bottom: 20px;
+            border-radius: 0 0 8px 8px;
+        }
+
+        header h1 {
+            margin: 0;
+            color: var(--cor-principal);
+            font-size: 24px;
+        }
+
+        /* Sistema de Abas (Tabs) - Estilo ERP */
+        .tab-menu {
+            display: flex;
+            border-bottom: 1px solid var(--cor-borda);
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+
+        .tab-button {
+            background-color: var(--cor-card-fundo);
+            color: var(--cor-texto);
+            padding: 10px 20px;
+            border: 1px solid transparent;
+            border-bottom: none;
+            cursor: pointer;
+            outline: none;
+            transition: background-color 0.3s, color 0.3s;
+            font-size: var(--tamanho-fonte-base);
+        }
+
+        .tab-button:hover {
+            background-color: #4a6582;
+        }
+
+        .tab-button.active {
+            background-color: var(--cor-fundo);
+            border: 1px solid var(--cor-borda);
+            border-bottom: 1px solid var(--cor-fundo); /* Oculta a linha de baixo */
+            color: var(--cor-principal);
+            font-weight: bold;
+        }
+
+        .tab-content {
+            padding: 20px;
+            background-color: var(--cor-fundo);
+            border: 1px solid var(--cor-borda);
+            border-radius: 4px;
+        }
+
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        /* Cards de Configuração (usados na Aba Geral) */
+        .config-area {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background-color: var(--cor-card-fundo);
+            border: 1px solid var(--cor-borda);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: var(--cor-principal);
+            border-bottom: 1px solid var(--cor-borda);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        /* Formulário e Inputs */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: var(--tamanho-fonte-base);
+            color: var(--cor-secundaria);
+        }
+
+        input[type="text"], input[type="number"], input[type="email"], select, textarea {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid var(--cor-borda);
+            border-radius: 4px;
+            background-color: var(--cor-fundo);
+            color: var(--cor-texto);
+            font-size: var(--tamanho-fonte-base);
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--cor-principal);
+            box-shadow: 0 0 0 2px rgba(23, 162, 184, 0.5);
+            outline: none;
+        }
+        
+        /* Botões */
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s, opacity 0.3s;
+            font-size: var(--tamanho-fonte-base);
+        }
+
+        .btn-principal {
+            background-color: var(--cor-principal);
+            color: white;
+        }
+
+        .btn-secundario {
+            background-color: var(--cor-borda);
+            color: var(--cor-texto);
+        }
+
+        .btn-alerta {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.8;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: flex-end;
+        }
+
+        /* Tabela */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .data-table th, .data-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--cor-borda);
+            font-size: var(--tamanho-fonte-base);
+        }
+        
+        .data-table th {
+            background-color: #4a6582; /* Um pouco mais claro que o card */
+            color: white;
+            font-weight: bold;
+        }
+
+        .data-table tr:hover {
+            background-color: #4a658250;
+        }
+        
+        .data-table td .btn {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+
+        /* Modal (Popup) */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+
+        .modal-content {
+            background-color: var(--cor-card-fundo);
+            margin: 5% auto;
+            padding: 30px;
+            border: 1px solid var(--cor-borda);
+            width: 90%;
+            max-width: 650px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--cor-principal);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .close-btn {
+            color: var(--cor-secundaria);
+            font-size: 32px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close-btn:hover, .close-btn:focus {
+            color: #ecf0f1;
+            text-decoration: none;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            .tab-menu {
+                flex-wrap: nowrap;
+            }
+            .tab-button {
+                flex-shrink: 0;
+            }
+            .config-area {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚙️ Painel de Configuração AlphaCommerce</h1>
+            <p>Empresa: **ALPHALUMI** | Base URL: **https://bd-comercial-alpha-default-rtdb.firebaseio.com/**</p>
+        </header>
+
+        <div class="tab-menu">
+            <button class="tab-button active" onclick="openTab(event, 'tabGeral')">Configurações Gerais</button>
+            <button class="tab-button" onclick="openTab(event, 'tabPeriodo')">Parâmetros do Período</button>
+            <button class="tab-button" onclick="openTab(event, 'tabFuncionarios')">Gestão de Funcionários</button>
+        </div>
+
+        <div class="tab-content">
+            
+            <div id="tabGeral" class="tab-pane active">
+                <h2>Configurações Estáticas da Empresa</h2>
+                <div class="config-area">
+                    <div id="card-config-geral" class="card">
+                        <h3>Configurações Básicas</h3>
+                        <div id="display-config-geral">Carregando...</div>
+                        <div class="btn-group">
+                            <button class="btn btn-principal" onclick="openModal('modalConfigGeral')">Editar Configurações</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tabPeriodo" class="tab-pane">
+                <h2>Parâmetros de Metas e Filtros do Período (<span id="periodo-atual"></span>)</h2>
+                <div class="config-area">
+                    <div id="card-config-periodo" class="card" style="grid-column: span 2;">
+                        <h3>Detalhes dos Parâmetros</h3>
+                        <div id="display-config-periodo">Carregando...</div>
+                        <div class="btn-group">
+                            <button class="btn btn-principal" onclick="openModal('modalConfigPeriodo')">Editar Parâmetros</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tabFuncionarios" class="tab-pane">
+                <h2>Cadastro e Edição de Funcionários/Vendedores</h2>
+                <div class="btn-group" style="justify-content: flex-start; margin-bottom: 15px;">
+                    <button class="btn btn-principal" onclick="addFuncionario()">+ Adicionar Funcionário</button>
+                </div>
+                <div class="table-container">
+                    <table id="tabela-funcionarios" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome</th>
+                                <th>Email</th>
+                                <th>Estado</th>
+                                <th>Permissão</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="modalConfigGeral" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Editar Configurações Gerais</h2>
+                <span class="close-btn" onclick="closeModal('modalConfigGeral')">&times;</span>
+            </div>
+            <form id="formConfigGeral">
+                <div class="form-group">
+                    <label for="inputUFS">UFs de Atuação (separadas por vírgula):</label>
+                    <input type="text" id="inputUFS" name="UFS" required>
+                </div>
+                <div class="form-group">
+                    <label for="inputMoeda">Moeda Padrão:</label>
+                    <input type="text" id="inputMoeda" name="moeda_padrao" required>
+                </div>
+                <div class="form-group">
+                    <label for="selectTema">Tema do App:</label>
+                    <select id="selectTema" name="tema_app">
+                        <option value="light">light</option>
+                        <option value="dark">dark</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="inputLogoUrl">URL do Logo:</label>
+                    <input type="text" id="inputLogoUrl" name="url_logo" required>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secundario" onclick="closeModal('modalConfigGeral')">Cancelar</button>
+                    <button type="submit" class="btn btn-principal">Salvar Configurações</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalConfigPeriodo" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Editar Parâmetros do Período (<span id="periodo-modal"></span>)</h2>
+                <span class="close-btn" onclick="closeModal('modalConfigPeriodo')">&times;</span>
+            </div>
+            <form id="formConfigPeriodo">
+                <div class="form-group">
+                    <label for="inputDiasUteis">DIAS_UTEIS:</label>
+                    <input type="number" id="inputDiasUteis" name="DIAS_UTEIS" required>
+                </div>
+                <div class="form-group">
+                    <label for="inputLimiteClientes">limite_clientes:</label>
+                    <input type="number" id="inputLimiteClientes" name="limite_clientes" required>
+                </div>
+                <div class="form-group">
+                    <label for="inputMetaFumeMax">META_FUME_MAX:</label>
+                    <input type="number" id="inputMetaFumeMax" name="META_FUME_MAX" required>
+                </div>
+                <div class="form-group">
+                    <label for="inputMetaGeral">META_GERAL (Novo campo):</label>
+                    <input type="number" id="inputMetaGeral" name="META_GERAL">
+                </div>
+                <div class="form-group">
+                    <label for="inputPercent15D">PERCENT_15D (0.00):</label>
+                    <input type="number" step="0.01" id="inputPercent15D" name="PERCENT_15D" required>
+                </div>
+                <div class="form-group">
+                    <label for="inputPrecoMedio">PRECO_MEDIO (0.00):</label>
+                    <input type="number" step="0.01" id="inputPrecoMedio" name="PRECO_MEDIO" required>
+                </div>
+                <div class="form-group">
+                    <label for="inputTempoAtualizacaoMinutos">TEMPO_ATUALIZACAO_MINUTOS (Novo campo):</label>
+                    <input type="number" id="inputTempoAtualizacaoMinutos" name="TEMPO_ATUALIZACAO_MINUTOS">
+                </div>
+                <div class="form-group">
+                    <label for="inputProdutosFiltro">PRODUTOS_FILTRO (Códigos separados por vírgula):</label>
+                    <textarea id="inputProdutosFiltro" name="PRODUTOS_FILTRO" required></textarea>
+                </div>
+                 <div class="form-group">
+                    <label for="inputProdutosFloat">PRODUTOS_FLOAT (Novo campo - Códigos separados por vírgula):</label>
+                    <textarea id="inputProdutosFloat" name="PRODUTOS_FLOAT"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="inputDiaMetaInicio">DIA_META_INICIO (YYYY-MM-DD):</label>
+                    <input type="text" id="inputDiaMetaInicio" name="DIA_META_INICIO" pattern="\d{4}-\d{2}-\d{2}">
+                </div>
+                <div class="form-group">
+                    <label for="inputDiaMeta15D">DIA_META_15D (YYYY-MM-DD):</label>
+                    <input type="text" id="inputDiaMeta15D" name="DIA_META_15D" pattern="\d{4}-\d{2}-\d{2}">
+                </div>
+                <div class="form-group">
+                    <label for="inputDiaMetaFim">DIA_META_FIM (YYYY-MM-DD):</label>
+                    <input type="text" id="inputDiaMetaFim" name="DIA_META_FIM" pattern="\d{4}-\d{2}-\d{2}">
+                </div>
+
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secundario" onclick="closeModal('modalConfigPeriodo')">Cancelar</button>
+                    <button type="submit" class="btn btn-principal">Salvar Parâmetros</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div id="modalFuncionario" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="funcionario-modal-titulo"></h2>
+                <span class="close-btn" onclick="closeModal('modalFuncionario')">&times;</span>
+            </div>
+            <form id="formFuncionario">
+                <div class="form-group">
+                    <label for="inputFuncionarioID">ID/Código:</label>
+                    <input type="text" id="inputFuncionarioID" name="id" required style="font-weight: bold;">
+                </div>
+                <div class="form-group">
+                    <label for="inputFuncionarioNome">Nome:</label>
+                    <input type="text" id="inputFuncionarioNome" name="nome" required>
+                </div>
+                <div class="form-group">
+                    <label for="inputFuncionarioEmail">Email:</label>
+                    <input type="email" id="inputFuncionarioEmail" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="inputFuncionarioEstado">Estado (UF):</label>
+                    <input type="text" id="inputFuncionarioEstado" name="estado">
+                </div>
+                <div class="form-group">
+                    <label for="selectFuncionarioPermissao">Permissão:</label>
+                    <select id="selectFuncionarioPermissao" name="permissao" required>
+                        <option value="user">user</option>
+                        <option value="adm">adm</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="inputFuncionarioSenha">Senha Hash (Criptografada):</label>
+                    <input type="text" id="inputFuncionarioSenha" name="senha_hash">
+                </div>
+                <div class="form-group">
+                    <label for="inputFuncionarioFoto">URL da Foto:</label>
+                    <input type="text" id="inputFuncionarioFoto" name="url_foto">
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secundario" onclick="closeModal('modalFuncionario')">Cancelar</button>
+                    <button type="button" class="btn btn-alerta" id="btnExcluirFuncionario" style="display: none;" onclick="deleteFuncionario(document.getElementById('inputFuncionarioID').value)">Excluir</button>
+                    <button type="submit" class="btn btn-principal" id="btnSalvarFuncionario">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Configuração do Firebase
+        const FIREBASE_CONFIG = {
+            databaseURL: "https://bd-comercial-alpha-default-rtdb.firebaseio.com/"
+        };
+        firebase.initializeApp(FIREBASE_CONFIG);
+        const database = firebase.database();
+        
+        // Constantes da Aplicação
+        const EMPRESA_KEY = "ALPHALUMI";
+
+        /** Retorna a chave do período atual (YYYY_MM). */
+        function getCurrentPeriodKey() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            return `${year}_${month}`;
+        }
+
+        const PERIODO_KEY = getCurrentPeriodKey();
+        
+        // Referências do Firebase
+        const configGeralRef = database.ref(`/empresas/${EMPRESA_KEY}/configuracoes`);
+        const configPeriodoRef = database.ref(`/performance_mensal/${EMPRESA_KEY}/${PERIODO_KEY}/parametros_do_periodo`);
+        const funcionariosRef = database.ref(`/funcionarios/${EMPRESA_KEY}`);
+
+        // Variável global para armazenar os dados dos funcionários
+        let funcionariosData = {};
+
+        // --- Funções de UI (Tabs e Modal) ---
+
+        /**
+         * Controla a navegação entre abas.
+         */
+        function openTab(evt, tabName) {
+            // Remove a classe 'active' de todos os painéis e botões
+            const tabPanes = document.getElementsByClassName("tab-pane");
+            for (let i = 0; i < tabPanes.length; i++) {
+                tabPanes[i].classList.remove('active');
+            }
+            const tabButtons = document.getElementsByClassName("tab-button");
+            for (let i = 0; i < tabButtons.length; i++) {
+                tabButtons[i].classList.remove('active');
+            }
+
+            // Adiciona a classe 'active' ao painel e botão selecionados
+            document.getElementById(tabName).classList.add('active');
+            evt.currentTarget.classList.add('active');
+        }
+
+
+        /** Abre o modal pelo ID. */
+        function openModal(id) {
+            document.getElementById(id).style.display = 'block';
+        }
+
+        /** Fecha o modal pelo ID. */
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        // --- Funções do Firebase (CRUD) ---
+        
+        // 1. Configurações Gerais
+
+        function loadConfigGeral() {
+            configGeralRef.on('value', (snapshot) => {
+                const config = snapshot.val();
+                if (config) {
+                    let html = '<ul>';
+                    for (const key in config) {
+                        html += `<li><strong>${key.replace(/_/g, ' ').toUpperCase()}:</strong> ${config[key]}</li>`;
+                    }
+                    html += '</ul>';
+                    document.getElementById('display-config-geral').innerHTML = html;
+                    
+                    // Preenche o formulário do modal
+                    document.getElementById('inputUFS').value = config.UFS || '';
+                    document.getElementById('inputMoeda').value = config.moeda_padrao || '';
+                    document.getElementById('selectTema').value = config.tema_app || 'dark';
+                    document.getElementById('inputLogoUrl').value = config.url_logo || '';
+                    
+                } else {
+                    document.getElementById('display-config-geral').textContent = 'Configurações não encontradas.';
+                }
+            }, (error) => {
+                console.error("Erro ao carregar Configurações Gerais:", error);
+                document.getElementById('display-config-geral').textContent = 'Erro ao carregar dados.';
+            });
+        }
+        
+        document.getElementById('formConfigGeral').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = {};
+            formData.forEach((value, key) => data[key] = value);
+
+            configGeralRef.set(data)
+                .then(() => {
+                    alert('Configurações Gerais salvas com sucesso!');
+                    closeModal('modalConfigGeral');
+                })
+                .catch((error) => {
+                    console.error("Erro ao salvar Configurações Gerais:", error);
+                    alert('Erro ao salvar: ' + error.message);
+                });
+        });
+
+        // 2. Parâmetros do Período
+        
+        document.getElementById('periodo-atual').textContent = PERIODO_KEY;
+        document.getElementById('periodo-modal').textContent = PERIODO_KEY;
+
+        function loadConfigPeriodo() {
+            configPeriodoRef.on('value', (snapshot) => {
+                const config = snapshot.val();
+                if (config) {
+                    let html = '<ul>';
+                    for (const key in config) {
+                        html += `<li><strong>${key.replace(/_/g, ' ').toUpperCase()}:</strong> ${config[key]}</li>`;
+                    }
+                    html += '</ul>';
+                    document.getElementById('display-config-periodo').innerHTML = html;
+
+                    // Preenche o formulário do modal (Todos os campos, incluindo os novos)
+                    document.getElementById('inputDiasUteis').value = config.DIAS_UTEIS || 0;
+                    document.getElementById('inputMetaFumeMax').value = config.META_FUME_MAX || 0;
+                    document.getElementById('inputPercent15D').value = config.PERCENT_15D || 0;
+                    document.getElementById('inputPrecoMedio').value = config.PRECO_MEDIO || 0;
+                    document.getElementById('inputLimiteClientes').value = config.limite_clientes || 0;
+                    document.getElementById('inputProdutosFiltro').value = config.PRODUTOS_FILTRO || '';
+                    
+                    // Novos campos
+                    document.getElementById('inputMetaGeral').value = config.META_GERAL || 0;
+                    document.getElementById('inputProdutosFloat').value = config.PRODUTOS_FLOAT || '';
+                    document.getElementById('inputTempoAtualizacaoMinutos').value = config.TEMPO_ATUALIZACAO_MINUTOS || 0;
+
+                    // Datas
+                    document.getElementById('inputDiaMeta15D').value = config.DIA_META_15D || '';
+                    document.getElementById('inputDiaMetaFim').value = config.DIA_META_FIM || '';
+                    document.getElementById('inputDiaMetaInicio').value = config.DIA_META_INICIO || '';
+
+                } else {
+                    document.getElementById('display-config-periodo').textContent = `Parâmetros para ${PERIODO_KEY} não encontrados. Eles serão criados ao salvar.`;
+                }
+            }, (error) => {
+                console.error("Erro ao carregar Parâmetros do Período:", error);
+                document.getElementById('display-config-periodo').textContent = 'Erro ao carregar dados.';
+            });
+        }
+
+        document.getElementById('formConfigPeriodo').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = {};
+            formData.forEach((value, key) => {
+                // Converte para número se for numérico (melhorando a tipagem)
+                if (['DIAS_UTEIS', 'META_FUME_MAX', 'limite_clientes', 'META_GERAL', 'TEMPO_ATUALIZACAO_MINUTOS'].includes(key)) {
+                    data[key] = parseInt(value) || 0;
+                } else if (['PERCENT_15D', 'PRECO_MEDIO'].includes(key)) {
+                    data[key] = parseFloat(value) || 0.0;
+                } else {
+                    data[key] = value;
+                }
+            });
+
+            configPeriodoRef.set(data)
+                .then(() => {
+                    alert('Parâmetros do Período salvos com sucesso!');
+                    closeModal('modalConfigPeriodo');
+                })
+                .catch((error) => {
+                    console.error("Erro ao salvar Parâmetros do Período:", error);
+                    alert('Erro ao salvar: ' + error.message);
+                });
+        });
+        
+        // 3. Funcionários/Vendedores
+
+        function loadFuncionarios() {
+            funcionariosRef.on('value', (snapshot) => {
+                funcionariosData = snapshot.val() || {};
+                const tbody = document.querySelector('#tabela-funcionarios tbody');
+                tbody.innerHTML = ''; 
+
+                // Ordena os funcionários pela chave (ID)
+                const sortedKeys = Object.keys(funcionariosData).sort((a, b) => parseInt(a) - parseInt(b));
+
+                sortedKeys.forEach(id => {
+                    const func = funcionariosData[id];
+                    const row = tbody.insertRow();
+                    row.insertCell().textContent = id;
+                    row.insertCell().textContent = func.nome || 'N/A';
+                    row.insertCell().textContent = func.email || 'N/A';
+                    row.insertCell().textContent = func.estado || func.uf || 'N/A';
+                    row.insertCell().textContent = func.permissao || 'user';
+                    
+                    const cellAcoes = row.insertCell();
+                    cellAcoes.innerHTML = `<button class="btn btn-principal" onclick="editFuncionario('${id}')">Editar</button>`;
+                });
+            }, (error) => {
+                console.error("Erro ao carregar Funcionários:", error);
+            });
+        }
+
+        function addFuncionario() {
+            document.getElementById('funcionario-modal-titulo').textContent = 'Adicionar Novo Funcionário';
+            document.getElementById('formFuncionario').reset();
+            // Permite editar o ID para um novo registro
+            document.getElementById('inputFuncionarioID').removeAttribute('readonly'); 
+            document.getElementById('inputFuncionarioID').value = ''; 
+            document.getElementById('btnExcluirFuncionario').style.display = 'none';
+            document.getElementById('btnSalvarFuncionario').textContent = 'Adicionar';
+            openModal('modalFuncionario');
+        }
+
+        function editFuncionario(id) {
+            const func = funcionariosData[id];
+            if (!func) {
+                alert('Funcionário não encontrado!');
+                return;
+            }
+
+            document.getElementById('funcionario-modal-titulo').textContent = `Editar Funcionário: ${func.nome}`;
+            
+            // Preenche o formulário
+            document.getElementById('inputFuncionarioID').value = id;
+            // Bloqueia a edição do ID para registros existentes
+            document.getElementById('inputFuncionarioID').setAttribute('readonly', 'true'); 
+            document.getElementById('inputFuncionarioNome').value = func.nome || '';
+            document.getElementById('inputFuncionarioEmail').value = func.email || '';
+            // Prioriza 'estado' mas aceita 'uf'
+            document.getElementById('inputFuncionarioEstado').value = func.estado || func.uf || ''; 
+            document.getElementById('selectFuncionarioPermissao').value = func.permissao || 'user';
+            document.getElementById('inputFuncionarioSenha').value = func.senha_hash || '';
+            document.getElementById('inputFuncionarioFoto').value = func.url_foto || '';
+            
+            document.getElementById('btnExcluirFuncionario').style.display = 'inline-block';
+            document.getElementById('btnSalvarFuncionario').textContent = 'Salvar Alterações';
+
+            openModal('modalFuncionario');
+        }
+
+        document.getElementById('formFuncionario').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const form = event.target;
+            const id = form.elements['id'].value.trim();
+            const isNew = !form.elements['id'].hasAttribute('readonly'); 
+
+            if (!id) {
+                alert('O campo ID é obrigatório!');
+                return;
+            }
+
+            const formData = new FormData(form);
+            const data = {};
+            formData.forEach((value, key) => {
+                // Remove campos vazios (para não sobrescrever com null se não for necessário)
+                if (value !== '') {
+                    data[key] = value;
+                }
+            });
+
+            // Ajusta o dado da senha, pois pode ser número em alguns casos
+            if (!isNaN(data.senha_hash) && data.senha_hash !== "") {
+                data.senha_hash = Number(data.senha_hash);
+            }
+            
+            delete data.id; 
+            
+            const funcRef = funcionariosRef.child(id);
+
+            // Se for novo, verifica duplicidade de ID
+            if (isNew && funcionariosData.hasOwnProperty(id)) {
+                alert(`Já existe um funcionário com o ID ${id}. Escolha um ID único.`);
+                return;
+            }
+
+            funcRef.set(data)
+                .then(() => {
+                    alert(`Funcionário ${isNew ? 'adicionado' : 'atualizado'} com sucesso!`);
+                    closeModal('modalFuncionario');
+                })
+                .catch((error) => {
+                    console.error("Erro ao salvar Funcionário:", error);
+                    alert('Erro ao salvar: ' + error.message);
+                });
+        });
+
+        function deleteFuncionario(id) {
+            if (!confirm(`Tem certeza que deseja EXCLUIR o funcionário com ID ${id}? Esta ação é irreversível.`)) {
+                return;
+            }
+
+            const funcRef = funcionariosRef.child(id);
+            
+            funcRef.remove()
+                .then(() => {
+                    alert(`Funcionário ${id} excluído com sucesso!`);
+                    closeModal('modalFuncionario');
+                })
+                .catch((error) => {
+                    console.error("Erro ao excluir Funcionário:", error);
+                    alert('Erro ao excluir: ' + error.message);
+                });
+        }
+        
+        // --- Inicialização ---
+
+        window.onload = function() {
+            // Abre a primeira aba por padrão
+            document.querySelector('.tab-button').click();
+
+            // Inicializa o carregamento de todos os dados
+            loadConfigGeral();
+            loadConfigPeriodo();
+            loadFuncionarios();
+            
+            // Fecha os modais se o usuário clicar fora
+            window.onclick = function(event) {
+                if (event.target.classList.contains('modal')) {
+                    event.target.style.display = "none";
+                }
+            }
+        };
+
+    </script>
+</body>
+</html>

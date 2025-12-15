@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eagle Eyes - DASH BOARD COMERCIAL</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    
+    <style>
+        /* ============================================ */
+        /* ESTILOS CSS - VISUAL E RESPONSIVIDADE (Ajustados) */
+        /* ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        
+        /* Efeitos Visuais (Mantidos) */
+        .background, .background-overlay, #particlesCanvas, .light-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+        
+        .background {
+            background-image: url('https://cff8a641f5ce591914133e8b96711d54.cdn.bubble.io/f1763687930534x104304690555373060/background2.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: 0;
+        }
+        
+        .background-overlay {
+            background: rgba(15, 23, 42, 0.4);
+            z-index: 1;
+        }
+        
+        #particlesCanvas {
+            z-index: 2;
+            pointer-events: none;
+            opacity: 0.4;
+        }
+        
+        .light-gradient {
+            background: radial-gradient(ellipse at center, rgba(30, 58, 138, 0.2) 0%, transparent 70%);
+            z-index: 3;
+            pointer-events: none;
+        }
+        
+        /* Tela de Login */
+        .login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        
+        .login-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .login-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.9) 100%);
+            border: 2px solid rgba(59, 130, 246, 0.3);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.8s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .login-logo {
+            width: 150px; 
+            height: auto;
+            margin: 0 auto 30px;
+            display: block;
+        }
+        
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .form-group {
+            text-align: left;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #94a3b8;
+            margin-bottom: 8px;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid rgba(59, 130, 246, 0.3);
+            border-radius: 10px;
+            background: rgba(15, 23, 42, 0.6);
+            color: #e2e8f0;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+
+        .form-group select {
+            padding-right: 30px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='white'%3E%3Cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.21 8.27a.75.75 0 01.02-1.06z' clip-rule='evenodd' /%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 20px;
+            cursor: pointer;
+        }
+        
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: rgba(15, 23, 42, 0.8);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+        }
+        
+        .login-button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 10px;
+        }
+        
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
+        }
+        
+        #errorMessage {
+            color: #ef4444;
+            font-size: 12px;
+            margin-top: 10px;
+            opacity: 0;
+            visibility: hidden;
+            height: 0;
+            overflow: hidden;
+            transition: opacity 0.3s ease, height 0.3s ease;
+        }
+        
+        #errorMessage.show {
+            opacity: 1;
+            visibility: visible;
+            height: auto;
+            padding: 5px 0;
+        }
+
+        /* Estrutura Principal do Dashboard */
+        .dashboard-container {
+            position: relative;
+            z-index: 5;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        /* Cabeçalho do Card (Informações do Vendedor) */
+        .card-header {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%);
+            border: 2px solid rgba(59, 130, 246, 0.3);
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            z-index: 10; /* Z-index alto para o Header */
+        }
+        
+        /* Elementos do Header para alinhamento (NOVO LAYOUT) */
+        .header-left, .header-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-left {
+            flex-grow: 1;
+        }
+        
+        .header-title-large {
+            font-size: 32px;
+            font-weight: 900;
+            color: #f87171;
+            margin-right: 20px; 
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-left: auto;
+            /* Garantindo que o dropdown é clicável */
+        }
+        
+        .card-user-info {
+            padding-left: 20px;
+            z-index: 5;
+            flex-shrink: 0;
+        }
+
+        .user-name {
+            font-size: 28px;
+            font-weight: 800;
+            color: #e2e8f0;
+            line-height: 1.2;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        
+        .user-state {
+            font-size: 16px;
+            color: #94a3b8;
+            font-weight: 500;
+            margin-left: 10px;
+        }
+        
+        .user-id {
+            font-size: 14px;
+            color: #fbbf24;
+            font-weight: 600;
+            margin-top: 5px;
+            display: block;
+        }
+        
+        .card-photo {
+            width: 120px;
+            height: 120px;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 3px solid #fbbf24;
+            box-shadow: 0 10px 30px rgba(251, 191, 36, 0.3);
+            flex-shrink: 0;
+            background-color: #1e293b;
+            z-index: 5;
+        }
+        
+        .card-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        /* Layout de Métricas e Gráficos */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* 4 Colunas fixas para Layer 1 e 4 */
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .metrics-grid.layer-dois {
+            grid-template-columns: repeat(3, 1fr); /* 3 Colunas fixas para Layer 2 (Donut) */
+        }
+        
+        /* Estilos dos Cards de Progresso (Layer 1 e 4) */
+        .metric-card {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(2px);
+            transition: transform 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(59, 130, 246, 0.15);
+        }
+        
+        .metric-label {
+            font-size: 14px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+        
+        .metric-value {
+            font-size: 32px;
+            font-weight: 900;
+            color: #e2e8f0;
+            line-height: 1.1;
+            margin-bottom: 5px;
+        }
+        
+        .metric-comparison {
+            font-size: 14px;
+            color: #94a3b8;
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+        
+        .progress-bar-container {
+            width: 100%;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: #334155;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 5px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            transition: width 1s ease-out;
+        }
+        
+        .progress-meta {
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 500;
+        }
+        
+        /* Estilos dos Cards de Donut (Layer 2) */
+        .donut-card {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(2px);
+            transition: transform 0.3s ease;
+            text-align: center;
+            height: 300px; /* Altura fixa para Donuts */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        .donut-card-content {
+            position: relative;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .donut-card-label {
+            font-size: 16px;
+            font-weight: 700;
+            color: #e2e8f0;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+        
+        .donut-card-meta {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 5px;
+        }
+
+        .donut-canvas-container {
+            position: relative;
+            width: 100%;
+            max-width: 200px;
+            max-height: 200px;
+            margin: 10px auto;
+        }
+        
+        .donut-center-value {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            font-weight: 900;
+            color: #e2e8f0;
+            line-height: 1;
+            pointer-events: none;
+        }
+        
+        /* Gráficos de Coluna (Layer 3) */
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .chart-card {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(2px);
+            min-height: 350px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chart-card h3 {
+            font-size: 18px;
+            color: #e2e8f0;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .chart-container {
+            flex-grow: 1;
+            position: relative;
+            padding-top: 10px;
+        }
+        
+        /* Pedidos Devolvidos (Layer 5) */
+        .devolucoes-container {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .devolucoes-container h3 {
+            font-size: 18px;
+            color: #e2e8f0;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .devolucoes-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Mais colunas para lista */
+            gap: 15px;
+        }
+
+        .devolucao-item {
+            background: #1e293b;
+            border: 1px solid #334155;
+            padding: 10px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .pedido-label {
+            font-size: 10px;
+            color: #94a3b8;
+            text-transform: uppercase;
+        }
+
+        .pedido-number {
+            font-size: 16px;
+            font-weight: 700;
+            color: #f87171;
+        }
+        
+        .placeholder-text {
+            color: #94a3b8;
+            font-size: 14px;
+            grid-column: 1 / -1; 
+            text-align: center;
+        }
+        
+        /* Responsividade (Ajustado para 4 colunas no Desktop e empilhamento Mobile) */
+        @media (max-width: 900px) {
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .header-left {
+                flex-direction: column;
+                align-items: flex-start;
+                width: 100%;
+            }
+            .header-right {
+                flex-direction: column;
+                align-items: flex-start;
+                width: 100%;
+                margin-top: 15px;
+                gap: 10px;
+            }
+            .header-controls {
+                width: 100%;
+                justify-content: space-between;
+                flex-direction: row;
+                margin-top: 10px;
+            }
+            .card-photo {
+                width: 80px;
+                height: 80px;
+                order: -1; 
+                margin-bottom: 15px;
+            }
+            .card-user-info {
+                padding-left: 0;
+            }
+            .user-name-wrapper {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .user-state {
+                margin-left: 0;
+            }
+            .metrics-grid, .metrics-grid.layer-dois {
+                grid-template-columns: 1fr;
+            }
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+            .header-title-large {
+                font-size: 24px;
+                margin-bottom: 10px;
+            }
+        }
+        @media (min-width: 901px) and (max-width: 1200px) {
+            .metrics-grid, .metrics-grid.layer-dois {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="background"></div>
+    <div class="background-overlay"></div>
+    <canvas id="particlesCanvas"></canvas>
+    <div class="light-gradient"></div>
+    
+    <div class="login-screen" id="loginScreen">
+        <div class="login-card">
+            <img src="https://cff8a641f5ce591914133e8b96711d54.cdn.bubble.io/f1763687930534x104304690555373060/background2.png" alt="Logo Eagle Eyes" class="login-logo">
+            <h2>DASH BOARD COMERCIAL</h2>
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="emailInput">Email</label>
+                    <input type="email" id="emailInput" placeholder="Seu email" required>
+                </div>
+                <div class="form-group">
+                    <label for="passwordInput">Senha</label>
+                    <input type="password" id="passwordInput" placeholder="Sua senha" required>
+                </div>
+                <button type="submit" class="login-button">Entrar</button>
+                <p id="errorMessage"></p>
+            </form>
+        </div>
+    </div>
+    
+    <div class="dashboard-container" id="dashboardContainer">
+        
+        <div class="card-header">
+            
+            <div class="header-left">
+                <div class="card-photo">
+                    <img id="userPhoto" src="https://via.placeholder.com/120" alt="Foto do Vendedor">
+                </div>
+                <div class="card-user-info">
+                    <span class="user-name" id="userName">Nome do Vendedor</span>
+                    <span class="user-state" id="userState">UF</span>
+                    <span class="user-id" id="userId">CÓD: 000</span>
+                </div>
+            </div>
+
+            <div class="header-right">
+                <span class="header-title-large">DASH BOARD COMERCIAL</span>
+                <div class="header-controls">
+                    
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="selectPeriodo">Período</label>
+                        <select id="selectPeriodo" style="cursor: pointer;"></select>
+                    </div>
+
+                    <button class="logout-button" id="logoutButton">Sair</button>
+                </div>
+            </div>
+        </div>
+        
+        <h3 style="color: #fbbf24; margin-bottom: 10px; font-size: 20px;">VENDAS / FATURAMENTO</h3>
+        <div class="metrics-grid">
+            
+            <div class="metric-card">
+                <div class="metric-label">VENDAS (R$)</div>
+                <div class="metric-value" id="metricVendas">R$ 0</div>
+                <div class="metric-comparison" id="comparisonVendas">Meta: R$ 0</div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressVendas"></div>
+                    </div>
+                    <div class="progress-meta" id="vendasText">0,0% da Meta</div>
+                </div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-label">VENDAS FUME MAX (R$)</div>
+                <div class="metric-value" id="metricFumeMax">R$ 0</div>
+                <div class="metric-comparison" id="comparisonFumeMax">Meta: R$ 0</div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFumeMax"></div>
+                    </div>
+                    <div class="progress-meta" id="fumeMaxText">0,0% da Meta</div>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-label">DESCONCENTRAÇÃO (15 D)</div>
+                <div class="metric-value" id="metricVendas15D">R$ 0</div>
+                <div class="metric-comparison" id="comparisonVendas15D">Meta: R$ 0</div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressVendas15D"></div>
+                    </div>
+                    <div class="progress-meta" id="vendas15DText">0,0% da Meta</div>
+                </div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-label">DESVIO (R$)</div>
+                <div class="metric-value" id="metricDesvio">R$ 0</div>
+                <div class="metric-comparison" id="comparisonDesvio">Média Diária (Meta): R$ 0</div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressDesvio"></div>
+                    </div>
+                    <div class="progress-meta" id="desvioText">Fazer/Dia: R$ 0</div>
+                </div>
+            </div>
+
+        </div>
+        
+        <hr style="border-color: rgba(251, 191, 36, 0.2); margin: 30px 0;">
+
+        <h3 style="color: #fbbf24; margin-bottom: 10px; font-size: 20px;">PERFORMANCE</h3>
+        <div class="metrics-grid layer-dois">
+            
+            <div class="donut-card">
+                <div class="donut-card-label">Preço Médio (R$/uni)</div>
+                <div class="donut-canvas-container">
+                    <canvas id="chartPrecoDonut"></canvas>
+                    <span class="donut-center-value" id="donutPrecoValue">R$ 0</span>
+                </div>
+                <div class="donut-card-meta" id="donutPrecoMeta">Meta: R$ 0</div>
+            </div>
+
+            <div class="donut-card">
+                <div class="donut-card-label">Clientes Atendidos (Qtde)</div>
+                <div class="donut-canvas-container">
+                    <canvas id="chartClientesDonut"></canvas>
+                    <span class="donut-center-value" id="donutClientesValue">0</span>
+                </div>
+                <div class="donut-card-meta" id="donutClientesMeta">Meta: 0 Clientes</div>
+            </div>
+            
+            <div class="donut-card">
+                <div class="donut-card-label">Devolução (R$)</div>
+                <div class="donut-canvas-container">
+                    <canvas id="chartDevolucaoDonut"></canvas>
+                    <span class="donut-center-value" id="donutDevolucaoValue">R$ 0</span>
+                </div>
+                <div class="donut-card-meta" id="donutDevolucaoMeta">Meta: R$ 0</div>
+            </div>
+            
+        </div>
+        
+        <hr style="border-color: rgba(251, 191, 36, 0.2); margin: 30px 0;">
+
+        <h3 style="color: #fbbf24; margin-bottom: 10px; font-size: 20px;">HISTÓRICO (Últimos 3 Períodos)</h3>
+        <div class="chart-grid">
+            <div class="chart-card">
+                <h3>Vendas Totais (R$)</h3>
+                <div class="chart-container">
+                    <canvas id="chartVendasHistorico"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>Vendas FUME MAX (R$)</h3>
+                <div class="chart-container">
+                    <canvas id="chartFumeMaxHistorico"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>Preço Médio (R$/uni)</h3>
+                <div class="chart-container">
+                    <canvas id="chartPrecoHistorico"></canvas>
+                </div>
+            </div>
+            <div class="chart-card" style="display: flex; align-items: center; justify-content: center; text-align: center;">
+                 <p class="placeholder-text">Espaço reservado para um 4º Gráfico Histórico (Ex: Devolução).</p>
+            </div>
+        </div>
+
+        <hr style="border-color: rgba(251, 191, 36, 0.2); margin: 30px 0;">
+
+        <h3 style="color: #fbbf24; margin-bottom: 10px; font-size: 20px;">INTELIGÊNCIA DE NEGÓCIOS</h3>
+        <div class="metrics-grid">
+            
+            <div class="metric-card">
+                <div class="metric-label">ÍNDICE PERFORMANCE TOTAL</div>
+                <div class="metric-value" id="metricIndiceTotal">0,0%</div>
+                <div class="metric-comparison" id="comparisonIndiceTotal">Base: 100%</div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressIndiceTotal"></div>
+                    </div>
+                    <div class="progress-meta" id="indiceTotalText">Média de Atingimento dos Pilares</div>
+                </div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-label">TICKET MÉDIO (R$/Cliente)</div>
+                <div class="metric-value" id="metricTicketMedio">R$ 0</div>
+                <div class="metric-comparison" id="comparisonTicketMedio">Vendas / Clientes</div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressTicketMedio"></div>
+                    </div>
+                    <div class="progress-meta" id="ticketMedioText">R$ 0 por Cliente</div>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-label">PESO FUMEMAX NAS VENDAS</div>
+                <div class="metric-value" id="metricPesoFumeMax">0,0%</div>
+                <div class="metric-comparison" id="comparisonPesoFumeMax">Alvo: X% do Total</div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressPesoFumeMax"></div>
+                    </div>
+                    <div class="progress-meta" id="pesoFumeMaxText">Peso atual sobre o Total</div>
+                </div>
+            </div>
+            
+            <div class="metric-card" style="display: flex; align-items: center; justify-content: center; text-align: center;">
+                <p class="placeholder-text" style="margin: 0;">Espaço reservado para 4º Indicador.</p>
+            </div>
+
+        </div>
+
+
+        <div class="devolucoes-container">
+            <h3>Pedidos Devolvidos</h3>
+            <div class="devolucoes-list" id="devolucoesList">
+                <p class="placeholder-text">Nenhum pedido devolvido registrado no período.</p>
+            </div>
+        </div>
+        
+    </div>
+
+    <script>
+        // Registrar o plugin de datalabels globalmente
+        Chart.register(ChartDataLabels);
+
+        // Configuração: Instância UNIFICADA do Firebase
+        const NEW_FIREBASE_URL = "https://bd-comercial-alpha-default-rtdb.firebaseio.com/";
+        const firebaseConfig = { databaseURL: NEW_FIREBASE_URL };
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = app.database();
+
+        // Variáveis Globais
+        let allCommercialData = null;
+        let userCredentials = null;
+        let periods = []; 
+        let currentPeriodKey = '';
+        let currentUserId = '';
+        let currentUserData = null;
+        
+        // Referências de Gráficos (Para destruição ao mudar de período)
+        let chartPrecoDonut = null;
+        let chartClientesDonut = null;
+        let chartDevolucaoDonut = null;
+        let chartVendasHistorico = null;
+        let chartFumeMaxHistorico = null;
+        let chartPrecoHistorico = null;
+
+        // Elementos DOM (Atualizados)
+        const el = {
+            loginScreen: document.getElementById('loginScreen'),
+            loginForm: document.getElementById('loginForm'),
+            emailInput: document.getElementById('emailInput'), // Alterado para emailInput
+            passwordInput: document.getElementById('passwordInput'),
+            errorMessage: document.getElementById('errorMessage'),
+            dashboardContainer: document.getElementById('dashboardContainer'),
+            logoutButton: document.getElementById('logoutButton'),
+            
+            userName: document.getElementById('userName'),
+            userState: document.getElementById('userState'),
+            userId: document.getElementById('userId'),
+            userPhoto: document.getElementById('userPhoto'),
+            selectPeriodo: document.getElementById('selectPeriodo'), 
+            
+            // Layer 1: Progress Bar Metrics
+            metricVendas: document.getElementById('metricVendas'),
+            comparisonVendas: document.getElementById('comparisonVendas'),
+            progressVendas: document.getElementById('progressVendas'),
+            vendasText: document.getElementById('vendasText'),
+
+            metricFumeMax: document.getElementById('metricFumeMax'),
+            comparisonFumeMax: document.getElementById('comparisonFumeMax'),
+            progressFumeMax: document.getElementById('progressFumeMax'),
+            fumeMaxText: document.getElementById('fumeMaxText'),
+
+            metricVendas15D: document.getElementById('metricVendas15D'),
+            comparisonVendas15D: document.getElementById('comparisonVendas15D'),
+            progressVendas15D: document.getElementById('progressVendas15D'),
+            vendas15DText: document.getElementById('vendas15DText'),
+            
+            metricDesvio: document.getElementById('metricDesvio'),
+            comparisonDesvio: document.getElementById('comparisonDesvio'),
+            progressDesvio: document.getElementById('progressDesvio'),
+            desvioText: document.getElementById('desvioText'),
+
+            // Layer 2: Donut Charts
+            donutPrecoValue: document.getElementById('donutPrecoValue'),
+            donutPrecoMeta: document.getElementById('donutPrecoMeta'),
+            donutClientesValue: document.getElementById('donutClientesValue'),
+            donutClientesMeta: document.getElementById('donutClientesMeta'),
+            donutDevolucaoValue: document.getElementById('donutDevolucaoValue'),
+            donutDevolucaoMeta: document.getElementById('donutDevolucaoMeta'),
+
+            // Layer 4: Intelligence Metrics
+            metricIndiceTotal: document.getElementById('metricIndiceTotal'),
+            comparisonIndiceTotal: document.getElementById('comparisonIndiceTotal'),
+            progressIndiceTotal: document.getElementById('progressIndiceTotal'),
+            indiceTotalText: document.getElementById('indiceTotalText'),
+            
+            metricTicketMedio: document.getElementById('metricTicketMedio'),
+            comparisonTicketMedio: document.getElementById('comparisonTicketMedio'),
+            progressTicketMedio: document.getElementById('progressTicketMedio'),
+            ticketMedioText: document.getElementById('ticketMedioText'),
+
+            metricPesoFumeMax: document.getElementById('metricPesoFumeMax'),
+            comparisonPesoFumeMax: document.getElementById('comparisonPesoFumeMax'),
+            progressPesoFumeMax: document.getElementById('progressPesoFumeMax'),
+            pesoFumeMaxText: document.getElementById('pesoFumeMaxText'),
+            
+            // Layer 5: Devoluções
+            devolucoesList: document.getElementById('devolucoesList'),
+
+            // Canvas IDs
+            chartPrecoDonutCanvas: document.getElementById('chartPrecoDonut'),
+            chartClientesDonutCanvas: document.getElementById('chartClientesDonut'),
+            chartDevolucaoDonutCanvas: document.getElementById('chartDevolucaoDonut'),
+            chartVendasHistoricoCanvas: document.getElementById('chartVendasHistorico'),
+            chartFumeMaxHistoricoCanvas: document.getElementById('chartFumeMaxHistorico'),
+            chartPrecoHistoricoCanvas: document.getElementById('chartPrecoHistorico'),
+        };
+
+        // ============================================
+        // FUNÇÕES DE FORMATAÇÃO E CORES
+        // ============================================
+
+        /**
+         * Formata valores monetários (R$) sem casas decimais.
+         */
+        function formatCurrency(value) {
+            const num = parseFloat(value) || 0;
+            return 'R$ ' + num.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
+
+        /**
+         * Formata valores numerais (Qtde) sem casas decimais.
+         */
+        function formatNumber(value) {
+            const num = parseFloat(value) || 0;
+            return num.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
+
+        /**
+         * Formata porcentagem com UMA casa decimal.
+         */
+        function formatPercent(value) {
+            const num = parseFloat(value) || 0;
+            return (num * 100).toFixed(1).replace('.', ',');
+        }
+
+        /**
+         * Retorna a cor com base no atingimento percentual (Lógica de Quartil).
+         * @param {number} percent - Valor percentual (0.0 a N.N).
+         * @param {boolean} isInverse - Se a métrica é "ruim" (menor é melhor, e.g., Devolução).
+         */
+        function getQuartileColor(percent, isInverse = false) {
+            const p = percent * 100;
+            let color = {
+                hex: '#3b82f6', // Azul (Padrão/Neutro)
+                progressGradient: 'linear-gradient(90deg, #3b82f6, #1e40af)',
+                background: 'rgba(59, 130, 246, 0.5)',
+                border: '#3b82f6'
+            };
+
+            if (isInverse) { 
+                // Indicadores "ruins" (Devolução, Desvio) - Menor % é melhor.
+                if (p > 100) { // Muito Mau (Excedeu Meta - Pior)
+                    color = { hex: '#ef4444', progressGradient: 'linear-gradient(90deg, #ef4444, #b91c1c)', background: 'rgba(239, 68, 68, 0.5)', border: '#ef4444' };
+                } else if (p > 75) { // Mau
+                    color = { hex: '#f59e0b', progressGradient: 'linear-gradient(90deg, #f59e0b, #d97706)', background: 'rgba(245, 158, 11, 0.5)', border: '#f59e0b' }; 
+                } else { // Bom (Abaixo de 75% da Meta ou Baixo Atingimento)
+                    color = { hex: '#10b981', progressGradient: 'linear-gradient(90deg, #10b981, #059669)', background: 'rgba(16, 185, 129, 0.5)', border: '#10b981' }; 
+                }
+            } else { 
+                // Indicadores "bons" (Vendas, Preço, Clientes, Fume Max) - Maior % é melhor.
+                if (p < 50) { // Mau
+                    color = { hex: '#ef4444', progressGradient: 'linear-gradient(90deg, #ef4444, #b91c1c)', background: 'rgba(239, 68, 68, 0.5)', border: '#ef4444' }; 
+                } else if (p < 75) { // Atenção
+                    color = { hex: '#f59e0b', progressGradient: 'linear-gradient(90deg, #f59e0b, #d97706)', background: 'rgba(245, 158, 11, 0.5)', border: '#f59e0b' }; 
+                } else if (p < 100) { // Bom (Próximo)
+                    color = { hex: '#3b82f6', progressGradient: 'linear-gradient(90deg, #3b82f6, #1e40af)', background: 'rgba(59, 130, 246, 0.5)', border: '#3b82f6' }; 
+                } else { // Excelente (Acima da Meta)
+                    color = { hex: '#10b981', progressGradient: 'linear-gradient(90deg, #10b981, #059669)', background: 'rgba(16, 185, 129, 0.5)', border: '#10b981' }; 
+                }
+            }
+            return color;
+        }
+
+
+        function clearCharts() {
+            // Destrói todos os gráficos para evitar sobreposição
+            if (chartPrecoDonut) { chartPrecoDonut.destroy(); }
+            if (chartClientesDonut) { chartClientesDonut.destroy(); }
+            if (chartDevolucaoDonut) { chartDevolucaoDonut.destroy(); }
+            if (chartVendasHistorico) { chartVendasHistorico.destroy(); }
+            if (chartFumeMaxHistorico) { chartFumeMaxHistorico.destroy(); }
+            if (chartPrecoHistorico) { chartPrecoHistorico.destroy(); }
+            chartPrecoDonut = chartClientesDonut = chartDevolucaoDonut = null;
+            chartVendasHistorico = chartFumeMaxHistorico = chartPrecoHistorico = null;
+        }
+
+
+        // ============================================
+        // LÓGICA DO DASHBOARD (ATUALIZADA)
+        // ============================================
+
+        function loadDataForSelectedPeriod() {
+            clearCharts();
+            currentPeriodKey = el.selectPeriodo.value;
+
+            if (!currentUserId || !currentPeriodKey || !allCommercialData || !allCommercialData[currentPeriodKey]) {
+                el.dashboardContainer.style.display = 'none';
+                return;
+            }
+
+            const periodData = allCommercialData[currentPeriodKey];
+            currentUserData = periodData[currentUserId];
+            
+            if (!currentUserData) {
+                el.dashboardContainer.style.display = 'none';
+                alert(`Aviso: Seu código de usuário (${currentUserId}) não possui dados no período ${currentPeriodKey}.`);
+                return;
+            }
+
+            el.dashboardContainer.style.display = 'block';
+            updateDashboard(currentUserData);
+        }
+
+        /**
+         * Calcula novas métricas de inteligência de negócios.
+         */
+        function calculateNewMetrics(data) {
+            const vendas = parseFloat(data.VENDAS) || 0;
+            const clientes = parseFloat(data.CLIENTES) || 0;
+            const fumemax = parseFloat(data.FUMEMAX) || 0;
+            const meta = parseFloat(data.META) || 0;
+            const metaCliente = parseFloat(data.META_CLIENTE) || 0;
+            const metaPreco = parseFloat(data.META_PRECO) || 0;
+            const metaFumeMax = parseFloat(data.META_FUME_MAX) || 0;
+            const devolucao = parseFloat(data.DEVOLUCAO) || 0;
+            const metaDevolucao = parseFloat(data.META_DEVOLUCAO) || 0;
+            
+            // 1. TICKET MÉDIO
+            const ticketMedio = clientes > 0 ? vendas / clientes : 0;
+
+            // 2. PESO FUMEMAX
+            const pesoFumeMax = vendas > 0 ? fumemax / vendas : 0;
+            // Alvo Peso FUMEMAX (apenas para a barra de progresso - vamos usar 20% como um alvo genérico)
+            const alvoPesoFumeMax = 0.20; 
+
+            // 3. ÍNDICE DE PERFORMANCE TOTAL (Média ponderada ou simples de atingimento dos 5 pilares)
+            const pVendas = meta > 0 ? vendas / meta : 0;
+            const pClientes = metaCliente > 0 ? clientes / metaCliente : 0;
+            const pPreco = metaPreco > 0 ? data.PRECO / metaPreco : 0; // PRECO já está no dado
+            const pFumeMax = metaFumeMax > 0 ? fumemax / metaFumeMax : 0;
+            const pDevolucao = metaDevolucao > 0 ? 1 - (devolucao / metaDevolucao) : 0; // Inverte para Devolução (1 = 0% de devolução / 0 = 100% de devolução da meta)
+            
+            const numPilares = 5;
+            const indiceTotal = (pVendas + pClientes + pPreco + pFumeMax + pDevolucao) / numPilares;
+
+            return { ticketMedio, pesoFumeMax, alvoPesoFumeMax, indiceTotal };
+        }
+
+
+        function updateDashboard(data) {
+            const newMetrics = calculateNewMetrics(data);
+
+            // 1. Informações do Usuário
+            el.userName.textContent = data.NOME ? data.NOME.split(' ')[0] : 'N/A'; // Apenas o primeiro nome
+            el.userState.textContent = data.ESTADO || 'N/A';
+            el.userId.textContent = `CÓD: ${data.COD}`;
+            el.userPhoto.src = data.URL_FOTO || 'https://via.placeholder.com/120';
+            
+            // 2. LAYER 1: VENDAS / FATURAMENTO (Progress Bar)
+            
+            // VENDAS (Meta/Vendas - fusão)
+            const percentVendas = (data.VENDAS / data.META) || 0;
+            const colorVendas = getQuartileColor(percentVendas, false);
+            el.metricVendas.textContent = formatCurrency(data.VENDAS);
+            el.comparisonVendas.textContent = `Meta: ${formatCurrency(data.META)}`;
+            el.progressVendas.style.width = `${Math.min(percentVendas * 100, 100)}%`;
+            el.progressVendas.style.background = colorVendas.progressGradient;
+            el.vendasText.textContent = `${formatPercent(percentVendas)}% da Meta`;
+
+            // VENDAS FUME MAX
+            const percentFumeMax = (data.FUMEMAX / data.META_FUME_MAX) || 0;
+            const colorFumeMax = getQuartileColor(percentFumeMax, false);
+            el.metricFumeMax.textContent = formatCurrency(data.FUMEMAX);
+            el.comparisonFumeMax.textContent = `Meta: ${formatCurrency(data.META_FUME_MAX)}`;
+            el.progressFumeMax.style.width = `${Math.min(percentFumeMax * 100, 100)}%`;
+            el.progressFumeMax.style.background = colorFumeMax.progressGradient;
+            el.fumeMaxText.textContent = `${formatPercent(percentFumeMax)}% da Meta`;
+
+            // DESCONCENTRAÇÃO (VENDAS 15 D)
+            const percentVendas15D = (data.VENDAS_15D / data.META_15D) || 0;
+            const colorVendas15D = getQuartileColor(percentVendas15D, false);
+            el.metricVendas15D.textContent = formatCurrency(data.VENDAS_15D);
+            el.comparisonVendas15D.textContent = `Meta: ${formatCurrency(data.META_15D)}`;
+            el.progressVendas15D.style.width = `${Math.min(percentVendas15D * 100, 100)}%`;
+            el.progressVendas15D.style.background = colorVendas15D.progressGradient;
+            el.vendas15DText.textContent = `${formatPercent(percentVendas15D)}% da Meta`;
+
+            // DESVIO (Fazer por dia) - Métrica Inversa: DESVIO é ruim (Maior = Pior)
+            const desvio = parseFloat(data.DESVIO) || 0;
+            const metaDia = parseFloat(data.META_DIA) || 0;
+            
+            // Lógica de progresso baseada em quão longe o desvio está da Meta (Quanto menor o DESVIO, melhor)
+            // Um desvio de 0 é 100% de atingimento. Vamos basear o progresso no percentual de VENDAS para o progress bar.
+            const desvioPercentual = (data.VENDAS / data.META) || 0; // Usamos o % VENDAS para o progress visual
+            const colorDesvio = getQuartileColor(desvioPercentual, false);
+            
+            el.metricDesvio.textContent = formatCurrency(desvio);
+            el.comparisonDesvio.textContent = `Meta/Dia: ${formatCurrency(metaDia)}`;
+            el.progressDesvio.style.width = `${Math.min(desvioPercentual * 100, 100)}%`;
+            el.progressDesvio.style.background = colorDesvio.progressGradient;
+            el.desvioText.textContent = `Fazer/Dia (Atual): ${formatCurrency(desvio / 10)} (Estimativa)`; // Simplesmente para ter um valor de referência
+
+            // 3. LAYER 2: PERFORMANCE (Donut Charts)
+            
+            drawDonutChart(
+                el.chartPrecoDonutCanvas,
+                'chartPrecoDonut',
+                (data.PRECO / data.META_PRECO) || 0,
+                false,
+                formatCurrency(data.PRECO),
+                `Meta: ${formatCurrency(data.META_PRECO)}`,
+                el.donutPrecoValue,
+                el.donutPrecoMeta
+            );
+            
+            drawDonutChart(
+                el.chartClientesDonutCanvas,
+                'chartClientesDonut',
+                (data.CLIENTES / data.META_CLIENTE) || 0,
+                false,
+                formatNumber(data.CLIENTES),
+                `Meta: ${formatNumber(data.META_CLIENTE)} Clientes`,
+                el.donutClientesValue,
+                el.donutClientesMeta
+            );
+
+            drawDonutChart(
+                el.chartDevolucaoDonutCanvas,
+                'chartDevolucaoDonut',
+                (data.DEVOLUCAO / data.META_DEVOLUCAO) || 0,
+                true, // INVERSO
+                formatCurrency(data.DEVOLUCAO),
+                `Meta: ${formatCurrency(data.META_DEVOLUCAO)}`,
+                el.donutDevolucaoValue,
+                el.donutDevolucaoMeta
+            );
+
+            // 4. LAYER 3: HISTÓRICO DE PERÍODOS (Coluna)
+            drawHistoricalCharts(currentUserId);
+            
+            // 5. LAYER 4: INTELIGÊNCIA DE NEGÓCIOS (Progress Bar)
+
+            // ÍNDICE TOTAL
+            const colorIndiceTotal = getQuartileColor(newMetrics.indiceTotal, false);
+            el.metricIndiceTotal.textContent = `${formatPercent(newMetrics.indiceTotal)}%`;
+            el.progressIndiceTotal.style.width = `${Math.min(newMetrics.indiceTotal * 100, 100)}%`;
+            el.progressIndiceTotal.style.background = colorIndiceTotal.progressGradient;
+            el.indiceTotalText.textContent = `Média de Atingimento (${formatNumber(newMetrics.indiceTotal * 5)}/5 Pilares)`;
+
+            // TICKET MÉDIO
+            const ticketMedioPercentual = (newMetrics.ticketMedio / 500) || 0; // Usando R$500 como uma meta de Ticket Médio de referência
+            const colorTicketMedio = getQuartileColor(ticketMedioPercentual, false);
+            el.metricTicketMedio.textContent = formatCurrency(newMetrics.ticketMedio);
+            el.progressTicketMedio.style.width = `${Math.min(ticketMedioPercentual * 100, 100)}%`;
+            el.progressTicketMedio.style.background = colorTicketMedio.progressGradient;
+            el.ticketMedioText.textContent = `${formatCurrency(newMetrics.ticketMedio)} por Cliente`;
+
+            // PESO FUMEMAX
+            const pesoFumeMaxPercentual = (newMetrics.pesoFumeMax / newMetrics.alvoPesoFumeMax) || 0;
+            const colorPesoFumeMax = getQuartileColor(pesoFumeMaxPercentual, false); // Consideramos um % alto como bom
+            el.metricPesoFumeMax.textContent = `${formatPercent(newMetrics.pesoFumeMax)}%`;
+            el.comparisonPesoFumeMax.textContent = `Alvo: ${formatPercent(newMetrics.alvoPesoFumeMax)}% do Total`;
+            el.progressPesoFumeMax.style.width = `${Math.min(pesoFumeMaxPercentual * 100, 100)}%`;
+            el.progressPesoFumeMax.style.background = colorPesoFumeMax.progressGradient;
+            el.pesoFumeMaxText.textContent = `Peso atual de ${formatCurrency(data.FUMEMAX)} sobre ${formatCurrency(data.VENDAS)}`;
+
+
+            // 6. LAYER 5: Pedidos Devolvidos (Ajuste: Remoção de "VALOR: R$ 0" mantida)
+            const devolucaoPedidos = data.IDPEDIDOS_DEVOLUCAO || [];
+            el.devolucoesList.innerHTML = ''; 
+
+            if (devolucaoPedidos.length === 0) {
+                el.devolucoesList.innerHTML = '<p class="placeholder-text">Nenhum pedido devolvido registrado no período.</p>';
+            } else {
+                devolucaoPedidos.forEach(pedidoId => {
+                    const item = document.createElement('div');
+                    item.className = 'devolucao-item';
+                    item.innerHTML = `
+                        <span class="pedido-label">PEDIDO</span>
+                        <span class="pedido-number">${pedidoId}</span>
+                    `;
+                    el.devolucoesList.appendChild(item);
+                });
+            }
+        }
+
+        // ============================================
+        // FUNÇÕES DE GRÁFICOS
+        // ============================================
+        
+        /**
+         * Desenha gráficos de Donut (Layer 2)
+         */
+        function drawDonutChart(canvasEl, chartRefName, percent, isInverse, valueText, metaText, valueElement, metaElement) {
+            const p = Math.min(percent, 1.0); // Limita o preenchimento a 100% no gráfico
+            const color = getQuartileColor(percent, isInverse);
+            const dataValue = isInverse ? p : p; // Valor para o preenchimento
+
+            if (chartRefName === 'chartPrecoDonut') { chartPrecoDonut = window.chartPrecoDonut; }
+            if (chartRefName === 'chartClientesDonut') { chartClientesDonut = window.chartClientesDonut; }
+            if (chartRefName === 'chartDevolucaoDonut') { chartDevolucaoDonut = window.chartDevolucaoDonut; }
+
+            valueElement.textContent = valueText;
+            valueElement.style.color = color.hex;
+            metaElement.textContent = metaText;
+
+            const newChart = new Chart(canvasEl.getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: [dataValue, 1 - dataValue],
+                        backgroundColor: [color.hex, '#334155'],
+                        borderColor: ['transparent', 'transparent'],
+                        borderWidth: 0,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '80%',
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: { enabled: false },
+                        datalabels: { display: false }
+                    }
+                }
+            });
+
+            // Atribui a referência do gráfico para destruição futura
+            if (chartRefName === 'chartPrecoDonut') { chartPrecoDonut = newChart; }
+            if (chartRefName === 'chartClientesDonut') { chartClientesDonut = newChart; }
+            if (chartRefName === 'chartDevolucaoDonut') { chartDevolucaoDonut = newChart; }
+        }
+
+
+        /**
+         * Desenha gráficos de Coluna Históricos (Layer 3)
+         */
+        function drawHistoricalCharts(userId) {
+            
+            // Filtra os dados dos últimos 3 períodos (ordenados do mais antigo para o mais recente para o eixo X)
+            const historicalPeriods = periods.slice(0, 3).reverse();
+            
+            const periodLabels = historicalPeriods.map(p => p.name);
+            const vendaData = [];
+            const fumeMaxData = [];
+            const precoData = [];
+            const vendaColors = [];
+            const fumeMaxColors = [];
+            const precoColors = [];
+            
+            historicalPeriods.forEach(period => {
+                const data = allCommercialData[period.key]?.[userId];
+                
+                if (data) {
+                    // VENDAS TOTAIS
+                    const pVendas = (data.VENDAS / data.META) || 0;
+                    vendaData.push(data.VENDAS);
+                    vendaColors.push(getQuartileColor(pVendas, false).background);
+                    
+                    // FUMEMAX
+                    const pFumeMax = (data.FUMEMAX / data.META_FUME_MAX) || 0;
+                    fumeMaxData.push(data.FUMEMAX);
+                    fumeMaxColors.push(getQuartileColor(pFumeMax, false).background);
+
+                    // PREÇO MÉDIO
+                    const pPreco = (data.PRECO / data.META_PRECO) || 0;
+                    precoData.push(data.PRECO);
+                    precoColors.push(getQuartileColor(pPreco, false).background);
+                } else {
+                    // Adiciona dados vazios para períodos sem dados para o usuário
+                    vendaData.push(0);
+                    fumeMaxData.push(0);
+                    precoData.push(0);
+                    vendaColors.push('#334155');
+                    fumeMaxColors.push('#334155');
+                    precoColors.push('#334155');
+                }
+            });
+
+            const commonOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { 
+                        display: false, // OBRIGATÓRIO: Sem rótulos verticais (valores)
+                        beginAtZero: true, 
+                        grid: { display: false }
+                    },
+                    x: { 
+                        ticks: { color: '#94a3b8' }, // OBRIGATÓRIO: Manter rótulos horizontais (períodos)
+                        grid: { display: false }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    datalabels: { // OBRIGATÓRIO: Rótulo de dados na parte superior
+                        anchor: 'end',
+                        align: 'end',
+                        formatter: (value, context) => {
+                            if (context.chart.id === 0) return formatCurrency(value); // Vendas
+                            if (context.chart.id === 1) return formatCurrency(value); // Fume Max
+                            if (context.chart.id === 2) return formatCurrency(value); // Preço Médio
+                        },
+                        color: '#e2e8f0',
+                        font: { weight: 'bold', size: 12 }
+                    },
+                    tooltip: { enabled: true }
+                }
+            };
+            
+            // 1. Vendas Totais
+            chartVendasHistorico = new Chart(el.chartVendasHistoricoCanvas.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: periodLabels,
+                    datasets: [{
+                        data: vendaData,
+                        backgroundColor: vendaColors,
+                        borderColor: vendaColors.map(c => c.replace('0.5', '1')), // Borda sólida
+                        borderWidth: 1
+                    }]
+                },
+                options: { ...commonOptions, id: 0 }
+            });
+
+            // 2. Vendas Fume Max
+            chartFumeMaxHistorico = new Chart(el.chartFumeMaxHistoricoCanvas.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: periodLabels,
+                    datasets: [{
+                        data: fumeMaxData,
+                        backgroundColor: fumeMaxColors,
+                        borderColor: fumeMaxColors.map(c => c.replace('0.5', '1')),
+                        borderWidth: 1
+                    }]
+                },
+                options: { ...commonOptions, id: 1 }
+            });
+
+            // 3. Preço Médio
+            chartPrecoHistorico = new Chart(el.chartPrecoHistoricoCanvas.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: periodLabels,
+                    datasets: [{
+                        data: precoData,
+                        backgroundColor: precoColors,
+                        borderColor: precoColors.map(c => c.replace('0.5', '1')),
+                        borderWidth: 1
+                    }]
+                },
+                options: { ...commonOptions, id: 2 }
+            });
+        }
+
+
+        // ============================================
+        // LÓGICA DE LOGIN/LOGOUT (AJUSTADA PARA EMAIL)
+        // ============================================
+
+        function onLogin(e) {
+            e.preventDefault();
+            
+            // Login agora é feito APENAS com EMAIL
+            const email = el.emailInput.value.trim().toLowerCase(); 
+            const password = el.passwordInput.value.toString();
+            
+            el.errorMessage.textContent = 'Verificando credenciais...';
+            el.errorMessage.classList.add('show');
+            el.errorMessage.style.color = '#fbbf24'; // Temporariamente amarelo
+
+            if (!userCredentials) {
+                el.errorMessage.textContent = 'Erro de Conexão: Dados de credenciais não carregados. Tente novamente.';
+                el.errorMessage.style.color = '#ef4444';
+                return;
+            }
+
+            // Busca o usuário pelo email
+            const userEntry = Object.values(userCredentials).find(user => 
+                (user.EMAIL || '').toLowerCase() === email
+            );
+
+            if (userEntry && userEntry.SENHA === password) {
+                currentUserId = userEntry.COD;
+                el.loginScreen.classList.add('hidden');
+                el.errorMessage.classList.remove('show');
+                
+                // Carrega os dados para o usuário e o período selecionado
+                loadDataForSelectedPeriod();
+            } else {
+                el.errorMessage.textContent = 'Email ou senha incorretos.';
+                el.errorMessage.style.color = '#ef4444';
+                setTimeout(() => el.errorMessage.classList.remove('show'), 3000);
+            }
+        }
+
+        function onLogout() {
+            currentUserId = '';
+            currentUserData = null;
+            clearCharts();
+            el.loginScreen.classList.remove('hidden');
+            el.emailInput.value = '';
+            el.passwordInput.value = '';
+            el.errorMessage.textContent = 'Sessão encerrada. Faça o login.';
+            el.errorMessage.style.color = '#fbbf24';
+            el.errorMessage.classList.add('show');
+            el.dashboardContainer.style.display = 'none';
+        }
+
+        // ============================================
+        // INICIALIZAÇÃO E PREPARAÇÃO DE DADOS
+        // ============================================
+
+        /**
+         * Busca os dados de login no nó unificado (funcionarios/ALPHALUMI).
+         */
+        function fetchLoginData() {
+            return new Promise((resolve, reject) => {
+                db.ref('funcionarios/ALPHALUMI').once('value')
+                .then(snapshot => {
+                    const data = snapshot.val();
+                    const normalizedCredentials = {};
+
+                    if (data) {
+                        for (const id in data) {
+                            const user = data[id];
+                            // Usando o email como chave de login principal, mas normalizando para a busca.
+                            if (user.email && user.senha_hash) {
+                                normalizedCredentials[id.toString()] = {
+                                    COD: id.toString(),
+                                    SENHA: user.senha_hash.toString(), 
+                                    NOME: user.nome,
+                                    EMAIL: user.email 
+                                };
+                            }
+                        }
+                        resolve(normalizedCredentials);
+                    } else {
+                        reject(new Error("Estrutura de login inválida ou nó não encontrado."));
+                    }
+                })
+                .catch(error => reject(error));
+            });
+        }
+        
+        /**
+         * Busca os dados do Firebase Comercial (para o dashboard) no nó performance_mensal/ALPHALUMI.
+         */
+        function fetchCommercialData() {
+            return db.ref('performance_mensal/ALPHALUMI').once('value')
+                .then(snapshot => snapshot.val());
+        }
+
+        /**
+         * Processa os dados comerciais, preenchendo o dropdown de períodos.
+         */
+        function prepareCommercialData(data) {
+            allCommercialData = data;
+            periods = [];
+            
+            for (const key in data) {
+                const [year, month] = key.split('_');
+                const formattedName = `${month}/${year}`;
+                periods.push({ key: key, name: formattedName });
+            }
+
+            periods.sort((a, b) => b.key.localeCompare(a.key)); // Mais recente primeiro
+            
+            el.selectPeriodo.innerHTML = '';
+            periods.forEach(period => {
+                const option = document.createElement('option');
+                option.value = period.key;
+                option.textContent = period.name;
+                el.selectPeriodo.appendChild(option);
+            });
+
+            if (periods.length > 0) {
+                currentPeriodKey = periods[0].key;
+                el.selectPeriodo.value = currentPeriodKey;
+            }
+        }
+
+
+        /**
+         * Verifica se existe um parâmetro 'user=ID' na URL.
+         */
+        function getUserIdFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const userId = urlParams.get('user');
+            return userId ? userId.toString() : null;
+        }
+
+        async function initApp() {
+            const urlUserId = getUserIdFromUrl();
+            let initialLoadSuccess = false;
+
+            el.dashboardContainer.style.display = 'none';
+            el.errorMessage.textContent = 'Carregando credenciais e dados...';
+            el.errorMessage.style.color = '#fbbf24';
+            el.errorMessage.classList.add('show');
+
+            // 1. Carregar dados de login (Necessário para checar ID da URL)
+            try {
+                userCredentials = await fetchLoginData();
+            } catch (e) {
+                el.errorMessage.textContent = 'Erro Crítico: Falha ao carregar a lista de credenciais do Firebase.';
+                el.errorMessage.style.color = '#ef4444';
+                return; 
+            }
+
+            // 2. Carregar dados comerciais
+            try {
+                const data = await fetchCommercialData();
+                if (data) {
+                    prepareCommercialData(data); 
+                    initialLoadSuccess = true;
+                }
+            } catch (e) {
+                console.warn("Aviso: Falha ao carregar dados do Dashboard.", e);
+            }
+            
+            // 3. Configurar eventos
+            el.logoutButton.addEventListener('click', onLogout);
+            el.loginForm.addEventListener('submit', onLogin);
+            el.selectPeriodo.addEventListener('change', loadDataForSelectedPeriod);
+
+            // 4. Lógica de carregamento via parâmetro URL
+            if (urlUserId) {
+                const userFound = userCredentials[urlUserId];
+
+                if (userFound) {
+                    currentUserId = urlUserId;
+                    el.loginScreen.classList.add('hidden');
+                    
+                    if (initialLoadSuccess && periods.length > 0) {
+                        loadDataForSelectedPeriod();
+                    } else {
+                         el.errorMessage.textContent = 'Aviso: Dados do Dashboard não carregados ou sem períodos disponíveis.';
+                         el.errorMessage.style.color = '#f59e0b';
+                         el.errorMessage.classList.add('show');
+                         el.dashboardContainer.style.display = 'none';
+                    }
+                } else {
+                    el.errorMessage.textContent = `Erro: Usuário ID ${urlUserId} não encontrado. Faça o login.`;
+                    el.errorMessage.style.color = '#ef4444';
+                    el.errorMessage.classList.add('show');
+                    el.loginScreen.classList.remove('hidden');
+                }
+            } else {
+                el.errorMessage.textContent = 'Pronto. Digite seu email e senha.';
+                el.errorMessage.style.color = '#fbbf24';
+                el.errorMessage.classList.add('show');
+                el.loginScreen.classList.remove('hidden');
+            }
+        }
+        
+        // Iniciar a aplicação
+        initApp();
+    </script>
+</body>
+</html>

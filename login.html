@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SISTEMA | Login & Principal</title>
+    
+    <style>
+        /* ========================================================== */
+        /* BLOCO DE PERSONALIZAÇÃO: VARIÁVEIS DE TEMA                 */
+        /* ========================================================== */
+        :root {
+            --cor-destaque: #006EE6;
+            --cor-erro: #ff5252;
+            --animacao-rapida: 0.3s ease;
+            --borda-raio: 8px;
+        }
+
+        /* Tema Escuro */
+        .dark-theme {
+            --cor-fundo-principal: #121212;
+            --cor-area-visual: #005662;
+            --cor-area-form: #212121;
+            --cor-escura: #0B0B0B;
+            --cor-texto-principal: #e0e0e0;
+            --cor-texto-secundario: #a0a0a0;
+            --cor-input-fundo: rgba(255, 255, 255, 0.08);
+            --cor-input-borda: rgba(0, 230, 118, 0.4);
+            --sombra-foco: 0 0 10px rgba(0, 230, 118, 0.6);
+            --cor-sidebar: #1f1f1f;
+            --cor-header: #2c2c2c;
+            --cor-btn-hover: #3a3a3a;
+        }
+        /* ========================================================== */
+
+
+        /* ========================================================== */
+        /* ESTILOS GERAIS                                             */
+        /* ========================================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+            transition: background-color var(--animacao-rapida), color var(--animacao-rapida);
+        }
+
+        body {
+            background-color: var(--cor-fundo-principal);
+            color: var(--cor-texto-principal);
+            min-height: 100vh;
+            overflow: hidden; /* IMPEDE O SCROLL GLOBAL E O ACESSO À TELA PRINCIPAL */
+        }
+        /* ========================================================== */
+
+
+        /* ========================================================== */
+        /* TELA DE LOGIN/CADASTRO                                     */
+        /* ========================================================== */
+
+        /* Regras para controle de visibilidade das Telas de Conteúdo */
+        .tela-conteudo {
+            display: none; 
+            width: 100%;
+        }
+
+        .tela-conteudo.active {
+            display: block; 
+        }
+
+
+        .tela-container {
+            width: 99vw;
+            height: 99vh;
+            display: none;
+            overflow: hidden;
+        }
+
+        .tela-container.active {
+            display: flex;
+        }
+
+        .split-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        .form-area {
+            flex: 1;
+            background-color: #404040;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .titulo-tela {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 5px var(--cor-destaque);
+        }
+
+        .logo-pequeno {
+            background-image: url('https://res.cloudinary.com/dclhoiqdg/image/upload/v1764684564/logo-eagle_cosqxt.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            width: 30%;
+            height: 30%;
+        }
+        /* ========================================================== */
+
+
+        /* ========================================================== */
+        /* FORMULÁRIO                                                 */
+        /* ========================================================== */
+        .form-bloco {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 350px;
+            gap: 15px;
+        }
+
+        .form-bloco input:not([type="file"]),
+        .form-bloco select,
+        .form-bloco button {
+            padding: 15px;
+            border: 1px solid transparent;
+            border-radius: var(--borda-raio);
+            background-color: var(--cor-input-fundo);
+            color: var(--cor-texto-principal);
+            font-size: 1em;
+            outline: none;
+        }
+
+        .form-bloco input:focus {
+            border: 1px solid var(--cor-destaque);
+            box-shadow: var(--sombra-foco);
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-destaque {
+            background-color: var(--cor-destaque);
+            color: var(--cor-fundo-principal);
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            letter-spacing: 1px;
+            border: none !important;
+        }
+
+        .btn-destaque:hover {
+            background-color: #006EE6;
+            transform: translateY(-2px);
+        }
+
+        .link-cadastro {
+            margin-top: 20px;
+            color: var(--cor-texto-secundario);
+        }
+
+        .link-cadastro a {
+            color: var(--cor-destaque);
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .link-cadastro a:hover {
+            opacity: 0.8;
+        }
+
+        .upload-foto-wrap {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .upload-foto-label {
+            width: 130px;
+            height: 130px;
+            border: 2px dashed var(--cor-destaque);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            background-color: rgba(0, 230, 118, 0.1);
+            transition: all var(--animacao-rapida);
+        }
+
+        .upload-foto-label:hover {
+            background-color: rgba(0, 230, 118, 0.2);
+            box-shadow: 0 0 10px var(--cor-destaque);
+        }
+
+        .upload-text {
+            font-size: 0.8em;
+        }
+        /* ========================================================== */
+
+
+        /* ========================================================== */
+        /* ÁREA VISUAL (LADO DIREITO)                                */
+        /* ========================================================== */
+        .visual-area {
+            flex: 1;
+            background-color: var(--cor-escura);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .logo-principal {
+            background-image: url('https://res.cloudinary.com/dclhoiqdg/image/upload/v1764815339/LOGO_EAGLE2_d9kqbs.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            width: 150%;
+            height: 150%;
+            color: transparent;
+        }
+        /* ========================================================== */
+
+
+        /* ========================================================== */
+        /* TELA PRINCIPAL – LAYOUT                                   */
+        /* ========================================================== */
+        #tela-principal {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            grid-template-rows: 100vh;
+        }
+
+        /* ------------------- SIDEBAR ------------------- */
+        #sidebar-menu {
+            background-color: var(--cor-sidebar);
+            display: flex;
+            flex-direction: column;
+            padding: 20px 0;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo-topo {
+            background-image: url('https://res.cloudinary.com/dclhoiqdg/image/upload/v1764684564/logo-eagle_cosqxt.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            width: 30%;
+            height: 30%;
+        }
+
+        #menu-navegacao {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 0 15px;
+        }
+
+        .menu-btn {
+            background-color: transparent;
+            color: var(--cor-texto-principal);
+            border: none;
+            padding: 12px 15px;
+            text-align: left;
+            cursor: pointer;
+            border-radius: var(--borda-raio);
+            transition: all var(--animacao-rapida);
+        }
+
+        .menu-btn:hover {
+            background-color: var(--cor-btn-hover);
+            color: var(--cor-destaque);
+            transform: translateX(5px);
+        }
+
+        .menu-btn.active {
+            background-color: var(--cor-destaque);
+            color: var(--cor-sidebar);
+            font-weight: bold;
+        }
+
+        .user-info {
+            padding: 20px 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .user-circle {
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            background-color: var(--cor-texto-secundario);
+            border: 3px solid var(--cor-destaque);
+        }
+
+        .btn-sair {
+            background-color: var(--cor-erro);
+            color: white;
+            padding: 10px;
+            margin: 10px 15px 0;
+            border-radius: var(--borda-raio);
+            cursor: pointer;
+        }
+
+        .btn-sair:hover {
+            background-color: #d32f2f;
+        }
+        /* ========================================================== */
+
+
+        /* ========================================================== */
+        /* HEADER DE FILTROS                                          */
+        /* ========================================================== */
+        #header-filtros {
+            background-color: var(--cor-header);
+            padding: 15px 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .filtro-dropdown {
+            padding: 10px 15px;
+            border-radius: 5px;
+            background-color: var(--cor-header);
+            color: var(--cor-texto-principal);
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+        }
+    </style>
+</head>
+
+<body class="dark-theme">
+
+    <div id="tela-login" class="tela-container active">
+        <div class="split-container">
+            <div class="form-area login-area">
+                <div class="logo-pequeno" aria-hidden="true"></div>
+                <form id="login-form" class="form-bloco">
+                    <input type="email" id="login-email" placeholder="E-MAIL" required>
+                    <input type="password" id="login-senha" placeholder="SENHA" required>
+                    <button type="submit" class="btn-destaque">ENTRAR</button>
+                </form>
+                <p class="link-cadastro">
+                    Não tem uma conta? <a href="#" id="link-para-cadastro">Cadastrar</a>
+                </p>
+            </div>
+            <div class="visual-area">
+                <video autoplay muted loop class="bg-video" playsinline>
+                    <source src="https://res.cloudinary.com/dclhoiqdg/video/upload/v1764818516/editado_l7bsvr.mp4" type="video/mp4">
+                </video>
+            </div>
+        </div>
+    </div>
+
+    <div id="tela-cadastro" class="tela-container">
+        <div class="split-container">
+            <div class="form-area cadastro-area">
+                <h1 class="titulo-tela">CADASTRO</h1>
+                <form id="cadastro-form" class="form-bloco">
+                    <div class="upload-foto-wrap">
+                        <label for="cadastro-foto" class="upload-foto-label">
+                            <span class="upload-text">UPLOAD FOTO</span>
+                            <input type="file" id="cadastro-foto" accept="image/*" style="display: none;">
+                        </label>
+                    </div>
+                    <input type="text" id="cadastro-empresa" placeholder="EMPRESA" required>
+                    <input type="number" id="cadastro-id" placeholder="ID (Número)" required>
+                    <input type="text" id="cadastro-uf" placeholder="UF (Ex: SP)" maxlength="2" required>
+                    <input type="text" id="cadastro-nome" placeholder="NOME COMPLETO" required>
+                    <input type="text" id="cadastro-permissao" placeholder="PERMISSÃO (Travada)" value="Padrão" disabled>
+                    <input type="email" id="cadastro-email" placeholder="EMAIL" required>
+                    <input type="password" id="cadastro-senha" placeholder="SENHA" required>
+                    <input type="password" id="cadastro-confirma-senha" placeholder="CONFIRMA SENHA" required>
+                    <button type="submit" class="btn-destaque">CADASTRAR</button>
+                </form>
+                <p class="link-cadastro">
+                    Já tem uma conta? <a href="#" id="link-para-login">Voltar ao Login</a>
+                </p>
+            </div>
+            <div class="visual-area">
+                <div class="logo-principal-wrap">
+                    <div class="logo-principal">
+                        <video autoplay muted loop playsinline class="video-bg">
+                            <source src="https://res.cloudinary.com/dclhoiqdg/video/upload/v1764818516/editado_l7bsvr.mp4" type="video/mp4">
+                        </video>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tela-principal" class="tela-container">
+
+        <aside id="sidebar-menu">
+            <div class="logo-topo" aria-hidden="true"></div>
+
+            <nav id="menu-navegacao">
+                <button class="menu-btn active" data-tela="tela1">TELA 1</button>
+                <button class="menu-btn" data-tela="tela2">TELA 2</button>
+                <button class="menu-btn" data-tela="tela3">TELA 3</button>
+                <button class="menu-btn" data-tela="tela4">TELA 4</button>
+                <button class="menu-btn" data-tela="tela5">TELA 5</button>
+                <button class="menu-btn" data-tela="tela6">TELA 6</button>
+            </nav>
+
+            <div class="user-info">
+                <div class="user-circle"></div>
+                <p id="sidebar-username">USUÁRIO LOGADO</p>
+            </div>
+
+            <button id="btn-sair" class="btn-sair">SAIR</button>
+        </aside>
+
+        <main id="main-content">
+
+            <header id="header-filtros">
+                <select id="filtro-periodo" class="filtro-dropdown">
+                    <option value="">PERÍODO</option>
+                </select>
+                <select id="filtro-uf" class="filtro-dropdown">
+                    <option value="">UF</option>
+                </select>
+                <select id="filtro-metricas" class="filtro-dropdown">
+                    <option value="">MÉTRICAS</option>
+                </select>
+                <select id="filtro-funcionarios" class="filtro-dropdown">
+                    <option value="">FUNCIONÁRIO</option>
+                </select>
+                <select id="filtro-tema" class="filtro-dropdown">
+                    <option value="dark">TEMA</option>
+                </select>
+
+                <button id="btn-atualizar" class="btn-atualizar">ATUALIZAR</button>
+            </header>
+
+            <section id="area-telas-metricas">
+                <div id="tela1" class="tela-conteudo active" style="background-color: #7AC74F; padding: 20px;">
+                    <h2>Conteúdo da Tela 1 (Padrão)</h2>
+                    <p>Esta é a área principal de métricas da TELA 1.</p>
+                </div>
+
+                <div id="tela2" class="tela-conteudo" style="background-color: #4F86C7; padding: 20px;">
+                    <h2>Conteúdo da Tela 2</h2>
+                    <p>Esta é a área principal de métricas da TELA 2.</p>
+                </div>
+
+                <div id="tela3" class="tela-conteudo" style="background-color: #C74F4F; padding: 20px;">
+                    <h2>Conteúdo da Tela 3</h2>
+                    <p>Esta é a área principal de métricas da TELA 3.</p>
+                </div>
+
+                <div id="tela4" class="tela-conteudo" style="background-color: #FFD700; padding: 20px;">
+                    <h2>Conteúdo da Tela 4</h2>
+                    <p>Esta é a área principal de métricas da TELA 4.</p>
+                </div>
+
+                <div id="tela5" class="tela-conteudo" style="background-color: #8A2BE2; padding: 20px;">
+                    <h2>Conteúdo da Tela 5</h2>
+                    <p>Esta é a área principal de métricas da TELA 5.</p>
+                </div>
+
+                <div id="tela6" class="tela-conteudo" style="background-color: #FF4500; padding: 20px;">
+                    <h2>Conteúdo da Tela 6</h2>
+                    <p>Esta é a área principal de métricas da TELA 6.</p>
+                </div>
+            </section>
+        </main>
+
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script> 
+    
+    <script>
+        /**
+         * ==========================================================
+         * INDEX.JS: CONFIGURAÇÃO, CONTROLE DE TELA, LOGIN E CADASTRO
+         * ==========================================================
+         */
+
+        // ==========================================================
+        // 1. CONFIGURAÇÃO E INICIALIZAÇÃO DO FIREBASE (APENAS DB)
+        // ==========================================================
+
+        const firebaseConfig = {
+            // URL do Realtime Database fornecida
+            databaseURL: "https://bd-comercial-alpha-default-rtdb.firebaseio.com/",
+            projectId: "bd-comercial-alpha" 
+        };
+
+        // Declara a variável do Database como GLOBAL
+        window.firebaseDatabase = null;
+
+        try {
+            // 1. Inicializa o SDK
+            firebase.initializeApp(firebaseConfig);
+            
+            // 2. Anexa a referência do Database ao objeto global (window)
+            window.firebaseDatabase = firebase.database();
+            
+            console.log("Firebase inicializado. DB acessível via window.firebaseDatabase.");
+
+        } catch (e) {
+            console.error("Erro CRÍTICO ao inicializar o Firebase. Verifique a URL do DB e a conexão de rede.", e);
+        }
+
+
+        // ==========================================================
+        // 2. LÓGICA DE CONTROLE DE TELA (VIEW) E TEMA
+        // ==========================================================
+
+        /**
+         * Função principal para mudar a tela (view)
+         * @param {string} targetId - O ID da tela a ser exibida
+         */
+        window.mudarTela = (targetId) => {
+            const telas = document.querySelectorAll('.tela-container');
+            const themeControl = document.getElementById('theme-control');
+            
+            telas.forEach(tela => {
+                tela.classList.remove('active');
+            });
+
+            const targetTela = document.getElementById(targetId);
+            if (targetTela) {
+                targetTela.classList.add('active');
+                
+                // Ajusta a visibilidade do controle de tema
+                if (themeControl) {
+                    if (targetId === 'tela-login' || targetId === 'tela-cadastro') {
+                        themeControl.style.display = 'block';
+                    } else {
+                        themeControl.style.display = 'none';
+                    }
+                }
+                
+            } else {
+                console.error(`Erro: Tela com ID ${targetId} não encontrada.`);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // 2.1. Controle de Tema (Dark/Light)
+            const body = document.body;
+            const themeToggle = document.getElementById('theme-toggle');
+            const filtroTema = document.getElementById('filtro-tema');
+
+            const updateTheme = (theme) => {
+                body.classList.remove('dark-theme', 'light-theme');
+                body.classList.add(`${theme}-theme`);
+                if (themeToggle) themeToggle.value = theme;
+                if (filtroTema) filtroTema.value = theme;
+            };
+
+            if (themeToggle) {
+                themeToggle.addEventListener('change', (event) => updateTheme(event.target.value));
+            }
+
+            if (filtroTema) {
+                filtroTema.addEventListener('change', (event) => updateTheme(event.target.value));
+            }
+            
+            const themeControl = document.getElementById('theme-control');
+            if (themeControl) {
+                // Inicializa escondido, será exibido em mudarTela('tela-login') se a tela de login estiver ativa
+                themeControl.style.display = 'block'; 
+            }
+            
+            // Chama a lógica de login e cadastro
+            setupLoginLogic();
+            setupCadastroLogic();
+        });
+
+        // ==========================================================
+        // 3. LÓGICA DE LOGIN (RTDB SIMPLES)
+        // ==========================================================
+
+        function updateSidebarUserInfo(user) {
+            const userInfoP = document.querySelector('#sidebar-menu .user-info p');
+            const userCircle = document.querySelector('#sidebar-menu .user-circle');
+            
+            if (userInfoP) {
+                // Exibe o primeiro nome
+                userInfoP.textContent = user.nome ? user.nome.split(' ')[0].toUpperCase() : 'USUÁRIO';
+            }
+
+            // Usa a url_foto para o avatar
+            if (userCircle && user.url_foto) {
+                userCircle.style.backgroundImage = `url(${user.url_foto})`;
+                userCircle.style.backgroundSize = 'cover';
+                userCircle.style.backgroundPosition = 'center';
+                userCircle.style.border = '3px solid #00e676'; 
+                userCircle.innerHTML = ''; 
+            }
+        }
+
+
+        function setupLoginLogic() {
+            const loginForm = document.getElementById('login-form');
+            const linkParaCadastro = document.getElementById('link-para-cadastro');
+            const btnSair = document.getElementById('btn-sair');
+            const database = window.firebaseDatabase; 
+
+            // Diagnóstico e Verificação de Inicialização
+            if (!database) {
+                console.error("ERRO CRÍTICO: Objeto 'database' não está disponível. Não é possível anexar a lógica de login.");
+                if (loginForm) {
+                    loginForm.addEventListener('submit', (event) => {
+                        event.preventDefault();
+                        alert("Erro de Inicialização: O sistema não conseguiu se conectar ao Firebase. Verifique o console.");
+                    });
+                }
+                return;
+            }
+
+            // 3.1. Ação de Login (Verificação Simples no Firebase RTDB)
+            if (loginForm) {
+                loginForm.addEventListener('submit', (event) => {
+                    event.preventDefault();
+                    const emailInput = document.getElementById('login-email');
+                    const senhaInput = document.getElementById('login-senha');
+                    const email = emailInput.value.toLowerCase();
+                    const senha = senhaInput.value; // Senha em texto simples
+                    
+                    emailInput.style.borderColor = '';
+                    senhaInput.style.borderColor = '';
+
+                    console.log(`Tentativa de Login com Email: ${email}`);
+
+                    // Busca todos os dados a partir do nó 'funcionarios'
+                    database.ref('funcionarios').once('value')
+                    .then((snapshot) => {
+                        console.log("Consulta Firebase realizada. Verificando dados...");
+                        let userFound = false;
+                        let userData = null;
+
+                        if (!snapshot.exists()) {
+                            alert('Erro: Estrutura de funcionários vazia ou não encontrada no Firebase.');
+                            return;
+                        }
+
+                        // Itera sobre todos os funcionários para encontrar o email
+                        snapshot.forEach(empresaSnap => {
+                            if (userFound) return; // Se já encontrou, para de buscar
+
+                            empresaSnap.forEach(userSnap => {
+                                const user = userSnap.val();
+                                // Autenticação simples: compara email e senha_hash (que é a senha simples)
+                                if (user && user.email === email) {
+                                    if (user.senha_hash === senha) {
+                                        userFound = true;
+                                        userData = user;
+                                        userData.empresa_id = empresaSnap.key; // Salva a chave da empresa
+                                        return true; // Para de iterar nos usuários desta empresa
+                                    } else {
+                                        userFound = 'password_mismatch';
+                                        return true; // Para de iterar nos usuários desta empresa
+                                    }
+                                }
+                            });
+                        });
+
+                        // 3.2. Resultado do Login
+                        if (userFound === true) {
+                            alert(`Login bem-sucedido! Bem-vindo(a), ${userData.nome.split(' ')[0]}.`);
+                            
+                            // Salva dados e atualiza a interface
+                            localStorage.setItem('currentUser', JSON.stringify(userData));
+                            updateSidebarUserInfo(userData);
+                            window.mudarTela('tela-principal');
+                            
+                            emailInput.value = '';
+                            senhaInput.value = '';
+
+                        } else if (userFound === 'password_mismatch') {
+                            alert('Erro: Senha incorreta.');
+                            senhaInput.style.borderColor = 'var(--cor-erro)';
+                        } else {
+                            alert('Erro: Usuário não encontrado.');
+                            emailInput.style.borderColor = 'var(--cor-erro)';
+                        }
+                    })
+                    .catch((error) => {
+                        alert(`Erro de comunicação com o Firebase: ${error.message}`);
+                        console.error("Firebase Read Error:", error);
+                    });
+                });
+            }
+
+            // 3.3. Transição para Tela de Cadastro
+            if (linkParaCadastro) {
+                linkParaCadastro.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    window.mudarTela('tela-cadastro');
+                });
+            }
+            
+            // 3.4. Lógica de Sair
+            if (btnSair) {
+                btnSair.addEventListener('click', () => {
+                    localStorage.removeItem('currentUser');
+                    alert('Saindo do sistema...');
+                    window.mudarTela('tela-login');
+                });
+            }
+        }
+
+
+        // ==========================================================
+        // 4. LÓGICA DE CADASTRO (RTDB SIMPLES)
+        // ==========================================================
+
+        function setupCadastroLogic() {
+            const cadastroForm = document.getElementById('cadastro-form');
+            const linkParaLogin = document.getElementById('link-para-login');
+            const database = window.firebaseDatabase; 
+            
+            // 4.1. Ação de Cadastro de Novo Usuário (Gravação Simples no Firebase RTDB)
+            if (cadastroForm && database) {
+                cadastroForm.addEventListener('submit', (event) => {
+                    event.preventDefault();
+                    
+                    const senha = document.getElementById('cadastro-senha').value;
+                    const confirmaSenha = document.getElementById('cadastro-confirma-senha').value;
+                    
+                    if (senha !== confirmaSenha) {
+                        alert("As senhas digitadas não são iguais!");
+                        return;
+                    }
+                    
+                    const email = document.getElementById('cadastro-email').value.toLowerCase();
+                    const empresa = document.getElementById('cadastro-empresa').value.toUpperCase(); 
+                    const idNumero = document.getElementById('cadastro-id').value;
+                    const uf = document.getElementById('cadastro-uf').value.toUpperCase(); 
+                    const nome = document.getElementById('cadastro-nome').value;
+                    const permissao = document.getElementById('cadastro-permissao').value; // 'Padrão'
+                    
+                    if (!empresa || !idNumero) {
+                        alert("O campo EMPRESA e ID são obrigatórios para definir a estrutura.");
+                        return;
+                    }
+
+                    console.log(`Tentativa de Cadastro para: /funcionarios/${empresa}/${idNumero}`);
+
+                    // 4.1a. Verifica se o funcionário já existe
+                    database.ref(`funcionarios/${empresa}/${idNumero}`).once('value')
+                        .then((snapshot) => {
+                            if (snapshot.exists()) {
+                                alert(`❌ Erro: O funcionário com ID ${idNumero} na empresa ${empresa} já existe.`);
+                                return;
+                            }
+
+                            // 4.1b. Grava os dados (a senha é gravada como texto simples em 'senha_hash')
+                            const novoUserRef = database.ref(`funcionarios/${empresa}/${idNumero}`);
+                            
+                            const novoUsuarioData = {
+                                nome: nome,
+                                uf: uf,
+                                permissao: permissao,
+                                email: email,
+                                senha_hash: senha, // Gravando a senha como string, conforme solicitado
+                                url_foto: "https://i.imgur.com/user_placeholder.png" // Placeholder
+                            };
+                            
+                            novoUserRef.set(novoUsuarioData)
+                                .then(() => {
+                                    alert('✅ Cadastro realizado com sucesso! Faça seu login.');
+                                    cadastroForm.reset();
+                                    window.mudarTela('tela-login');
+                                })
+                                .catch((error) => {
+                                    alert(`❌ Erro ao salvar dados: ${error.message}`);
+                                    console.error("Firebase Write Error:", error);
+                                });
+                        });
+                });
+            }
+
+            // 4.2. Transição de volta para Tela de Login e Lógica de Upload (simulação)
+            if (linkParaLogin) {
+                linkParaLogin.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    window.mudarTela('tela-login');
+                });
+            }
+            
+            const inputFoto = document.getElementById('cadastro-foto');
+            if (inputFoto) {
+                inputFoto.addEventListener('change', (event) => {
+                    const label = document.querySelector('.upload-text');
+                    label.textContent = event.target.files.length > 0 ? 
+                                        event.target.files[0].name.substring(0, 10) + '...' : 
+                                        'UPLOAD FOTO';
+                });
+            }
+        }
+
+        /**
+         * ==========================================================
+         * SIDEBAR.JS: LÓGICA DE NAVEGAÇÃO
+         * ==========================================================
+         */
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuBtns = document.querySelectorAll('.menu-btn');
+            
+            // NOTA: Os botões de menu (menu-btn) atuam como indicadores visuais (indicador-tela) na sua estrutura atual.
+            
+            /**
+             * Altera o indicador visual (a cor de fundo do botão) na sidebar.
+             * @param {string} targetId O ID da tela de destino (obtido do atributo data-tela).
+             */
+            const mudarIndicadorTela = (targetId) => {
+                // Remove a classe 'active' de todos os botões para desativá-los
+                menuBtns.forEach(btn => {
+                    btn.classList.remove('active');
+                });
+
+                // Tenta encontrar o botão específico pelo atributo data-tela.
+                const targetBtn = document.querySelector(`.menu-btn[data-tela="${targetId}"]`);
+                
+                if (targetBtn) {
+                    // Adiciona a classe 'active' ao botão clicado para destacá-lo
+                    targetBtn.classList.add('active');
+                } else {
+                    console.error(`Erro: Botão de menu com [data-tela="${targetId}"] não encontrado.`);
+                }
+            }
+
+            /**
+             * CRÍTICO: Gerencia a exibição do conteúdo principal da tela.
+             * Esconde todas as telas de métricas e exibe apenas a tela de destino.
+             * @param {string} targetId O ID da tela de conteúdo a ser exibida (ex: 'tela1').
+             */
+            const mostrarTelaConteudo = (targetId) => {
+                // 1. Esconde TODAS as áreas de conteúdo usando a classe 'tela-conteudo'
+                document.querySelectorAll('.tela-conteudo').forEach(tela => {
+                    tela.classList.remove('active');
+                });
+
+                // 2. Encontra a tela de conteúdo específica pelo ID (ex: document.getElementById('tela1'))
+                const targetContent = document.getElementById(targetId); 
+
+                if (targetContent) {
+                    // 3. Adiciona a classe 'active', fazendo com que ela seja exibida pelo CSS
+                    targetContent.classList.add('active');
+                } else {
+                    console.error(`Erro: Contêiner de conteúdo da tela com ID "${targetId}" não encontrado no DOM.`);
+                }
+            }
+
+            menuBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const targetTelaId = btn.getAttribute('data-tela');
+                    
+                    // 1. Atualiza o indicador visual (cor do botão)
+                    mudarIndicadorTela(targetTelaId);
+                    
+                    // 2. MUDANÇA REAL DO CONTEÚDO: Exibe a tela de métricas correspondente
+                    mostrarTelaConteudo(targetTelaId); 
+
+                    console.log(`Navegando e exibindo conteúdo para: ${targetTelaId}`);
+                });
+            });
+
+            // Inicialização: Garante que a tela inicial (e seu conteúdo) esteja visível e ativa
+            const inicializarTela = () => {
+                const primeiroBtn = document.querySelector('.menu-btn.active'); // Pega o botão ativo por padrão
+                
+                if (primeiroBtn) {
+                    const primeiroTargetId = primeiroBtn.getAttribute('data-tela');
+                    
+                    // Ativa o botão e o indicador (se já não estiver)
+                    mudarIndicadorTela(primeiroTargetId);
+
+                    // Exibe o conteúdo da primeira tela
+                    mostrarTelaConteudo(primeiroTargetId); 
+                }
+            }
+            
+            // Garante que a inicialização só ocorra se a tela principal estiver ativa
+            if (document.getElementById('tela-principal') && document.getElementById('tela-principal').classList.contains('active')) {
+                inicializarTela();
+            }
+            // Caso a tela principal não comece ativa, a lógica é disparada após o login
+            // (a função de login precisará chamar mostrarTelaConteudo('tela1') após a troca de tela).
+        });
+
+        /**
+         * ==========================================================
+         * HEADER.JS: LÓGICA DE FILTROS
+         * ==========================================================
+         */
+        document.addEventListener('DOMContentLoaded', () => {
+            const filtroPeriodo = document.getElementById('filtro-periodo');
+            const filtroUf = document.getElementById('filtro-uf');
+            const filtroMetricas = document.getElementById('filtro-metricas');
+            const filtroFuncionarios = document.getElementById('filtro-funcionarios');
+            const btnAtualizar = document.getElementById('btn-atualizar');
+
+            const database = window.firebaseDatabase;
+            const EMPRESA_ID = 'ALPHALUMI'; // ID fixo da empresa para consultas, conforme sua estrutura
+
+            // utilitário: limpa e adiciona option placeholder
+            const resetSelect = (el, placeholder) => {
+                if (!el) return;
+                el.innerHTML = '';
+                const opt = document.createElement('option');
+                opt.value = '';
+                opt.textContent = placeholder || '';
+                el.appendChild(opt);
+            }
+
+            // popula periodos buscando chaves em performance_mensal/ALPHALUMI (PONTO 4a)
+            const carregarPeriodos = async () => {
+                resetSelect(filtroPeriodo, 'PERÍODO');
+                if (!database) return;
+                try {
+                    const snap = await database.ref(`performance_mensal/${EMPRESA_ID}`).once('value');
+                    if (!snap.exists()) return;
+                    const keys = new Set();
+                    snap.forEach(child => {
+                        keys.add(child.key); // ex: 2025_12, 2025_11 ...
+                    });
+
+                    // Ordena e adiciona os períodos, começando pelo mais recente
+                    Array.from(keys).sort().reverse().forEach(k => {
+                        const opt = document.createElement('option');
+                        opt.value = k;
+                        opt.textContent = k.replace('_', '/'); // Exibe 2025/12
+                        filtroPeriodo.appendChild(opt);
+                    });
+                } catch (err) {
+                    console.error('Erro ao carregar períodos:', err);
+                }
+            };
+            
+            // NOVO: Carrega UFs de empresas/ALPHALUMI/configuracoes/UFS (PONTO 4b)
+            const carregarUfs = async () => {
+                resetSelect(filtroUf, 'UF');
+                if (!database) return;
+                try {
+                    const snap = await database.ref(`empresas/${EMPRESA_ID}/configuracoes/UFS`).once('value');
+                    if (!snap.exists()) return;
+                    
+                    const ufs = snap.val();
+                    let ufKeys = [];
+                    
+                    if (ufs && typeof ufs === 'object') {
+                        ufKeys = Object.keys(ufs); // Assume que UFS são as chaves de um objeto
+                    } else if (Array.isArray(ufs)) {
+                        ufKeys = ufs.filter(uf => typeof uf === 'string'); // Caso seja um array de strings
+                    }
+                    
+                    ufKeys.sort().forEach(uf => {
+                        const opt = document.createElement('option');
+                        opt.value = uf;
+                        opt.textContent = uf;
+                        filtroUf.appendChild(opt);
+                    });
+
+                } catch (err) {
+                    console.error('Erro ao carregar UFs:', err);
+                }
+            };
+
+            // NOVO: Carrega Metricas de um funcionário dentro do período (PONTO 4c)
+            const carregarMetricas = async (periodo) => {
+                resetSelect(filtroMetricas, 'MÉTRICAS');
+                if (!database || !periodo) return;
+
+                try {
+                    const periodoSnap = await database.ref(`performance_mensal/${EMPRESA_ID}/${periodo}`).once('value');
+                    if (!periodoSnap.exists()) return;
+                    
+                    let metricasKeys = [];
+                    
+                    // Procura pelo primeiro nó de funcionário (que não seja 'parametros_do_periodo')
+                    let funcionarioSnap = null;
+                    periodoSnap.forEach(childSnap => {
+                        if (childSnap.key !== 'parametros_do_periodo') {
+                            funcionarioSnap = childSnap;
+                            return true; // Para o loop
+                        }
+                    });
+                    
+                    if (funcionarioSnap) {
+                        // Coleta as chaves dos dados do funcionário
+                        metricasKeys = Object.keys(funcionarioSnap.val());
+                        
+                        // Lista de exclusão, caso existam no nó de performance (ex: 'nome')
+                        const excludes = new Set(['nome', 'parametros_do_periodo']); 
+
+                        const metricasFiltradas = metricasKeys
+                            .filter(key => !excludes.has(key))
+                            .sort();
+                        
+                        metricasFiltradas.forEach(m => {
+                            const opt = document.createElement('option');
+                            opt.value = m;
+                            // Capitaliza para exibição
+                            opt.textContent = m.charAt(0).toUpperCase() + m.slice(1); 
+                            filtroMetricas.appendChild(opt);
+                        });
+                    } else {
+                        console.warn(`Nenhum dado de funcionário encontrado para o período ${periodo}.`);
+                    }
+                    
+                } catch (err) {
+                    console.error('Erro ao carregar métricas:', err);
+                }
+            };
+            
+            // Função existente (Ajustada para ignorar 'parametros_do_periodo')
+            const carregarFuncionarios = async (periodo) => { 
+                resetSelect(filtroFuncionarios, 'FUNCIONÁRIO');
+                if (!database || !periodo) return;
+                try {
+                    // Busca o nome a partir do nó 'funcionarios' 
+                    const funcionarioRef = database.ref(`funcionarios/${EMPRESA_ID}`);
+                    const funcionarioSnap = await funcionarioRef.once('value');
+                    if (!funcionarioSnap.exists()) return;
+                    
+                    // Pega apenas os IDs dos funcionários que têm dados no período selecionado
+                    const periodoSnap = await database.ref(`performance_mensal/${EMPRESA_ID}/${periodo}`).once('value');
+                    if (!periodoSnap.exists()) return;
+                    
+                    periodoSnap.forEach(funcDataSnap => {
+                        const id = funcDataSnap.key;
+                        
+                        // Ignora o nó 'parametros_do_periodo'
+                        if (id === 'parametros_do_periodo') return;
+
+                        // Busca o nome no nó 'funcionarios'
+                        const funcInfo = funcionarioSnap.child(id).val();
+                        const nome = (funcInfo && funcInfo.nome) ? funcInfo.nome : id;
+                        
+                        const opt = document.createElement('option');
+                        opt.value = id;
+                        opt.textContent = nome;
+                        filtroFuncionarios.appendChild(opt);
+                    });
+                    
+                } catch (err) {
+                    console.error('Erro ao carregar funcionários:', err);
+                }
+            };
+
+            // inicialização
+            (async () => {
+                await carregarPeriodos();
+                await carregarUfs(); // Ponto 4b: Inicia o carregamento das UFs
+            })();
+
+            // eventos dependentes
+            if (filtroPeriodo) {
+                filtroPeriodo.addEventListener('change', (e) => {
+                    const periodo = e.target.value;
+                    // Carrega métricas e funcionários dependendo do período (PONTO 4c)
+                    carregarMetricas(periodo); 
+                    carregarFuncionarios(periodo);
+                });
+            }
+
+            if (btnAtualizar) {
+                btnAtualizar.addEventListener('click', () => {
+                    const filtros = {
+                        periodo: filtroPeriodo.value,
+                        uf: filtroUf.value,
+                        metricas: filtroMetricas.value,
+                        funcionarios: filtroFuncionarios.value
+                    };
+                    console.log("ATUALIZANDO DADOS com os seguintes filtros:", filtros);
+                    // Lógica de atualização de gráficos/tabelas viria aqui
+                });
+            }
+        });
+    </script>
+
+</body>
+</html>

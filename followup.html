@@ -1,0 +1,698 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>FOLLOW-UP - GERENCIAL</title>
+<style>
+  :root{
+    --bg:#0f1413;
+    --panel:#0c1a19;
+    --muted:#162e2a;
+    --accent:#3fd1ff;
+    --card:#071b18;
+    --card-header-bg:#061411;
+    --good:#34d07a; /* Verde */
+    --warn:#e3c24a; /* Amarelo */
+    --bad:#e65151; /* Vermelho */
+    --info:#4aa6e6; /* Azul */
+    --text:#d9e6e2;
+    --radius:14px;
+    --met-card-width:320px;
+    --text-title:#b9d0c9;
+  }
+  *{box-sizing:border-box;font-family:Inter, system-ui, Arial, sans-serif}
+  body{
+    margin:0;background: linear-gradient(180deg,#071010 0%, #0b0f0f 100%);color:var(--text);padding:16px;
+    overflow: hidden; 
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* header */
+  .header{
+    display:flex;gap:12px;align-items:center;margin-bottom:12px;
+    padding: 0 0 12px 0; 
+    flex-shrink: 0;
+  }
+  .brand{display:flex;align-items:center;gap:12px;padding:8px 12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.03));border-radius:10px}
+  .brand h1{font-size:13px;margin:0;font-weight:800} 
+  .controls{margin-left:auto;display:flex;gap:8px;align-items:center}
+
+  /* generic dropdown style */
+  .multi-drop{position:relative;min-width:180px}
+  .multi-drop .toggle{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:10px;background:var(--muted);cursor:pointer;border:1px solid rgba(255,255,255,0.03);font-weight:700}
+  .multi-drop .menu{position:absolute;left:0;top:calc(100% + 8px);z-index:80;width:320px;max-height:300px;overflow:auto;padding:8px;background:var(--panel);border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,0.6)}
+  .multi-drop label{display:flex;align-items:center;gap:8px;padding:8px;border-radius:8px;cursor:pointer}
+  .multi-drop input[type="checkbox"]{width:16px;height:16px}
+
+  button.btn{background:linear-gradient(180deg,#2c6a61,#1f4f44);color:var(--text);padding:10px 14px;border-radius:10px;border:0;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,0.5);font-weight:700}
+
+  .error{background:#4b2323;color:#ffdcdc;padding:8px;border-radius:8px;margin-left:12px;font-size:13px}
+
+  /* Area de cards com barra de rolagem vertical/horizontal estilizada */
+  .scroll-wrap-cards{
+    overflow-y: auto;
+    overflow-x: hidden; 
+    flex-grow: 1;
+    padding-bottom: 24px;
+  }
+
+  /* Scrollbar styling */
+  .scroll-wrap-cards::-webkit-scrollbar{width:12px;height:12px}
+  .scroll-wrap-cards::-webkit-scrollbar-track{background:rgba(255,255,255,0.02);border-radius:8px}
+  .scroll-wrap-cards::-webkit-scrollbar-thumb{background:rgba(125,160,150,0.22);border-radius:8px}
+  .scroll-wrap-cards::-webkit-scrollbar-thumb:hover{background:rgba(125,160,150,0.28)}
+
+  /* horizontal scroll area (styled) */
+  .scroll-wrap{
+    overflow-x:auto;padding:6px 6px 0px 6px;border-radius:10px; 
+    overflow-y: hidden;
+  }
+  .cards{display:flex;gap:14px;align-items:flex-start;padding:8px}
+  .scroll-wrap::-webkit-scrollbar{height:12px}
+  .scroll-wrap::-webkit-scrollbar-track{background:rgba(255,255,255,0.02);border-radius:8px}
+  .scroll-wrap::-webkit-scrollbar-thumb{background:rgba(125,160,150,0.22);border-radius:8px}
+  .scroll-wrap::-webkit-scrollbar-thumb:hover{background:rgba(125,160,150,0.28)}
+
+  /* Métrica Card */
+  .metric-card{
+    width:var(--met-card-width);min-width:var(--met-card-width);flex:0 0 var(--met-card-width);
+    background: linear-gradient(180deg,#071b18 0%, #071412 100%);border-radius:18px;
+    padding:0px 0px 12px 0px; 
+    display:flex;flex-direction:column;gap:10px;
+    border:1px solid rgba(255,255,255,0.03);
+  }
+  .card-header{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:8px 12px; 
+    border-radius:17px 17px 0 0;
+    background:var(--card-header-bg);
+    margin-bottom:8px;
+  }
+  .card-title-metrica{font-weight:800;font-size:16px;color:var(--text-title)}
+  
+  /* Botões de Ação no Header */
+  .card-actions{display:flex;gap:4px;align-items:center}
+  .action-btn{
+    width:30px;height:30px; 
+    background:var(--muted);color:var(--text);
+    border-radius:8px;border:0;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    font-size:16px;font-weight:700;
+  }
+  .action-btn:hover{background:rgba(255,255,255,0.08)}
+
+  /* Vendedor Indicator (sub-container) */
+  .seller-indicator{
+    display:flex;gap:8px;align-items:center;padding:6px 12px; 
+    border-radius:10px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+    margin:0 12px 6px 12px; 
+    transition: background-color 300ms ease;
+    border:1px solid transparent; 
+  }
+  .seller-indicator:hover{
+    background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.04));
+  }
+  /* Destaque para Devolução Zero */
+  .seller-indicator.devol-zero{
+    border:1px solid var(--good);
+    box-shadow:0 0 6px rgba(52,208,122,0.3);
+  }
+
+  .avatar{width:36px;height:36px;border-radius:50%;overflow:hidden;border:2px solid rgba(255,255,255,0.04);flex:0 0 36px;background:#0a0a0a}
+  .avatar img{width:100%;height:100%;object-fit:cover;display:block}
+
+  .seller-data{flex:1;display:flex;flex-direction:column;gap:4px;}
+  .seller-top-row{display:flex;justify-content:space-between;align-items:flex-end;}
+  .seller-name{font-weight:700;font-size:13px;line-height:1;}
+  .seller-value{font-weight:800;font-size:14px;line-height:1;text-align:right;}
+
+  .bar-wrap{height:8px;background:rgba(255,255,255,0.2);border-radius:8px;overflow:hidden;}
+  .bar{height:100%;width:0%;border-radius:8px;transition:width 600ms ease}
+
+  @media (max-width:720px){
+    :root{--met-card-width:280px;}
+    .multi-drop .menu{width:240px}
+  }
+</style>
+</head>
+<body>
+  <div class="header">
+    <div class="brand">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" style="opacity:0.9">
+        <rect x="2" y="2" width="20" height="20" rx="5" fill="#0f6a57"></rect>
+        <path d="M7 12h10M7 16h6" stroke="#e8fff9" stroke-width="1.6" stroke-linecap="round"></path>
+      </svg>
+      <h1>FOLLOW-UP - GERENCIAL</h1>
+    </div>
+
+    <div class="controls">
+      <div class="multi-drop" id="estadoSelector" style="min-width:120px">
+        <div class="toggle" id="toggleEstados"><div>UF</div><div style="opacity:0.85">▾</div></div>
+        <div class="menu" id="menuEstados" style="display:none;width:240px"></div>
+      </div>
+
+      <div class="multi-drop" id="metricSelector" style="min-width:180px">
+        <div class="toggle" id="toggleMetrics"><div>MÉTRICAS</div><div style="opacity:0.85">▾</div></div>
+        <div class="menu" id="menuMetrics" style="display:none"></div>
+      </div>
+
+      <div class="multi-drop" id="vendorSelector">
+        <div class="toggle" id="toggleVendors"><div>VENDEDORES</div><div style="opacity:0.85">▾</div></div>
+        <div class="menu" id="menuVendors" style="display:none"></div>
+      </div>
+
+      <button class="btn" id="btnRefresh">ATUALIZAR</button>
+      <div id="err" class="error" style="display:none"></div>
+    </div>
+  </div>
+
+  <div class="scroll-wrap-cards">
+    <div class="scroll-wrap" id="scrollWrap">
+      <div class="cards" id="metricCards"></div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  const FIREBASE_URL = 'https://config-comercial-default-rtdb.firebaseio.com/.json';
+  
+  // Constantes de cor
+  const COLOR_GOOD = '#34d07a';
+  const COLOR_WARN = '#e3c24a';
+  const COLOR_BAD = '#e65151';
+  const COLOR_INFO = '#4aa6e6'; 
+
+  let rawData = null;
+  let sellersList = []; 
+  let selectedMetrics = new Set(); 
+  let selectedKeys = new Set(); 
+  let selectedEstados = new Set(); 
+  const sortOrders = {}; 
+  
+  // Definições de Métricas (Devolução com defaultSort: 'asc')
+  const METRICS = [
+    {key:'VENDAS', label:'VENDAS', type:'currency0', sourceField:'VENDAS', defaultSort:'desc'},
+    {key:'percent_META', label:'META (%)', type:'percent1', sourceField:'percent_META', defaultSort:'desc'},
+    {key:'FUMEMAX_R$', label:'F.MAX VENDAS', type:'currency0', sourceField:'FUMEMAX', defaultSort:'desc'},
+    {key:'FUMEMAX_PERCENT', label:'F.MAX - META', type:'percent1', sourceField: 'FUMEMAX_DIV_META', defaultSort:'desc'}, 
+    {key:'FUMEMAX_CARTEIRA', label:'F.MAX CARTEIRA', type:'percent1', sourceField:'percent_F_MAX', defaultSort:'desc'},
+    {key:'PRECO', label:'PREÇO MÉDIO', type:'currency0', sourceField:'PRECO', defaultSort:'desc'},
+    {key:'percent_PRECO', label:'PREÇO %', type:'percent1', sourceField:'percent_PRECO', defaultSort:'desc'},
+    {key:'DEVOLUCAO_R$', label:'DEVOLUÇÃO (R$)', type:'currency0', sourceField:'DEVOLUCAO', defaultSort:'asc'}, // Menor para Maior (Melhor para Pior)
+    {key:'percent_DEV', label:'DEVOLUÇÃO %', type:'percent2', sourceField:'DEVOLUCAO_DIV_VENDAS', defaultSort:'asc'}, // Menor para Maior (Melhor para Pior)
+    {key:'DESCONCENTRACAO', label:'DESCONCENTRAÇÃO (%)', type:'percent1', sourceField:'percent_VENDAS_15D', defaultSort:'desc'},
+    {key:'CLIENTES', label:'CARTEIRA - QUANT. CLI', type:'number', sourceField:'CLIENTES', defaultSort:'desc'},
+    {key:'percent_CLIENTES', label:'CLIENTES %', type:'percent1', sourceField:'percent_CLIENTES', defaultSort:'desc'},
+  ];
+  
+  // DOM refs
+  const menuVendors = document.getElementById('menuVendors');
+  const toggleVendors = document.getElementById('toggleVendors');
+  const menuMetrics = document.getElementById('menuMetrics');
+  const toggleMetrics = document.getElementById('toggleMetrics');
+  const menuEstados = document.getElementById('menuEstados');
+  const toggleEstados = document.getElementById('toggleEstados');
+  const metricCardsEl = document.getElementById('metricCards');
+  const errEl = document.getElementById('err');
+  const btnRefresh = document.getElementById('btnRefresh');
+
+  // formatting helpers
+  const fmtCurrency0 = (v) => {
+    v = Number(v) || 0;
+    return new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0}).format(Math.round(v));
+  };
+  const fmtNumber = (v) => Math.round(Number(v) || 0).toString();
+  const fmtPercent1 = (frac) => (isNaN(frac)||frac===null) ? '0.0%' : (frac*100).toFixed(1) + '%';
+  const fmtPercent2 = (frac) => (isNaN(frac)||frac===null) ? '0.00%' : (frac*100).toFixed(2) + '%';
+
+  function safeGet(obj,key,def=0){ return (obj && (key in obj)) ? obj[key] : def; }
+  
+  // parse and enrich seller data
+  function parseSellers(isInitialLoad){
+    const currentSelectedKeys = new Set(selectedKeys);
+    
+    sellersList = [];
+    if(!rawData) return;
+    const periodKey = Object.keys(rawData)[0];
+    const vendors = rawData[periodKey] || {};
+    
+    Object.keys(vendors).forEach(k => {
+      let data = vendors[k];
+      
+      // Desconsiderar cliente "GERAL"
+      if ((data.NOME || '').toUpperCase().includes('GERAL')) return;
+
+      let vendas = Number(safeGet(data,'VENDAS',0));
+      let fume = Number(safeGet(data,'FUMEMAX',0));
+      let meta_fume = Number(safeGet(data,'META_FUME_MAX',48000));
+      let devol = Number(safeGet(data,'DEVOLUCAO',0));
+      let meta_devol = Number(safeGet(data,'META_DEVOLUCAO', 0)); // Captura META_DEVOLUCAO
+      
+      if(devol > 0 && devol <= 1 && vendas > 0){ devol = vendas * devol; }
+      
+      data.DEVOLUCAO = devol; 
+      data.FUMEMAX_DIV_META = meta_fume !== 0 ? (fume / meta_fume) : 0;
+      data.DEVOLUCAO_DIV_VENDAS = vendas !== 0 ? (devol / vendas) : 0;
+      
+      // Calcula o índice META para devolução percentual (NOVO)
+      data.META_DEVOLUCAO_DIV_VENDAS = vendas !== 0 ? (meta_devol / vendas) : 0;
+      
+      sellersList.push({key:k, data: data});
+    });
+    
+    // Atualiza selectedKeys
+    const allNewKeys = new Set(sellersList.map(s => s.key));
+
+    if(isInitialLoad) { 
+        selectedKeys = allNewKeys; 
+    } else {
+        selectedKeys = new Set(Array.from(currentSelectedKeys).filter(k => allNewKeys.has(k)));
+    }
+    
+    // Sort orders iniciais
+    METRICS.forEach(m => {
+        if(!(m.key in sortOrders)) sortOrders[m.key] = m.defaultSort;
+    });
+
+    sellersList.sort((a,b)=> (''+(a.data.NOME||'')).localeCompare(''+(b.data.NOME||'')));
+  }
+
+  // Build Estados Menu
+  function buildEstadosMenu(isInitialLoad){
+    menuEstados.innerHTML = '';
+    const estados = Array.from(new Set(sellersList.map(s => (s.data.ESTADO||'').toString()).filter(x=>x))).sort();
+    
+    if(isInitialLoad) estados.forEach(e => selectedEstados.add(e));
+
+    estados.forEach(est => {
+      const id = 'e_' + est;
+      const lbl = document.createElement('label');
+      lbl.innerHTML = `<input type="checkbox" id="${id}" data-estado="${est}" ${selectedEstados.has(est)?'checked':''}/>
+                       <div style="flex:1">${est}</div>`;
+      menuEstados.appendChild(lbl);
+      lbl.querySelector('input').addEventListener('change', onEstadoToggle);
+    });
+    
+    const foot = document.createElement('div');
+    foot.style.display='flex';foot.style.gap='6px';foot.style.padding='6px';
+    foot.innerHTML = `<button class="btn" id="selAllE" style="padding:6px 8px;font-size:13px">Todos</button>
+                      <button class="btn" id="clearAllE" style="padding:6px 8px;font-size:13px">Limpar</button>`;
+    menuEstados.appendChild(foot);
+    document.getElementById('selAllE').addEventListener('click', ()=> {
+      estados.forEach(e=>selectedEstados.add(e));
+      syncEstadoChecks();
+      buildVendorMenu(); 
+      updateAllMetricCardIndicators(); 
+    });
+    document.getElementById('clearAllE').addEventListener('click', ()=> {
+      selectedEstados.clear();
+      syncEstadoChecks();
+      buildVendorMenu();
+      updateAllMetricCardIndicators();
+    });
+  }
+
+  function onEstadoToggle(e){
+    const est = e.target.dataset.estado;
+    if(e.target.checked) selectedEstados.add(est); else selectedEstados.delete(est);
+    buildVendorMenu();
+    updateAllMetricCardIndicators();
+  }
+  function syncEstadoChecks(){ menuEstados.querySelectorAll('input[type="checkbox"]').forEach(c=> c.checked = selectedEstados.has(c.dataset.estado)); }
+
+  // Build Vendor Menu 
+  function buildVendorMenu(){
+    menuVendors.innerHTML = '';
+    
+    const listToShow = selectedEstados.size === 0 
+      ? sellersList 
+      : sellersList.filter(s => selectedEstados.has((s.data.ESTADO||'').toString()));
+
+    listToShow.forEach(s=>{
+      const id = 'v_' + s.key;
+      const lbl = document.createElement('label');
+      lbl.innerHTML = `<input type="checkbox" id="${id}" data-key="${s.key}" ${selectedKeys.has(s.key)?'checked':''}/>
+                       <div style="flex:1">${s.data.NOME || ('#'+s.key)} ${s.data.ESTADO?(' • '+s.data.ESTADO):''}</div>`;
+      menuVendors.appendChild(lbl);
+      lbl.querySelector('input').addEventListener('change', onVendorToggle);
+    });
+    const foot = document.createElement('div');
+    foot.style.display='flex';foot.style.gap='6px';foot.style.padding='6px';
+    foot.innerHTML = `<button class="btn" id="selAllV" style="padding:6px 8px;font-size:13px">Todos</button>
+                      <button class="btn" id="clearAllV" style="padding:6px 8px;font-size:13px">Limpar</button>`;
+    menuVendors.appendChild(foot);
+    
+    document.getElementById('selAllV').addEventListener('click', ()=>{
+      listToShow.forEach(s => selectedKeys.add(s.key));
+      syncVendorChecks();
+      updateAllMetricCardIndicators();
+    });
+    document.getElementById('clearAllV').addEventListener('click', ()=>{
+      listToShow.forEach(s => selectedKeys.delete(s.key));
+      syncVendorChecks();
+      updateAllMetricCardIndicators();
+    });
+  }
+
+  function onVendorToggle(e){
+    const key = e.target.dataset.key;
+    if(e.target.checked) selectedKeys.add(key); else selectedKeys.delete(key);
+    updateAllMetricCardIndicators();
+  }
+  function syncVendorChecks(){
+    menuVendors.querySelectorAll('input[type="checkbox"]').forEach(c=>{
+      c.checked = selectedKeys.has(c.dataset.key);
+    });
+  }
+
+  // Build Metrics Menu
+  function buildMetricsMenu(){
+    menuMetrics.innerHTML = '';
+    METRICS.forEach(m=>{
+      const id = 'm_' + m.key;
+      const lbl = document.createElement('label');
+      lbl.innerHTML = `<input type="checkbox" id="${id}" data-key="${m.key}" ${selectedMetrics.has(m.key)?'checked':''}/>
+                       <div style="flex:1">${m.label}</div>`;
+      menuMetrics.appendChild(lbl);
+      lbl.querySelector('input').addEventListener('change', onMetricToggle);
+    });
+    const foot = document.createElement('div');
+    foot.style.display='flex';foot.style.gap='6px';foot.style.padding='6px';
+    foot.innerHTML = `<button class="btn" id="selAllM" style="padding:6px 8px;font-size:13px">Todos</button>
+                      <button class="btn" id="clearAllM" style="padding:6px 8px;font-size:13px">Limpar</button>`;
+    menuMetrics.appendChild(foot);
+    document.getElementById('selAllM').addEventListener('click', ()=>{
+      METRICS.forEach(m=>selectedMetrics.add(m.key));
+      syncMetricChecks();
+      renderMetricCards(Array.from(selectedMetrics));
+    });
+    document.getElementById('clearAllM').addEventListener('click', ()=>{
+      selectedMetrics.clear();
+      syncMetricChecks();
+      renderMetricCards(Array.from(selectedMetrics));
+    });
+  }
+  function onMetricToggle(e){
+    const key = e.target.dataset.key;
+    if(e.target.checked) selectedMetrics.add(key); else selectedMetrics.delete(key);
+    renderMetricCards(Array.from(selectedMetrics));
+  }
+  function syncMetricChecks(){ menuMetrics.querySelectorAll('input[type="checkbox"]').forEach(c=> c.checked = selectedMetrics.has(c.dataset.key)); }
+
+
+  // toggle menus
+  toggleVendors.addEventListener('click', ()=> menuVendors.style.display = (menuVendors.style.display==='none'?'block':'none'));
+  toggleMetrics.addEventListener('click', ()=> menuMetrics.style.display = (menuMetrics.style.display==='none'?'block':'none'));
+  toggleEstados.addEventListener('click', ()=> menuEstados.style.display = (menuEstados.style.display==='none'?'block':'none')); 
+  document.addEventListener('click', e=>{
+    if(!document.getElementById('vendorSelector').contains(e.target)) menuVendors.style.display='none';
+    if(!document.getElementById('metricSelector').contains(e.target)) menuMetrics.style.display='none';
+    if(!document.getElementById('estadoSelector').contains(e.target)) menuEstados.style.display='none'; 
+  });
+
+  // fetch data
+  async function fetchData(isInitialLoad){
+    errEl.style.display='none';
+    try{
+      const res = await fetch(FIREBASE_URL);
+      if(!res.ok) throw new Error('Erro ao acessar Firebase: ' + res.status);
+      const j = await res.json();
+      rawData = j;
+      
+      parseSellers(isInitialLoad); 
+      buildEstadosMenu(isInitialLoad); 
+      buildVendorMenu();
+      buildMetricsMenu();
+      
+      // Default: apenas VENDAS monetário (se for a primeira carga)
+      if(isInitialLoad && selectedMetrics.size === 0) {
+        selectedMetrics.add('VENDAS');
+        syncMetricChecks();
+      }
+
+      renderMetricCards(Array.from(selectedMetrics));
+    }catch(err){
+      console.error(err);
+      errEl.style.display='block';
+      errEl.textContent = 'Falha ao carregar dados: ' + (err.message||err);
+    }
+  }
+
+  // --- Core Metric/Vendor logic ---
+
+  function getMetricValue(metricKey, sellerData){
+    const met = METRICS.find(m => m.key === metricKey);
+    if (!met) return 0;
+    
+    if (metricKey === 'FUMEMAX_PERCENT') return Number(safeGet(sellerData, 'FUMEMAX_DIV_META', 0));
+    if (metricKey === 'percent_DEV') return Number(safeGet(sellerData, 'DEVOLUCAO_DIV_VENDAS', 0));
+    
+    return Number(safeGet(sellerData, met.sourceField, 0));
+  }
+  
+  function getFormattedValue(metricKey, value){
+    const met = METRICS.find(m => m.key === metricKey);
+    if (!met) return value.toString();
+
+    switch(met.type){
+      case 'currency0': return fmtCurrency0(value); 
+      case 'percent1': return fmtPercent1(value); 
+      case 'percent2': return fmtPercent2(value); 
+      case 'number': return fmtNumber(value);
+      default: return value.toString();
+    }
+  }
+
+  // Calcula apenas o progresso da barra (0-100), a cor é definida externamente.
+  function calculateBar(metricKey, value, min, max) {
+    let barPercent = 0;
+    
+    if (min === max) {
+        barPercent = value === 0 ? 0 : 100;
+    } else {
+        barPercent = ((value - min) / (max - min)) * 100;
+    }
+    barPercent = Math.min(100, Math.max(0, barPercent));
+    
+    return {barPercent, barColor: ''}; 
+  }
+  
+  // Rebuild the list of seller indicators for a single metric card
+  function rebuildIndicatorsForMetricCard(metricCardEl, metricKey){
+    const met = METRICS.find(m => m.key === metricKey);
+    if(!met) return;
+    
+    const indsContainer = metricCardEl.querySelector('.indicators-list');
+    indsContainer.innerHTML = '';
+    
+    // 1. Filter sellers
+    const filteredSellers = sellersList
+      .filter(s => selectedKeys.has(s.key))
+      .filter(s => selectedEstados.size === 0 || selectedEstados.has((s.data.ESTADO||'').toString()));
+    
+    if(filteredSellers.length === 0) return;
+
+    // 2. Get values and min/max
+    const values = filteredSellers.map(s => getMetricValue(metricKey, s.data));
+    const minVal = Math.min(...values);
+    const maxVal = Math.max(...values);
+    
+    // 4. Sort Sellers
+    const currentSort = sortOrders[metricKey] || met.defaultSort;
+    
+    filteredSellers.sort((a, b) => {
+      const valA = getMetricValue(metricKey, a.data);
+      const valB = getMetricValue(metricKey, b.data);
+      if(valA === valB) {
+        return a.data.NOME.localeCompare(b.data.NOME);
+      }
+      return currentSort === 'desc' ? valB - valA : valA - valB;
+    });
+
+    // 5. Create Indicator elements
+    filteredSellers.forEach(seller => {
+      const d = seller.data;
+      const value = getMetricValue(metricKey, d);
+      const formattedValue = getFormattedValue(metricKey, value);
+      
+      // Calculate Bar Progress (0-100)
+      const {barPercent} = calculateBar(metricKey, value, minVal, maxVal); 
+      
+      let barColor = '';
+      const isDevol = metricKey.startsWith('DEVOLUCAO') || metricKey.startsWith('percent_DEV');
+
+      if (isDevol) {
+          // --- LÓGICA DE CORES PARA DEVOLUÇÃO (RUIM) ---
+          
+          if (metricKey === 'DEVOLUCAO_R$') {
+              // Lógica: Escala de min (Verde/Melhor) para max (Vermelho/Pior)
+              let pos = 0; 
+              if (maxVal > minVal) {
+                   pos = (value - minVal) / (maxVal - minVal); // Posição 0 (min) a 1 (max)
+              }
+              
+              if (value <= 0) {
+                  barColor = COLOR_GOOD; 
+              } else if (pos <= 0.25) { 
+                  barColor = COLOR_GOOD;
+              } else if (pos <= 0.50) { 
+                  barColor = COLOR_INFO;
+              } else if (pos <= 0.75) { 
+                  barColor = COLOR_WARN;
+              } else { 
+                  barColor = COLOR_BAD;
+              }
+          } 
+          
+          if (metricKey === 'percent_DEV') {
+              // Lógica: Acima da Meta é Vermelho. Abaixo segue escala.
+              const metaIndex = d.META_DEVOLUCAO_DIV_VENDAS || 0;
+
+              if (value <= 0) {
+                  barColor = COLOR_GOOD; // Zero
+              } else if (metaIndex > 0 && value > metaIndex) {
+                  barColor = COLOR_BAD; // Acima da meta -> Vermelho (Pior)
+              } else if (value <= 0.005) { 
+                  barColor = COLOR_GOOD;
+              } else if (value <= 0.02) { 
+                  barColor = COLOR_INFO;
+              } else if (value <= 0.05) { 
+                  barColor = COLOR_WARN;
+              } else {
+                   // Fallback para Vermelho (caso valores altos sem meta)
+                   barColor = COLOR_BAD; 
+              }
+          }
+      } else {
+          // --- LÓGICA DE CORES PARA MÉTRICAS BOAS (VENDAS, META, etc.) ---
+          const progressForColor = barPercent;
+          if(progressForColor <= 40) barColor = COLOR_BAD; 
+          else if(progressForColor <= 70) barColor = COLOR_WARN; 
+          else if(progressForColor <= 99) barColor = COLOR_INFO; 
+          else barColor = COLOR_GOOD; // Acima de 99% (Verde)
+      }
+
+      const el = document.createElement('div');
+      el.className = 'seller-indicator';
+      
+      // Set border highlight for zero devolution
+      if(isDevol && value <= 0) el.classList.add('devol-zero'); 
+
+      el.innerHTML = `
+        <div class="avatar"><img src="${d.URL_FOTO || ''}" alt=""></div>
+        <div class="seller-data">
+          <div class="seller-top-row">
+            <div class="seller-name">${d.NOME || ('#'+seller.key)}</div>
+            <div class="seller-value">${formattedValue}</div>
+          </div>
+          <div class="bar-wrap"><div class="bar" data-target-width="${barPercent}%" style="width:0%;background:${barColor}"></div></div>
+        </div>
+      `;
+      indsContainer.appendChild(el);
+    });
+    
+    // Animate bars
+    requestAnimationFrame(()=> {
+      indsContainer.querySelectorAll('.bar').forEach(b=>{
+        const w = b.dataset.targetWidth;
+        setTimeout(() => b.style.width = w, 40); 
+      });
+    });
+  }
+
+  // Toggle sort order for a metric and re-render the card
+  function toggleSortOrder(metricCardEl, metricKey){
+    sortOrders[metricKey] = sortOrders[metricKey] === 'desc' ? 'asc' : 'desc';
+    const sortBtn = metricCardEl.querySelector('.sort-btn');
+    sortBtn.textContent = sortOrders[metricKey]==='desc'?'↓':'↑'; 
+    rebuildIndicatorsForMetricCard(metricCardEl, metricKey);
+  }
+
+  // Remove metric card 
+  function removeMetricCard(metricCardEl, metricKey){
+    metricCardEl.remove();
+    selectedMetrics.delete(metricKey);
+    syncMetricChecks();
+  }
+
+  // Create/Update Metric Cards
+  function renderMetricCards(keys){
+    const newKeys = new Set(keys);
+    Array.from(metricCardsEl.children).forEach(card=>{
+      const k = card.dataset.metric;
+      if(!newKeys.has(k)) metricCardsEl.removeChild(card);
+    });
+    
+    keys.forEach(k=>{
+      const existing = metricCardsEl.querySelector(`.metric-card[data-metric="${k}"]`);
+      const met = METRICS.find(m => m.key === k);
+      if(!met) return;
+      
+      if(existing){
+        rebuildIndicatorsForMetricCard(existing, k);
+      } else {
+        const card = document.createElement('div');
+        card.className = 'metric-card';
+        card.dataset.metric = k;
+        card.innerHTML = `
+          <div class="card-header">
+            <div class="card-title-metrica">${met.label}</div>
+            <div class="card-actions">
+              <button class="action-btn sort-btn" data-metric-key="${k}">${sortOrders[k]==='desc'?'↓':'↑'}</button>
+              <button class="action-btn remove-btn" data-metric-key="${k}">x</button>
+            </div>
+          </div>
+          <div class="indicators-list" data-inds-for="${k}"></div>
+        `;
+        metricCardsEl.appendChild(card);
+        card.querySelector('.sort-btn').addEventListener('click', () => toggleSortOrder(card, k));
+        card.querySelector('.remove-btn').addEventListener('click', () => removeMetricCard(card, k)); 
+        rebuildIndicatorsForMetricCard(card, k);
+      }
+    });
+  }
+  
+  function updateAllMetricCardIndicators(){
+    Array.from(metricCardsEl.children).forEach(card=>{
+      const metricKey = card.dataset.metric;
+      rebuildIndicatorsForMetricCard(card, metricKey);
+    });
+  }
+
+  // initial load
+  fetchData(true); 
+
+  // refresh button action: reload firebase, keep visible cards & selections
+  btnRefresh.addEventListener('click', async ()=>{
+    btnRefresh.disabled = true;
+    btnRefresh.textContent = 'ATUALIZANDO...';
+    
+    const currentMetrics = Array.from(selectedMetrics);
+    const currentEstados = Array.from(selectedEstados);
+    
+    selectedEstados.clear(); 
+    currentEstados.forEach(e => selectedEstados.add(e));
+
+    await fetchData(false); 
+
+    selectedMetrics = new Set(currentMetrics);
+    syncMetricChecks();
+    syncEstadoChecks(); 
+    
+    buildVendorMenu(); 
+    syncVendorChecks(); 
+    
+    renderMetricCards(currentMetrics);
+    
+    btnRefresh.disabled = false;
+    btnRefresh.textContent = 'ATUALIZAR';
+  });
+
+})();
+</script>
+</body>
+</html>

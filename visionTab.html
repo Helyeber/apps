@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>VISION TAB - PAINEL COMERCIAL</title>
+<style>
+  :root {
+    /* Cores base (Tema Escuro) */
+    --bg: #0f1413;
+    --panel: #0c1a19;
+    --muted: #162e2a;
+    --accent: #3fd1ff;
+    --card: #071b18; /* Cor escura para cabeçalho/rodapé (Requisito 6) */
+    --text: #d9e6e2;
+    --radius: 14px;
+    
+    /* Definições de Tabela */
+    --row-height: 44px;
+    --header-footer-height: 57px;
+    --selection-row: #2c4842;
+    --cell-border: #1c3732; /* Pequena borda na célula */
+    --border-thickness: 2px;
+    
+    /* Cores Alternadas (Tema Escuro) - para Sem Cor/Médio (Requisito 4) */
+    --row-even: #10211f;
+    --row-odd: #0b1c19;
+
+    /* PALETA FIXA DE OBJETIVO (5 Níveis - PARÂMETROS PERSONALIZÁVEIS) */
+    /* > 100% (Excelente) - Azul */
+    --q-excellent-bg: #11818d; 
+    /* 90% a < 100% (Bom) - Verde */
+    --q-good-l-bg: #27884d; 
+    --q-good-d-bg: #1e6c3d;
+    /* 70% a < 90% (Atenção) - Amarelo */
+    --q-warn-l-bg: #d0871d; 
+    --q-warn-d-bg: #b5761a;
+    /* < 30% (Ruim) - Vermelho */
+    --q-bad-l-bg: #9a2828; 
+    --q-bad-d-bg: #811e1e;
+    /* 30% a < 70% (Neutro) - Segue cor da linha */
+    --q-neutral-bg: transparent;
+
+    /* Cor do texto em células coloridas */
+    --color-on-scale: white;
+  }
+  
+  *{box-sizing:border-box;font-family:Inter, system-ui, Arial, sans-serif}
+  body{
+    margin:0;background: linear-gradient(180deg,#071010 0%, #0b0f0f 100%);color:var(--text);padding:16px;
+    overflow: hidden;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* header controls */
+  .header{display:flex;gap:12px;align-items:center;margin-bottom:12px;padding: 0 0 12px 0;flex-shrink: 0;}
+  .brand{display:flex;align-items:center;gap:12px;padding:8px 12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.03));border-radius:10px}
+  .brand h1{font-size:13px;margin:0;font-weight:800}
+  .controls{margin-left:auto;display:flex;gap:8px;align-items:center}
+  
+  /* Dropdown Styles */
+  .multi-drop, .single-drop{position:relative;min-width:140px}
+  .multi-drop .toggle, .single-drop .toggle{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:10px;background:var(--muted);cursor:pointer;border:1px solid rgba(255,255,255,0.03);font-weight:700}
+  .multi-drop .menu, .single-drop .menu{position:absolute;right:0;top:calc(100% + 8px);z-index:80;width:320px;max-height:300px;overflow:auto;padding:8px;background:var(--panel);border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,0.6); display: none;} /* Escondido por padrão */
+  .multi-drop label{display:flex;align-items:center;gap:8px;padding:8px;border-radius:8px;cursor:pointer}
+  .multi-drop input[type="checkbox"]{width:16px;height:16px}
+  .single-drop .menu{width:auto;min-width:150px;}
+  .single-drop .menu div{padding:8px 12px;border-radius:8px;cursor:pointer;}
+  .single-drop .menu div:hover, .single-drop .menu div.selected{background:var(--muted)}
+  
+  /* Button Style */
+  button.btn{background:linear-gradient(180deg,#2c6a61,#1f4f44);color:var(--text);padding:10px 14px;border-radius:10px;border:0;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,0.5);font-weight:700}
+  button.btn:disabled{opacity:0.5;cursor:not-allowed}
+  .error{background:#4b2323;color:#ffdcdc;padding:8px;border-radius:8px;margin-left:12px;font-size:13px;display:none}
+  
+  /* Custom Scrollbar Styling */
+  .table-body-scroll::-webkit-scrollbar{width:10px;height:10px}
+  .table-body-scroll::-webkit-scrollbar-track{background:rgba(255,255,255,0.02);border-radius:8px}
+  .table-body-scroll::-webkit-scrollbar-thumb{background:rgba(125,160,150,0.22);border-radius:8px}
+  .table-body-scroll::-webkit-scrollbar-thumb:hover{background:rgba(125,160,150,0.28)}
+
+  /* --- Table Styles --- */
+  .table-container{
+    flex-grow:1;display:flex;flex-direction:column;
+    border-radius:var(--radius);overflow:hidden;
+    background:var(--card);
+  }
+  
+  /* Header/Footer Styles (Cor escura - Requisito 6) */
+  .table-header-row, .table-footer-row{
+    background:var(--card); 
+    font-weight:800;
+    color:var(--text);
+    position:sticky;
+    z-index:10;
+    border-bottom:var(--border-thickness) solid var(--cell-border);
+    height: var(--header-footer-height);
+    flex-shrink: 0;
+  }
+  .table-header-row{top:0;}
+  .table-footer-row{bottom:0;border-top:var(--border-thickness) solid var(--cell-border);border-bottom:none;color:var(--accent);} 
+  
+  /* Scrollable Body */
+  .table-body-scroll{
+    overflow:auto;
+    flex-grow:1;
+  }
+  .table-body{
+    display:inline-block; 
+    min-width:100%;
+  }
+
+  /* Table Rows (Alternating Colors & Small Borders) */
+  .table-row-container{
+    display:flex;
+    flex-shrink:0;
+    min-height:var(--row-height);
+    border-bottom:1px solid var(--cell-border); 
+  }
+  .table-body .table-row-container:nth-child(even){background:var(--row-even);} 
+  .table-body .table-row-container:nth-child(odd){background:var(--row-odd);} 
+  .table-body .table-row-container:hover{background:var(--selection-row) !important;}
+
+  /* Table Cells (Requisito 4: Pequena borda) */
+  .table-cell{
+    display:flex;
+    align-items:center;
+    justify-content:center; /* Centralizar conteúdo */
+    border-right:1px solid var(--cell-border); 
+    transition:background-color 200ms ease;
+    white-space:nowrap;
+    color:var(--text);
+    padding:8px 12px;
+    min-width:120px;
+    flex-shrink: 0;
+    text-align:center;
+  }
+  .table-cell.col-fixed{min-width:80px; justify-content: center;}
+  .table-cell.col-nome{min-width:250px; justify-content: flex-start; padding-left:20px;}
+
+  /* Header/Footer Cell Style */
+  .table-header-row .table-cell, .table-footer-row .table-cell{
+    height:var(--header-footer-height);
+    font-weight:800;
+    padding:10px 12px;
+    cursor:pointer;
+    user-select:none;
+    justify-content: center;
+    text-align: center;
+  }
+  .table-header-row .table-cell:last-child, .table-footer-row .table-cell:last-child, .table-body .table-row-container .table-cell:last-child{
+    border-right:none;
+  }
+  .table-header-row .table-cell .sort-icon{margin-left:8px}
+
+  /* Seller Info Cell */
+  .seller-info{display:flex;align-items:center;gap:10px;justify-content:center;}
+  .seller-info img{width:32px;height:32px;border-radius:50%;object-fit:cover;}
+  .seller-info span{white-space:normal;line-height:1.2}
+  
+  /* Currency Formatting */
+  .currency-cell{display:flex;width:100%;justify-content:center;align-items:center;}
+  .currency-cell .symbol{margin-right:4px;opacity:0.7}
+  .currency-cell .value{font-weight:600;}
+  
+  /* Fixed columns are not sortable/colorable */
+  .table-header-row .table-cell.col-fixed, .table-header-row .table-cell.col-nome{cursor:default;}
+  
+  /* Color Scale Indicator */
+  .color-scale-indicator {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    margin-left: 6px;
+    vertical-align: middle;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="brand">
+    <h1>VISION TAB - PAINEL COMERCIAL</h1>
+  </div>
+
+  <div class="controls">
+    <div id="periodSelector" class="single-drop">
+        <div class="toggle" id="togglePeriods">
+            <span id="currentPeriodDisplay">PERÍODO</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="menu" id="menuPeriods">
+            </div>
+    </div>
+    
+    <div id="metricSelector" class="multi-drop">
+      <div class="toggle" id="toggleMetrics">
+        <span>MÉTRICAS</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+      <div class="menu" id="menuMetrics">
+        </div>
+    </div>
+
+    <div id="vendorSelector" class="multi-drop">
+      <div class="toggle" id="toggleVendors">
+        <span>VENDEDOR</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+      <div class="menu" id="menuVendors">
+        </div>
+    </div>
+
+    <div id="estadoSelector" class="multi-drop">
+      <div class="toggle" id="toggleEstados">
+        <span>UF</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+      <div class="menu" id="menuEstados">
+        </div>
+    </div>
+
+    <button class="btn" id="btnRefresh">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: -4px;"><path d="M21.5 2v6h-6"/><path d="M2.5 22v-6h6"/><path d="M21.5 8a10 10 0 0 0-17-6l-2.5 2.5"/><path d="M2.5 16a10 10 0 0 0 17 6l2.5-2.5"/></svg>
+      ATUALIZAR
+    </button>
+    
+    <div class="error" id="errorDisplay"></div>
+  </div>
+</div>
+
+<div class="table-container">
+  <div class="table-header-row" id="tableHeader">
+    </div>
+  <div class="table-body-scroll">
+    <div class="table-body" id="tableBody">
+      </div>
+  </div>
+  <div class="table-footer-row" id="tableFooter">
+    </div>
+</div>
+
+<script>
+  // ============================================================================
+  // PARÂMETROS DE ESCALA DE CORES - CONFIGURÁVEIS
+  // ============================================================================
+  const COLOR_SCALE_PARAMS = {
+    // PARÂMETRO 1: Escala Normal (quanto maior melhor)
+    NORMAL: {
+      thresholds: [
+        { max: 0.29, colorType: 'BAD' },      // Vermelho: até 29%
+        { max: 0.69, colorType: 'NEUTRAL' },  // Neutro: 30% a 69%
+        { max: 0.89, colorType: 'WARN' },     // Amarelo: 70% a 89%
+        { max: 0.99, colorType: 'GOOD' },     // Verde: 90% a 99%
+        { max: Infinity, colorType: 'EXCELLENT' } // Azul: 100%+
+      ]
+    },
+    
+    // PARÂMETRO 2: Escala Inversa (quanto menor melhor - para devolução)
+    INVERSE: {
+      thresholds: [
+        { max: 0.0099, colorType: 'EXCELLENT' },  // Azul: abaixo de 1%
+        { max: 0.29, colorType: 'GOOD' },         // Verde: 1% a 29%
+        { max: 0.59, colorType: 'WARN' },         // Amarelo: 30% a 59%
+        { max: 0.99, colorType: 'NEUTRAL' },      // Neutro: 60% a 99%
+        { max: Infinity, colorType: 'BAD' }       // Vermelho: 100%+
+      ]
+    }
+  };
+
+  // ============================================================================
+  // CONFIGURAÇÕES FIXAS
+  // ============================================================================
+  const FIREBASE_URL = 'https://bd-comercial-alpha-default-rtdb.firebaseio.com/.json';
+  const METRIC_COL_WIDTH = '120px';
+  const VENDOR_COL_WIDTH = '250px';
+
+  // ============================================================================
+  // VARIÁVEIS DE ESTADO
+  // ============================================================================
+  let rawData = null; 
+  let allSellersData = []; 
+  let availablePeriods = []; 
+  let currentPeriod = ''; 
+  let allEstados = new Set();
+  let selectedEstados = new Set();
+  let selectedVendors = new Set();
+  let visibleMetrics = []; // Métricas selecionadas (EXCLUINDO fixas)
+  let sortKey = 'NOME'; // Ordenação inicial por NOME
+  let sortDirection = 'asc';
+  let coloredMetrics = new Set(); // Múltiplas colunas podem ter escala de cores
+  let isDataLoaded = false; // Flag para controlar se os dados já vieram
+
+  // ============================================================================
+  // COLUNAS FIXAS INICIAIS
+  // ============================================================================
+  const FIXED_METRICS = [
+    { key: 'COD_FOTO', label: '#', type: 'image', width: '80px', fixed: true, sortable: false },
+    { key: 'NOME', label: 'Vendedor', type: 'text', width: VENDOR_COL_WIDTH, fixed: true, sortable: true },
+    { key: 'META_ORIGINAL', label: 'Meta', type: 'currency', width: '150px', fixed: true, sortable: true }, 
+  ];
+  
+  // ============================================================================
+  // DEFINIÇÕES DE MÉTRICAS DINÂMICAS
+  // ============================================================================
+  const ALL_METRICS_DEFINITIONS = [
+    // Métricas principais com escalas de cores
+    { key: 'REALIZADO', label: 'Realizado', sourceField: 'VENDAS', type: 'currency', 
+      colorLogic: 'PARAM_NORMAL', colorSource: 'percent_META' },
+    
+    { key: 'ALCANCADO', label: 'Alcançado', sourceField: 'percent_META', type: 'percent', 
+      colorLogic: 'PARAM_NORMAL', colorSource: 'percent_META' },
+    
+    { key: 'DESVIO', label: 'Desvio', sourceField: 'DESVIO', type: 'currency', 
+      colorLogic: 'PARAM_NORMAL', colorSource: 'percent_META' },
+    
+    { key: 'VENDER_P_DIA', label: 'Vender p/ Dia', sourceField: 'META_DIA', type: 'currency', 
+      colorLogic: 'PARAM_NORMAL', colorSource: 'percent_META' },
+    
+    { key: 'CARTEIRA', label: 'Carteira', sourceField: 'CLIENTES', type: 'number', 
+      colorLogic: 'PARAM_NORMAL', colorSource: 'percent_CLIENTES' },
+    
+    { key: 'PRECO_MEDIO', label: 'Preço Médio', sourceField: 'PRECO', type: 'currency', 
+      colorLogic: 'PARAM_NORMAL', colorSource: 'PRECO_CALC' }, // Cálculo especial
+    
+    { key: 'FUMEMAX_RS', label: 'FumeMax R$', sourceField: 'FUMEMAX', type: 'currency', 
+      colorLogic: 'PARAM_NORMAL', colorSource: 'FUMEMAX_CALC' }, // Cálculo especial
+    
+    { key: 'FMAX_CARTEIRA', label: 'F.Max Carteira', sourceField: 'percent_F_MAX', type: 'percent', 
+      colorLogic: 'PARAM_NORMAL', colorSource: 'percent_F_MAX' },
+    
+    { key: 'DEVOLUCAO_RS', label: 'Devolução R$', sourceField: 'DEVOLUCAO', type: 'currency', 
+      colorLogic: 'PARAM_INVERSE', colorSource: 'DEVOLUCAO_CALC' }, // Cálculo especial
+    
+    { key: 'PERCENT_DEVOLUCAO', label: '% Devolução', sourceField: 'percent_DEV', type: 'percent', 
+      colorLogic: 'PARAM_INVERSE', colorSource: 'percent_DEV' },
+  ];
+
+  function getMetricDef(key) {
+    return ALL_METRICS_DEFINITIONS.find(m => m.key === key) || FIXED_METRICS.find(m => m.key === key);
+  }
+
+  // ============================================================================
+  // ELEMENTOS DOM
+  // ============================================================================
+  const tableHeaderEl = document.getElementById('tableHeader');
+  const tableBodyEl = document.getElementById('tableBody');
+  const tableFooterEl = document.getElementById('tableFooter');
+  const menuMetrics = document.getElementById('menuMetrics');
+  const menuVendors = document.getElementById('menuVendors');
+  const menuEstados = document.getElementById('menuEstados');
+  const menuPeriods = document.getElementById('menuPeriods');
+  const currentPeriodDisplay = document.getElementById('currentPeriodDisplay');
+  const btnRefresh = document.getElementById('btnRefresh');
+  const errEl = document.getElementById('errorDisplay');
+
+  // ============================================================================
+  // FUNÇÕES UTILITÁRIAS
+  // ============================================================================
+  const safeGet = (obj, path, defaultValue = null) => {
+    const parts = Array.isArray(path) ? path : (path || '').split('.');
+    let current = obj;
+    for (const part of parts) {
+      if (current === null || typeof current !== 'object' || !current.hasOwnProperty(part)) {
+        return defaultValue;
+      }
+      current = current[part];
+    }
+    return current;
+  };
+
+  function formatValue(value, type) {
+    if (value === null || value === undefined) return '-';
+    const num = Number(value);
+    if (isNaN(num)) return value;
+
+    switch (type) {
+      case 'currency':
+        // Sem casas decimais para valores monetários
+        return {
+          symbol: 'R$',
+          value: num.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+        };
+      case 'percent':
+        // Uma casa decimal para percentuais
+        return (num * 100).toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + '%';
+      case 'number':
+      default:
+        // Sem casas decimais para números inteiros
+        return num.toLocaleString('pt-BR', { maximumFractionDigits: 0 });
+    }
+  }
+
+  // ============================================================================
+  // CÁLCULOS ESPECIAIS PARA ESCALA DE CORES
+  // ============================================================================
+  function calculateColorValue(sellerData, metricKey, colorSource) {
+    if (!colorSource || !sellerData) return null;
+    
+    switch (colorSource) {
+      case 'percent_META':
+        return Number(safeGet(sellerData, 'percent_META', null));
+      
+      case 'percent_CLIENTES':
+        return Number(safeGet(sellerData, 'percent_CLIENTES', null));
+      
+      case 'percent_F_MAX':
+        return Number(safeGet(sellerData, 'percent_F_MAX', null));
+      
+      case 'percent_DEV':
+        return Number(safeGet(sellerData, 'percent_DEV', null));
+      
+      case 'PRECO_CALC':
+        // ((percent_PRECO * PRECO_MEDIO) - 100) / 65
+        const percentPreco = Number(safeGet(sellerData, 'percent_PRECO', 0));
+        const precoMedio = Number(safeGet(sellerData, 'PRECO', 0));
+        return precoMedio > 0 ? ((percentPreco * precoMedio) - 100) / 65 : null;
+      
+      case 'FUMEMAX_CALC':
+        // FUMEMAX / META_FUME_MAX
+        const fumeMax = Number(safeGet(sellerData, 'FUMEMAX', 0));
+        const metaFumeMax = Number(safeGet(sellerData, 'META_FUME_MAX', 0));
+        return metaFumeMax > 0 ? fumeMax / metaFumeMax : null;
+      
+      case 'DEVOLUCAO_CALC':
+        // DEVOLUCAO / META_DEVOLUCAO
+        const devolucao = Number(safeGet(sellerData, 'DEVOLUCAO', 0));
+        const metaDevolucao = Number(safeGet(sellerData, 'META_DEVOLUCAO', 0));
+        return metaDevolucao > 0 ? devolucao / metaDevolucao : null;
+      
+      default:
+        return Number(safeGet(sellerData, colorSource, null));
+    }
+  }
+
+  // ============================================================================
+  // LÓGICA DE CORES BASEADA NOS PARÂMETROS
+  // ============================================================================
+  function calculateCellColor(metricKey, colorValue, isEven) {
+    if (colorValue === null || colorValue === undefined) return '';
+    
+    const metricDef = getMetricDef(metricKey);
+    if (!metricDef || !metricDef.colorLogic) return '';
+    
+    // Determinar qual conjunto de parâmetros usar
+    const params = metricDef.colorLogic === 'PARAM_INVERSE' 
+      ? COLOR_SCALE_PARAMS.INVERSE 
+      : COLOR_SCALE_PARAMS.NORMAL;
+    
+    // Encontrar o threshold correspondente
+    const threshold = params.thresholds.find(t => colorValue <= t.max);
+    if (!threshold) return '';
+    
+    // Determinar a cor baseada no tipo
+    let color = '';
+    switch (threshold.colorType) {
+      case 'EXCELLENT':
+        color = 'var(--q-excellent-bg)';
+        break;
+      case 'GOOD':
+        color = isEven ? 'var(--q-good-d-bg)' : 'var(--q-good-l-bg)';
+        break;
+      case 'WARN':
+        color = isEven ? 'var(--q-warn-d-bg)' : 'var(--q-warn-l-bg)';
+        break;
+      case 'BAD':
+        color = isEven ? 'var(--q-bad-d-bg)' : 'var(--q-bad-l-bg)';
+        break;
+      case 'NEUTRAL':
+        // Segue a cor padrão da linha
+        color = isEven ? 'var(--row-even)' : 'var(--row-odd)';
+        break;
+    }
+    
+    return color;
+  }
+
+  // ============================================================================
+  // LÓGICA DE DADOS E RENDERIZAÇÃO
+  // ============================================================================
+  function parseSellers(selectedPeriodData, masterEmployees) {
+    const sellers = [];
+    
+    for (const cod in selectedPeriodData) {
+        if(cod === 'parametros_do_periodo') continue;
+
+        const periodData = selectedPeriodData[cod];
+        const masterData = masterEmployees[cod];
+        
+        if (!masterData || !masterData.nome) continue;
+
+        const seller = {
+            id: cod,
+            estado: periodData.ESTADO || masterData.estado,
+            nome: periodData.NOME || masterData.nome,
+            url_foto: periodData.URL_FOTO || masterData.url_foto,
+            meta_original: masterData.meta, 
+            data: periodData 
+        };
+
+        sellers.push(seller);
+    }
+    
+    // --- FILTRAGEM E ORDENAÇÃO ---
+    let filteredSellers = sellers
+        .filter(s => selectedVendors.has(s.id))
+        .filter(s => selectedEstados.has(s.estado));
+
+    if (sortKey) {
+        filteredSellers.sort((a, b) => {
+            const met = getMetricDef(sortKey);
+            let valA, valB;
+
+            if (sortKey === 'NOME') {
+                valA = a.nome;
+                valB = b.nome;
+            } else if (sortKey === 'META_ORIGINAL') {
+                valA = a.meta_original || 0;
+                valB = b.meta_original || 0;
+            } else if (met) {
+                if (met.sourceField) {
+                    valA = Number(safeGet(a.data, met.sourceField, 0));
+                    valB = Number(safeGet(b.data, met.sourceField, 0));
+                } else {
+                    valA = 0;
+                    valB = 0;
+                }
+            } else {
+                return 0;
+            }
+            
+            // Tratamento correto para valores zero
+            if (valA === 0 && valB === 0) return 0;
+            if (valA === 0) return sortDirection === 'asc' ? -1 : 1;
+            if (valB === 0) return sortDirection === 'asc' ? 1 : -1;
+            
+            let comparison = 0;
+            if (valA > valB) comparison = 1;
+            if (valA < valB) comparison = -1;
+
+            if (sortDirection === 'desc') {
+                return comparison * -1;
+            }
+            return comparison;
+        });
+    }
+
+    allSellersData = filteredSellers;
+  }
+
+  // ============================================================================
+  // RENDERIZADORES DE MENU
+  // ============================================================================
+  function buildPeriodsMenu(periods) {
+    availablePeriods = periods;
+    if (periods.length > 0 && !currentPeriod) {
+        currentPeriod = periods[periods.length - 1]; 
+    }
+    
+    if (isDataLoaded) {
+        document.getElementById('currentPeriodDisplay').textContent = currentPeriod || 'N/A';
+    }
+
+    menuPeriods.innerHTML = '';
+
+    periods.forEach(p => {
+        const div = document.createElement('div');
+        div.textContent = p;
+        div.dataset.period = p;
+        if (p === currentPeriod) div.classList.add('selected');
+        div.addEventListener('click', () => {
+            handlePeriodChange(p);
+            // Fechar o menu após seleção
+            menuPeriods.style.display = 'none';
+        });
+        menuPeriods.appendChild(div);
+    });
+  }
+
+  function handlePeriodChange(newPeriod) {
+    if (newPeriod === currentPeriod) return;
+    currentPeriod = newPeriod;
+    
+    document.getElementById('currentPeriodDisplay').textContent = currentPeriod;
+    processAndRenderData(false);
+  }
+
+  function buildEstadosMenu(isInitialLoad) {
+    const masterEmployees = safeGet(rawData, ['funcionarios', 'ALPHALUMI'], {});
+    
+    allEstados.clear();
+    for(const cod in masterEmployees){
+        const estado = masterEmployees[cod].estado || masterEmployees[cod].uf; 
+        if (estado) allEstados.add(estado);
+    }
+    
+    const sortedEstados = Array.from(allEstados).sort();
+    
+    if (isInitialLoad) {
+        selectedEstados = new Set(sortedEstados);
+    }
+
+    menuEstados.innerHTML = '';
+    sortedEstados.forEach(est => {
+        const label = document.createElement('label');
+        label.innerHTML = `<input type="checkbox" data-estado="${est}" ${selectedEstados.has(est) ? 'checked' : ''} /> ${est}`;
+        label.querySelector('input').addEventListener('change', handleEstadoChange);
+        menuEstados.appendChild(label);
+    });
+  }
+
+  function handleEstadoChange(e) {
+    const est = e.target.dataset.estado;
+    if (e.target.checked) selectedEstados.add(est);
+    else selectedEstados.delete(est);
+    
+    buildVendorMenu(false);
+    processAndRenderData(false); 
+  }
+
+  function buildVendorMenu(isInitialLoad = false) {
+    const masterEmployees = safeGet(rawData, ['funcionarios', 'ALPHALUMI'], {});
+    
+    if (isInitialLoad) { 
+        Object.keys(masterEmployees).forEach(id => selectedVendors.add(id));
+    }
+
+    menuVendors.innerHTML = '';
+    
+    const visibleVendorsByEstado = Object.keys(masterEmployees)
+        .filter(id => {
+            const estado = masterEmployees[id].estado || masterEmployees[id].uf;
+            return selectedEstados.has(estado);
+        })
+        .sort((idA, idB) => masterEmployees[idA].nome.localeCompare(masterEmployees[idB].nome));
+    
+    visibleVendorsByEstado.forEach(cod => {
+        const name = masterEmployees[cod].nome;
+        const isSelected = selectedVendors.has(cod);
+        
+        const label = document.createElement('label');
+        label.innerHTML = `<input type="checkbox" data-cod="${cod}" ${isSelected ? 'checked' : ''} /> <span>${name}</span>`;
+        label.querySelector('input').addEventListener('change', handleVendorChange);
+        menuVendors.appendChild(label);
+    });
+  }
+
+  function handleVendorChange(e) {
+    const cod = e.target.dataset.cod;
+    if (e.target.checked) selectedVendors.add(cod);
+    else selectedVendors.delete(cod);
+    processAndRenderData(false);
+  }
+
+  function buildMetricsMenu(isInitialLoad) {
+    menuMetrics.innerHTML = '';
+    
+    if (isInitialLoad) {
+        visibleMetrics = []; 
+    }
+    
+    visibleMetrics = visibleMetrics.filter(key => !FIXED_METRICS.map(m=>m.key).includes(key));
+    
+    ALL_METRICS_DEFINITIONS.forEach(met => {
+        const isSelected = visibleMetrics.includes(met.key);
+        
+        const label = document.createElement('label');
+        label.innerHTML = `<input type="checkbox" data-metric="${met.key}" ${isSelected ? 'checked' : ''} /> <span>${met.label}</span>`;
+        label.querySelector('input').addEventListener('change', handleMetricChange);
+        menuMetrics.appendChild(label);
+    });
+  }
+
+  function handleMetricChange(e) {
+    const key = e.target.dataset.metric;
+    if (e.target.checked) {
+        visibleMetrics.push(key);
+    } else {
+        visibleMetrics = visibleMetrics.filter(m => m !== key);
+        if (coloredMetrics.has(key)) coloredMetrics.delete(key);
+        if (sortKey === key) sortKey = 'NOME'; 
+    }
+    
+    processAndRenderData(false);
+  }
+
+  // ============================================================================
+  // RENDERIZAÇÃO DA TABELA
+  // ============================================================================
+  function calculateTableWidth(visibleMetrics) {
+    const allMetrics = [...FIXED_METRICS, ...visibleMetrics.map(getMetricDef)].filter(m => m);
+    let totalWidth = 0;
+    
+    allMetrics.forEach(met => {
+        totalWidth += parseInt(met.width || METRIC_COL_WIDTH);
+    });
+    
+    return totalWidth + 'px';
+  }
+
+  function renderHeader() {
+    tableHeaderEl.innerHTML = '';
+    const allVisibleMetrics = [...FIXED_METRICS, ...visibleMetrics.map(getMetricDef)].filter(m => m);
+    
+    const headerRow = document.createElement('div');
+    headerRow.className = 'table-row-container';
+    headerRow.style.width = calculateTableWidth(visibleMetrics);
+
+    allVisibleMetrics.forEach(met => {
+        const cell = document.createElement('div');
+        cell.className = `table-cell ${met.fixed ? 'col-fixed' : 'col-metric'} col-${met.key.toLowerCase()}`;
+        cell.style.width = met.width || METRIC_COL_WIDTH;
+        
+        // Adicionar indicador de escala de cores se aplicável
+        const hasColorScale = coloredMetrics.has(met.key);
+        const colorIndicator = hasColorScale ? '<span class="color-scale-indicator" style="background-color: var(--q-excellent-bg);"></span>' : '';
+        
+        cell.innerHTML = `${met.label}${colorIndicator}`;
+        
+        if (met.sortable !== false) {
+            cell.dataset.key = met.key;
+            cell.addEventListener('click', handleSort);
+            
+            // Botão direito para alternar escala de cores
+            cell.addEventListener('contextmenu', handleColorScaleToggle);
+        }
+        
+        // Indicador de ordenação
+        if (met.key === sortKey) {
+            const icon = sortDirection === 'asc' ? '▲' : '▼';
+            cell.innerHTML += `<span class="sort-icon">${icon}</span>`;
+        }
+        
+        headerRow.appendChild(cell);
+    });
+
+    tableHeaderEl.appendChild(headerRow);
+  }
+
+  function renderRows() {
+    tableBodyEl.innerHTML = '';
+    const allVisibleMetrics = [...FIXED_METRICS, ...visibleMetrics.map(getMetricDef)].filter(m => m);
+    const tableWidth = calculateTableWidth(visibleMetrics);
+
+    let rowsHTML = '';
+    allSellersData.forEach((seller, index) => {
+        const isEven = index % 2 === 0;
+        let rowHTML = `<div class="table-row-container" style="width: ${tableWidth};" data-index="${index}">`;
+        
+        allVisibleMetrics.forEach(met => {
+            const isFixed = met.fixed || false;
+            let value, formatted;
+            let cellStyle = '';
+            let cellClass = `table-cell ${isFixed ? 'col-fixed' : 'col-metric'} col-${met.key.toLowerCase()}`;
+            
+            // Obter valor para exibição
+            if (met.key === 'META_ORIGINAL') {
+                value = seller.meta_original;
+                formatted = formatValue(value, met.type);
+            } else if (met.key === 'COD_FOTO') {
+                formatted = `<div class="seller-info"><img src="${seller.url_foto}" alt="${seller.nome}" /></div>`;
+                cellClass += ' col-fixed';
+            } else if (met.key === 'NOME') {
+                formatted = seller.nome;
+                cellClass += ' col-nome';
+            } else if (met.sourceField) {
+                value = Number(safeGet(seller.data, met.sourceField, 0));
+                formatted = formatValue(value, met.type);
+            } else {
+                formatted = '-';
+            }
+            
+            // Aplicar escala de cores se a coluna estiver marcada
+            if (coloredMetrics.has(met.key) && met.colorSource) {
+                const colorValue = calculateColorValue(seller.data, met.key, met.colorSource);
+                const color = calculateCellColor(met.key, colorValue, isEven);
+                if (color) {
+                    cellStyle = `background-color: ${color}; color: var(--color-on-scale);`;
+                }
+            }
+
+            // Formatar conteúdo
+            let cellContent = formatted;
+            if (met.type && met.type.includes('currency') && formatted.symbol) { 
+                cellContent = `<div class="currency-cell"><span class="symbol">${formatted.symbol}</span><span class="value">${formatted.value}</span></div>`;
+            }
+            
+            rowHTML += `<div class="${cellClass}" style="width: ${met.width || METRIC_COL_WIDTH}; ${cellStyle}">${cellContent}</div>`;
+        });
+
+        rowHTML += `</div>`;
+        rowsHTML += rowHTML;
+    });
+
+    tableBodyEl.innerHTML = rowsHTML;
+  }
+
+  function renderFooter() {
+    tableFooterEl.innerHTML = '';
+    const allVisibleMetrics = [...FIXED_METRICS, ...visibleMetrics.map(getMetricDef)].filter(m => m);
+    const tableWidth = calculateTableWidth(visibleMetrics);
+    
+    const footerRow = document.createElement('div');
+    footerRow.className = 'table-row-container';
+    footerRow.style.width = tableWidth;
+    
+    allVisibleMetrics.forEach((met, index) => {
+        const cell = document.createElement('div');
+        cell.className = `table-cell ${met.fixed ? 'col-fixed' : 'col-metric'} col-${met.key.toLowerCase()}`;
+        cell.style.width = met.width || METRIC_COL_WIDTH;
+        
+        let total = 0;
+        let showTotal = false;
+
+        if (index === 0) {
+            cell.textContent = 'TOTAL';
+            showTotal = false;
+        } else if (met.type === 'currency' || met.type === 'number') {
+            total = allSellersData.reduce((sum, seller) => {
+                const source = met.key === 'META_ORIGINAL' ? seller.meta_original : safeGet(seller.data, met.sourceField, 0);
+                return sum + Number(source);
+            }, 0);
+            showTotal = true;
+        } else if (met.type === 'percent') {
+            if(met.key === 'ALCANCADO' || met.sourceField === 'percent_META'){
+                 const totalVendas = allSellersData.reduce((sum, s) => sum + Number(safeGet(s.data, 'VENDAS', 0)), 0);
+                 const totalMeta = allSellersData.reduce((sum, s) => sum + Number(safeGet(s.data, 'META', 0)), 0);
+                 total = totalMeta !== 0 ? totalVendas / totalMeta : 0;
+            } else {
+                total = allSellersData.reduce((sum, seller) => sum + Number(safeGet(seller.data, met.sourceField, 0)), 0);
+                total = allSellersData.length > 0 ? total / allSellersData.length : 0;
+            }
+            showTotal = true;
+        }
+        
+        if (showTotal) {
+            if (met.type && met.type.includes('currency')) {
+                const formatted = formatValue(total, met.type);
+                cell.innerHTML = `<div class="currency-cell"><span class="symbol">${formatted.symbol}</span><span class="value">${formatted.value}</span></div>`;
+            } else {
+                cell.textContent = formatValue(total, met.type);
+            }
+        }
+
+        footerRow.appendChild(cell);
+    });
+
+    tableFooterEl.appendChild(footerRow);
+  }
+
+  function renderTable() {
+    renderHeader();
+    renderRows();
+    renderFooter();
+  }
+
+  function handleSort(e) {
+    const newSortKey = e.currentTarget.dataset.key;
+    if (sortKey === newSortKey) {
+        sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+        sortKey = newSortKey;
+        const met = getMetricDef(newSortKey);
+        sortDirection = (newSortKey === 'NOME' || (met && met.type === 'text')) ? 'asc' : 'desc';
+    }
+    
+    processAndRenderData(false); 
+  }
+
+  function handleColorScaleToggle(e) {
+    e.preventDefault(); 
+    const clickedKey = e.currentTarget.dataset.key;
+    
+    // Alternar escala de cores para esta coluna
+    if (coloredMetrics.has(clickedKey)) {
+        coloredMetrics.delete(clickedKey);
+    } else {
+        coloredMetrics.add(clickedKey);
+    }
+    
+    // Atualizar apenas as linhas (mantém header e footer)
+    renderRows();
+    
+    // Atualizar o header para mostrar/ocultar indicador
+    const headerCell = e.currentTarget;
+    const hasColorScale = coloredMetrics.has(clickedKey);
+    const baseText = headerCell.textContent.replace('▲', '').replace('▼', '').trim();
+    const colorIndicator = hasColorScale ? '<span class="color-scale-indicator" style="background-color: var(--q-excellent-bg);"></span>' : '';
+    const sortIcon = headerCell.querySelector('.sort-icon') ? headerCell.querySelector('.sort-icon').outerHTML : '';
+    
+    headerCell.innerHTML = `${baseText}${colorIndicator}${sortIcon}`;
+  }
+
+  // ============================================================================
+  // CONTROLE DE FLUXO E FETCH DE DADOS
+  // ============================================================================
+  async function fetchData(isInitialLoad = false) {
+    errEl.style.display='none';
+    btnRefresh.disabled = true;
+    
+    try {
+      const response = await fetch(FIREBASE_URL);
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      const data = await response.json();
+      
+      rawData = data;
+      const periods = Object.keys(safeGet(rawData, ['performance_mensal', 'ALPHALUMI'], {})).sort();
+      
+      if(isInitialLoad){
+          buildPeriodsMenu(periods);
+          buildEstadosMenu(isInitialLoad); 
+          buildVendorMenu(isInitialLoad);
+          buildMetricsMenu(isInitialLoad);
+          isDataLoaded = true;
+          
+          document.getElementById('currentPeriodDisplay').textContent = currentPeriod || 'PERÍODO';
+      } else {
+          buildPeriodsMenu(periods); 
+          buildEstadosMenu(false); 
+          buildVendorMenu(false);
+          buildMetricsMenu(false);
+      }
+      
+      processAndRenderData(isInitialLoad);
+      
+    } catch (err) {
+      console.error(err);
+      errEl.style.display='block';
+      errEl.textContent = 'Falha ao carregar dados: ' + (err.message || 'Erro desconhecido');
+    } finally {
+      btnRefresh.disabled = false;
+    }
+  }
+
+  function processAndRenderData(isInitialLoad) {
+    if (!rawData || !currentPeriod) return;
+    
+    const selectedPeriodData = safeGet(rawData, ['performance_mensal', 'ALPHALUMI', currentPeriod], {});
+    const masterEmployees = safeGet(rawData, ['funcionarios', 'ALPHALUMI'], {});
+    
+    parseSellers(selectedPeriodData, masterEmployees);
+    renderTable();
+  }
+  
+  // ============================================================================
+  // LÓGICA DE DROP DOWNS
+  // ============================================================================
+  const allMenuIds = ['menuPeriods', 'menuMetrics', 'menuVendors', 'menuEstados'];
+  const allToggleIds = ['togglePeriods', 'toggleMetrics', 'toggleVendors', 'toggleEstados'];
+
+  function toggleDropdown(menuId) {
+      const menuEl = document.getElementById(menuId);
+      const isVisible = menuEl.style.display === 'block';
+
+      allMenuIds.forEach(id => {
+          document.getElementById(id).style.display = 'none';
+      });
+
+      if (!isVisible) {
+          menuEl.style.display = 'block';
+      }
+  }
+
+  // ============================================================================
+  // SETUP INICIAL E LISTENERS
+  // ============================================================================
+  fetchData(true); 
+
+  // Toggle menus
+  allToggleIds.forEach(toggleId => {
+      const menuId = 'menu' + toggleId.replace('toggle', '');
+      const toggleEl = document.getElementById(toggleId);
+      
+      if(toggleEl) {
+          toggleEl.addEventListener('click', (e) => { 
+              e.stopPropagation(); 
+              toggleDropdown(menuId);
+          });
+      }
+  });
+
+  // Listener global para fechar menus ao clicar fora
+  document.addEventListener('click', () => {
+      allMenuIds.forEach(id => {
+          document.getElementById(id).style.display = 'none';
+      });
+  });
+  
+  // Impede que um clique dentro do menu feche imediatamente
+  allMenuIds.forEach(id => {
+      const menuEl = document.getElementById(id);
+      if(menuEl) {
+        menuEl.addEventListener('click', (e) => e.stopPropagation());
+      }
+  });
+
+  // Botão Atualizar
+  btnRefresh.addEventListener('click', () => fetchData(false));
+  
+  // Timer de Atualização (3 minutos)
+  setInterval(() => {
+    console.log('Atualização automática (3 minutos) - Recarregando dados...');
+    fetchData(false); 
+  }, 180000);
+  
+</script>
+</body>
+</html>

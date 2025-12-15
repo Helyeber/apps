@@ -1,0 +1,849 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>DASH ONE - MÉTRICAS</title>
+<style>
+  :root{
+    --bg:#0f1413;
+    --panel:#0c1a19;
+    --muted:#162e2a;
+    --accent:#3fd1ff;
+    --card:#071b18;
+    --good:#34d07a;
+    --warn:#e3c24a;
+    --bad:#e65151;
+    --info:#4aa6e6;
+    --text:#d9e6e2;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;font-family:Inter, system-ui, Arial, sans-serif}
+  body{
+    margin:0;background: linear-gradient(180deg,#071010 0%, #0b0f0f 100%);color:var(--text);padding:16px;
+  }
+
+  /* header */
+  .header{display:flex;gap:12px;align-items:center;margin-bottom:12px}
+  .brand{display:flex;align-items:center;gap:12px;padding:8px 12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.03));border-radius:10px}
+  .brand h1{font-size:13px;margin:0;font-weight:800} 
+  .controls{margin-left:auto;display:flex;gap:8px;align-items:center}
+  /* Estilo para desabilitar o dropdown visualmente */
+  .multi-drop.disabled .toggle{opacity:0.5;cursor:not-allowed}
+  .multi-drop.disabled .menu{display:none !important}
+
+  /* generic dropdown style */
+  .multi-drop{position:relative;min-width:180px}
+  .multi-drop .toggle{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:10px;background:var(--muted);cursor:pointer;border:1px solid rgba(255,255,255,0.03);font-weight:700}
+  .multi-drop .menu{position:absolute;left:0;top:calc(100% + 8px);z-index:80;width:320px;max-height:300px;overflow:auto;padding:8px;background:var(--panel);border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,0.6)}
+  .multi-drop label{display:flex;align-items:center;gap:8px;padding:8px;border-radius:8px;cursor:pointer}
+  .multi-drop input[type="radio"]{width:16px;height:16px} 
+  .multi-drop input[type="checkbox"]{width:16px;height:16px}
+
+  button.btn{background:linear-gradient(180deg,#2c6a61,#1f4f44);color:var(--text);padding:10px 14px;border-radius:10px;border:0;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,0.5);font-weight:700}
+  button.btn:disabled{opacity:0.5;cursor:not-allowed}
+
+  .error{background:#4b2323;color:#ffdcdc;padding:8px;border-radius:8px;margin-left:12px;font-size:13px}
+
+  /* horizontal scroll area (styled) */
+  .scroll-wrap{overflow-x:auto;padding:6px 6px 24px 6px;border-radius:10px}
+  .cards{display:flex;gap:14px;align-items:flex-start;padding:8px}
+  .scroll-wrap::-webkit-scrollbar{height:12px}
+  .scroll-wrap::-webkit-scrollbar-track{background:rgba(255,255,255,0.02);border-radius:8px}
+  .scroll-wrap::-webkit-scrollbar-thumb{background:rgba(125,160,150,0.22);border-radius:8px}
+  .scroll-wrap::-webkit-scrollbar-thumb:hover{background:rgba(125,160,150,0.28)}
+
+  /* fixed card width (first size minus 5%) -> use fixed 304px (ex: 320 -5%) */
+  .card{width:304px;min-width:304px;flex:0 0 304px;aspect-ratio:3/6;background: linear-gradient(180deg,#071b18 0%, #071412 100%);border-radius:18px;padding:12px;display:flex;flex-direction:column;gap:10px;border:1px solid rgba(255,255,255,0.03)}
+
+  .card-top{display:flex;align-items:center;gap:10px}
+  .avatar{width:54px;height:54px;border-radius:50%;overflow:hidden;border:3px solid rgba(255,255,255,0.04);flex:0 0 54px;background:#0a0a0a}
+  .avatar img{width:100%;height:100%;object-fit:cover;display:block}
+  .card-title{font-weight:800;font-size:15px}
+  .card-sub{font-size:12px;color:#9fb0a9}
+
+  /* --- user provided visual tweak for indicators --- */
+  .ind{
+    background: linear-gradient(180deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+    border-radius:10px;padding:8px;border:0px solid rgba(255,255,255,0.003);
+    display:flex;flex-direction:column;gap:8px; 
+  }
+  .ind .row{display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700}
+  .ind .bar-wrap{height:12px;background:rgba(255,255,255,0.2);border-radius:12px;overflow:hidden}
+  .bar{height:100%;width:0%;border-radius:12px;transition:width 600ms ease}
+  .ind .row.low{font-size:12px;font-weight:600;color:#b9d0c9;display:flex;justify-content:space-between}
+  /* highlight for zero devolução */
+  .ind.devol-zero{border:2px solid var(--good);box-shadow:0 6px 18px rgba(52,208,122,0.06)}
+  /* end indicators */
+
+  @media (max-width:720px){
+    .card{width:260px;min-width:260px;flex:0 0 260px;padding:10px}
+    .multi-drop .menu{width:240px}
+  }
+</style>
+</head>
+<body>
+  <div class="header">
+    <div class="brand">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" style="opacity:0.9">
+        <rect x="2" y="2" width="20" height="20" rx="5" fill="#0f6a57"></rect>
+        <path d="M7 12h10M7 16h6" stroke="#e8fff9" stroke-width="1.6" stroke-linecap="round"></path>
+      </svg>
+      <h1>DASH ONE - MÉTRICAS</h1>
+    </div>
+
+    <div class="controls">
+      <div class="multi-drop" id="periodSelector" style="min-width:180px">
+        <div class="toggle" id="togglePeriods"><div>PERÍODO</div><div style="opacity:0.85">▾</div></div>
+        <div class="menu" id="menuPeriods" style="display:none"></div>
+      </div>
+
+      <div class="multi-drop disabled" id="vendorSelector" style="min-width:180px">
+        <div class="toggle" id="toggleVendors"><div>VENDEDORES</div><div style="opacity:0.85">▾</div></div>
+        <div class="menu" id="menuVendors" style="display:none"></div>
+      </div>
+
+      <div class="multi-drop" id="metricSelector">
+        <div class="toggle" id="toggleMetrics"><div>MÉTRICAS</div><div style="opacity:0.85">▾</div></div>
+        <div class="menu" id="menuMetrics" style="display:none"></div>
+      </div>
+
+      <div class="multi-drop disabled" id="estadoSelector">
+        <div class="toggle" id="toggleEstados"><div>UF</div><div style="opacity:0.85">▾</div></div>
+        <div class="menu" id="menuEstados" style="display:none"></div>
+      </div>
+
+      <button class="btn" id="btnRefresh" disabled>ATUALIZAR</button>
+      <div id="err" class="error" style="display:none"></div>
+    </div>
+  </div>
+
+  <div class="scroll-wrap" id="scrollWrap">
+    <div class="cards" id="cards"></div>
+  </div>
+
+<script>
+(() => {
+  // ----------------------------------------------------------------------
+  // ** CONFIGURAÇÕES DE FIREBASE E CONSTANTES **
+  // ----------------------------------------------------------------------
+  const FIREBASE_BASE_URL = 'https://bd-comercial-alpha-default-rtdb.firebaseio.com';
+  const COMPANY_KEY = 'ALPHALUMI';
+  const REFRESH_INTERVAL_MS = 60000; // 1 minuto
+
+  let PERIOD_KEY = null; 
+  let periodsList = [];
+  let perfData = null; 
+  let employeesData = null; 
+  let globalParams = {}; 
+  let sellersList = []; 
+  
+  // Sets iniciam vazios
+  let selectedKeys = new Set(); // Vendedores: deve iniciar vazio
+  let selectedMetrics = new Set(); // Métricas: deve iniciar com todas selecionadas
+  let selectedEstados = new Set(); // UF: deve iniciar vazio, mas será populado na primeira carga
+  // Variavel para rastrear se o período foi alterado
+  let lastLoadedPeriod = null; 
+
+  // Metric definitions and order
+  const METRICS = [
+    {key:'VENDAS', label:'VENDAS'},
+    {key:'FUMEMAX_R$', label:'FUME MAX - R$'},
+    {key:'FUMEMAX_CARTEIRA', label:'FUME MAX - CARTEIRA'},
+    {key:'DESCONCENTRACAO', label:'DESCONCENTRAÇÃO'},
+    {key:'CLIENTES', label:'CLIENTES'},
+    {key:'PRECO', label:'PREÇO'},
+    {key:'DEVOLUCAO', label:'DEVOLUÇÃO'}
+  ];
+  // default all selected for the metrics menu 
+  METRICS.forEach(m=>selectedMetrics.add(m.key)); 
+
+  // DOM refs
+  const menuPeriods = document.getElementById('menuPeriods');
+  const togglePeriods = document.getElementById('togglePeriods');
+  const vendorSelectorEl = document.getElementById('vendorSelector');
+  const menuVendors = document.getElementById('menuVendors');
+  const toggleVendors = document.getElementById('toggleVendors');
+  const metricSelectorEl = document.getElementById('metricSelector');
+  const estadoSelectorEl = document.getElementById('estadoSelector');
+  const menuEstados = document.getElementById('menuEstados');
+  const cardsEl = document.getElementById('cards');
+  const errEl = document.getElementById('err');
+  const btnRefresh = document.getElementById('btnRefresh');
+
+  // ----------------------------------------------------------------------
+  // ** HELPERS E FORMATAÇÃO **
+  // ----------------------------------------------------------------------
+  const fmtCurrency = (v) => {
+    v = Number(v) || 0;
+    return new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0}).format(Math.round(v));
+  };
+  const fmtNumber = (v) => Math.round(Number(v) || 0).toString();
+  const fmtPercent1 = (frac) => (isNaN(frac)||frac===null) ? '0.0%' : (frac*100).toFixed(1) + '%';
+  const fmtPercent2 = (frac) => (isNaN(frac)||frac===null) ? '0.00%' : (frac*100).toFixed(2) + '%';
+
+  function colorForPercent(p){
+    if(p <= 40) return '#e65151';
+    if(p <= 70) return '#e3c24a';
+    if(p <= 100) return '#4aa6e6';
+    return '#34d07a';
+  }
+  function colorForDevol(p){
+    // Inversão: 0% é bom (verde), alto é ruim (vermelho)
+    if(p <= 40) return '#34d07a';
+    if(p <= 70) return '#4aa6e6';
+    if(p <= 100) return '#e3c24a';
+    return '#e65151';
+  }
+
+  // Corrigido para priorizar a chave exata (CASE SENSITIVE) do Firebase
+  function safeGet(obj, key, def = 0) {
+    if (!obj) return def;
+    // 1. Tenta a chave exata (ex: 'VENDAS')
+    if (key in obj && obj[key] !== undefined && obj[key] !== null) return obj[key];
+    // 2. Tenta a chave em minúscula (para compatibilidade com chaves dinâmicas não mapeadas)
+    const lowerKey = key.toLowerCase();
+    if (lowerKey in obj && obj[lowerKey] !== undefined && obj[lowerKey] !== null) return obj[lowerKey];
+    return def;
+  }
+  
+  // Função para encurtar o nome: Primeiro nome e primeira letra do segundo nome
+  function getCleanName(fullName) {
+      if (!fullName) return '';
+      const parts = fullName.trim().split(/\s+/).filter(p => p.length > 0);
+      if (parts.length < 2) return parts.join(' ') || '';
+      
+      const firstName = parts[0];
+      // Tenta encontrar a primeira letra do segundo nome
+      for (let i = 1; i < parts.length; i++) {
+        if (parts[i][0]) {
+          return `${firstName} ${parts[i][0]}.`;
+        }
+      }
+      return firstName;
+  }
+
+  // ----------------------------------------------------------------------
+  // ** LÓGICA DE DADOS E FETCH **
+  // ----------------------------------------------------------------------
+  
+  // Etapa 1: Busca apenas os períodos disponíveis
+  async function fetchPeriods(){
+      errEl.style.display='none';
+      togglePeriods.firstChild.textContent = 'CARREGANDO PERÍODOS...';
+      try{
+          const PERIODS_URL = `${FIREBASE_BASE_URL}/performance_mensal/${COMPANY_KEY}.json`;
+          const res = await fetch(PERIODS_URL);
+          if(!res.ok) throw new Error(`Erro ao acessar Performance. Código ${res.status}`);
+          const allPeriods = await res.json();
+          
+          periodsList = allPeriods ? Object.keys(allPeriods).filter(k => k !== 'parametros_do_periodo') : [];
+          periodsList.sort().reverse(); 
+          
+          buildPeriodMenu();
+          togglePeriods.firstChild.textContent = PERIOD_KEY ? PERIOD_KEY.replace('_', '/') : 'PERÍODO';
+      } catch(err){
+          console.error(err);
+          errEl.style.display='block';
+          errEl.textContent = 'Falha ao carregar períodos: ' + (err.message||err);
+      } finally {
+        // Habilita o botão Atualizar apenas se um período estiver selecionado
+        btnRefresh.disabled = PERIOD_KEY === null;
+      }
+  }
+
+  // Etapa 2: Busca dados para um período específico
+  async function loadAllDataForPeriod(isAutoRefresh = false){
+    if(PERIOD_KEY === null) {
+      if (!isAutoRefresh) errEl.textContent = 'Selecione um período.';
+      return;
+    }
+    
+    // Verifica se o período mudou em relação ao último carregamento
+    const periodChanged = PERIOD_KEY !== lastLoadedPeriod;
+
+    if (!isAutoRefresh) {
+      btnRefresh.disabled = true;
+      btnRefresh.textContent = 'ATUALIZANDO...';
+      errEl.style.display='none';
+    }
+
+    try{
+      const PERFORMANCE_URL = `${FIREBASE_BASE_URL}/performance_mensal/${COMPANY_KEY}/${PERIOD_KEY}.json`;
+      const EMPLOYEES_URL = `${FIREBASE_BASE_URL}/funcionarios/${COMPANY_KEY}.json`;
+
+      // 1. Fetch Performance Data
+      let res = await fetch(PERFORMANCE_URL);
+      if(!res.ok) throw new Error(`Erro ao acessar Performance. Código ${res.status}`);
+      perfData = await res.json();
+      if(!perfData) throw new Error("Dados de performance vazios.");
+
+      // 2. Fetch Employees Data
+      res = await fetch(EMPLOYEES_URL);
+      if(!res.ok) throw new Error(`Erro ao acessar Funcionários. Código ${res.status}`);
+      employeesData = await res.json();
+      if(!employeesData) throw new Error("Dados de funcionários vazios.");
+      
+      // Mescla e prepara a lista de vendedores, atualizando as seleções (selectedKeys e selectedEstados)
+      parseSellers();
+      
+      // Se for o primeiro load OU o período mudou, reconstruir menus de seleção
+      if (!isAutoRefresh || periodChanged) {
+          
+          // Remove todos os cards existentes
+          cardsEl.innerHTML = ''; 
+          
+          // Reconstroi os menus de Vendedores e Estados 
+          buildEstadosMenu(); 
+          buildVendorMenu(); 
+
+          // Ativa os outros menus
+          vendorSelectorEl.classList.remove('disabled');
+          metricSelectorEl.classList.remove('disabled');
+          estadoSelectorEl.classList.remove('disabled');
+      }
+      
+      // Atualiza o rastreador de período
+      lastLoadedPeriod = PERIOD_KEY;
+      
+      // Renderiza: só renderiza se o usuário já tiver feito alguma seleção de vendedor.
+      filterAndRenderCards();
+      
+    }catch(err){
+      console.error(err);
+      errEl.style.display='block';
+      errEl.textContent = 'Falha ao carregar dados: ' + (err.message||err);
+    } finally {
+      if (!isAutoRefresh) {
+        btnRefresh.disabled = false;
+        btnRefresh.textContent = 'ATUALIZAR';
+      }
+    }
+  }
+
+  // Mescla dados de performance e funcionário, e encurta o nome
+  function parseSellers(){
+    sellersList = [];
+    if(!employeesData || !perfData) return;
+    
+    globalParams = perfData.parametros_do_periodo || {};
+    
+    Object.keys(employeesData).forEach(k => {
+        // Ignora o 'Geral' (ID 999999)
+        if(k === '999999') return; 
+
+        const employee = employeesData[k];
+        const performance = perfData[k] || {}; 
+        
+        const mergedData = {
+            key: k,
+            NOME: getCleanName(employee.nome), 
+            ESTADO: employee.estado || employee.uf || performance.ESTADO || '', 
+            URL_FOTO: employee.url_foto || '',
+            ...performance 
+        };
+        
+        const performanceKeys = Object.keys(performance).filter(key => key !== 'ESTADO' && key !== 'META_DEVOLUCAO');
+        if (performanceKeys.length > 0 || employee.nome) { 
+            sellersList.push({key: k, data: mergedData});
+        }
+    });
+
+    sellersList.sort((a,b)=> (''+(a.data.NOME||'')).localeCompare(''+(b.data.NOME||'')));
+    
+    // Atualiza selectedKeys: Remove chaves de vendedores que não existem mais neste período/lista.
+    const currentKeys = new Set(sellersList.map(s => s.key));
+    selectedKeys = new Set(Array.from(selectedKeys).filter(k => currentKeys.has(k)));
+    
+    // --- AJUSTE CIRÚRGICO: UF deve vir toda selecionada por padrão ---
+    const currentEstados = new Set(sellersList.map(s => s.data.ESTADO).filter(e => e));
+    
+    // Se a seleção de estados está vazia OU o período mudou (e os estados antigos foram filtrados),
+    // devemos selecionar TODOS os estados disponíveis (novo comportamento padrão para UF).
+    if (selectedEstados.size === 0 || Array.from(selectedEstados).some(e => !currentEstados.has(e))) {
+      selectedEstados.clear();
+      Array.from(currentEstados).forEach(e => selectedEstados.add(e));
+    } else {
+      // Se não, remove apenas os estados que deixaram de existir no período.
+      selectedEstados = new Set(Array.from(selectedEstados).filter(e => currentEstados.has(e)));
+    }
+  }
+
+  // ----------------------------------------------------------------------
+  // ** LÓGICA DE RENDERIZAÇÃO E INDICADORES **
+  // ----------------------------------------------------------------------
+
+  function rebuildIndicatorsForCard(cardEl, sellerKey){
+    const seller = sellersList.find(x=>x.key===sellerKey);
+    const d = seller ? seller.data : null;
+    const indsContainer = cardEl.querySelector('.indicators');
+    indsContainer.innerHTML = '';
+    if(!d) return;
+
+    // --- LEITURA DE CAMPOS (USANDO safeGet PARA CHAVES CASE SENSITIVE) ---
+    const vendas = Number(safeGet(d,'VENDAS',0));
+    const meta = Number(safeGet(d,'META',0));
+    const percent_meta = Number(safeGet(d,'percent_META',0)); 
+    
+    const fume = Number(safeGet(d,'FUMEMAX',0));
+    const meta_fume = Number(safeGet(globalParams,'META_FUME_MAX', 24000)); 
+
+    const percent_v15 = Number(safeGet(d, 'percent_VENDAS_15D', 0)); 
+    const vendas15 = Number(safeGet(d, 'VENDAS_15D', 0));
+    const meta_15d = Number(safeGet(d, 'META_15D', 0)); 
+    
+    const clientes = Number(safeGet(d,'CLIENTES',0));
+    const meta_cliente = Number(safeGet(globalParams,'limite_clientes', 30)); 
+    const percent_clientes = Number(safeGet(d, 'percent_CLIENTES', 0)); 
+    
+    const preco = Number(safeGet(d,'PRECO',0));
+    const meta_preco = Number(safeGet(globalParams,'PRECO_MEDIO', 165));
+    const percent_preco = Number(safeGet(d, 'percent_PRECO', 0)); 
+
+    const devol = Number(safeGet(d,'DEVOLUCAO',0));
+    const meta_devol_vendedor = Number(safeGet(d,'META_DEVOLUCAO', 0)); 
+    
+
+    // --- PREPARAR MÉTRICAS ---
+    const order = METRICS.map(m=>m.key);
+    order.forEach(key => {
+      if(!selectedMetrics.has(key)) return;
+      let el = null;
+      switch(key){
+        case 'VENDAS': {
+          const top = fmtPercent1(percent_meta);
+          const barPercent = percent_meta * 100;
+          el = createIndicatorElement('VENDAS', top, barPercent, fmtCurrency(vendas), fmtCurrency(meta));
+          break;
+        }
+        case 'FUMEMAX_R$': {
+          const frac = meta_fume !== 0 ? (fume / meta_fume) : 0;
+          const top = fmtPercent1(frac);
+          const barPercent = frac * 100;
+          el = createIndicatorElement('FUME MAX - R$', top, barPercent, fmtCurrency(fume), fmtCurrency(meta_fume));
+          break;
+        }
+        case 'FUMEMAX_CARTEIRA': {
+          const fracCarteira = vendas !== 0 ? (fume / vendas) : 0;
+          const top = fmtPercent1(fracCarteira);
+          const target = 0.3 * vendas; 
+          const barFrac = target !== 0 ? (fume / target) : 0;
+          const barPercent = barFrac * 100;
+          el = createIndicatorElement('FUME MAX - CARTEIRA', top, barPercent, fmtCurrency(fume), fmtCurrency(target));
+          break;
+        }
+        case 'DESCONCENTRACAO': {
+          const top = fmtPercent1(percent_v15);
+          const barPercent = percent_v15 * 100;
+          el = createIndicatorElement('DESCONCENTRAÇÃO', top, barPercent, fmtCurrency(vendas15), fmtCurrency(meta_15d));
+          break;
+        }
+        case 'CLIENTES': {
+          const top = fmtNumber(clientes); // AJUSTE: Valor Alcançado no lugar do %
+          const barPercent = percent_clientes * 100;
+          el = createIndicatorElement('CLIENTES', top, barPercent, '', fmtNumber(meta_cliente)); // achievedText vazio
+          break;
+        }
+        case 'PRECO': {
+          const top = fmtCurrency(preco); // AJUSTE: Valor Alcançado no lugar do %
+          const barPercent = percent_preco * 100;
+          el = createIndicatorElement('PREÇO', top, barPercent, '', fmtCurrency(meta_preco)); // achievedText vazio
+          break;
+        }
+        case 'DEVOLUCAO': {
+          const topFrac = vendas !== 0 ? (devol / vendas) : 0;
+          const topLabel = fmtPercent2(topFrac);
+          
+          let barPercent = 0;
+          if (devol > 0 && meta_devol_vendedor === 0) {
+            barPercent = 100; 
+          } else if (meta_devol_vendedor > 0) {
+            barPercent = (devol / meta_devol_vendedor) * 100;
+          }
+          
+          const devolZero = Number(devol) === 0;
+          el = createIndicatorElement('DEVOLUÇÃO', topLabel, barPercent, fmtCurrency(devol), fmtCurrency(meta_devol_vendedor), {isDevol:true, devolZero:devolZero});
+          break;
+        }
+      }
+      if(el) indsContainer.appendChild(el);
+    });
+  }
+
+  function createIndicatorElement(title, topRightLabel, barPercentValue, achievedText, targetText, options={}){
+    const color = options.isDevol ? colorForDevol(barPercentValue) : colorForPercent(barPercentValue);
+    const displayWidth = Math.min(100, Math.max(0, barPercentValue)); 
+    const el = document.createElement('div');
+    el.className = 'ind';
+    if(options.devolZero) el.classList.add('devol-zero');
+    
+    // Ajuste: Se achievedText é vazio (para CLIENTES/PREÇO), mostra "Meta" na linha de baixo.
+    const lowRowContent = achievedText === '' ? 
+      `<div>Meta:</div><div>${targetText}</div>` : 
+      `<div>${achievedText}</div><div>${targetText}</div>`;
+      
+    el.innerHTML = `
+      <div class="row"><div style="text-align:left">${title}</div><div style="text-align:right">${topRightLabel}</div></div>
+      <div class="bar-wrap"><div class="bar" data-target-width="${displayWidth}%" style="width:${displayWidth}%;background:${color}"></div></div>
+      <div class="row low">${lowRowContent}</div>
+    `;
+    return el;
+  }
+  
+  function renderCards(keys){
+    const newKeys = new Set(keys);
+    Array.from(cardsEl.children).forEach(card=>{
+      const k = card.dataset.seller;
+      if(!newKeys.has(k)) cardsEl.removeChild(card);
+    });
+    keys.forEach(k=>{
+      const existing = cardsEl.querySelector(`.card[data-seller="${k}"]`);
+      if(existing){
+        rebuildIndicatorsForCard(existing, k);
+      } else {
+        const seller = sellersList.find(x=>x.key===k);
+        if(!seller) return;
+        const d = seller.data;
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.dataset.seller = k;
+        card.innerHTML = `
+          <div class="card-top">
+            <div class="avatar"><img src="${d.URL_FOTO || ''}" alt=""></div>
+            <div style="flex:1">
+              <div class="card-title">${d.NOME || ('#'+k)}</div>
+              <div class="card-sub">${d.ESTADO || ''} • COD ${k}</div>
+            </div>
+          </div>
+          <div class="indicators" data-inds-for="${k}"></div>
+        `;
+        cardsEl.appendChild(card);
+        rebuildIndicatorsForCard(card, k);
+      }
+    });
+    // Animação da barra de progresso
+    requestAnimationFrame(()=> {
+      document.querySelectorAll('.bar').forEach(b=>{
+        const w = b.dataset.targetWidth || b.style.width || '0%';
+        b.style.width = '0%';
+        setTimeout(()=> b.style.width = w, 40);
+      });
+    });
+  }
+
+  function updateAllCardsIndicators(){
+    Array.from(cardsEl.children).forEach(card=>{
+      const sellerKey = card.dataset.seller;
+      rebuildIndicatorsForCard(card, sellerKey);
+    });
+  }
+
+  // ----------------------------------------------------------------------
+  // ** LÓGICA DOS DROPDOWNS E SELEÇÕES **
+  // ----------------------------------------------------------------------
+  
+  function setupToggles(){
+      const toggleMenu = (toggleId, menuId) => {
+          const toggle = document.getElementById(toggleId);
+          const menu = document.getElementById(menuId);
+          toggle.addEventListener('click', () => {
+              // Verifica se o dropdown está desabilitado
+              if(toggle.parentElement.classList.contains('disabled')) return; 
+
+              const isVisible = menu.style.display === 'block';
+              // Fecha todos os menus abertos (exceto o próprio)
+              document.querySelectorAll('.multi-drop .menu').forEach(m => {
+                if(m.id !== menuId) m.style.display = 'none';
+              });
+              // Abre o menu clicado
+              menu.style.display = isVisible ? 'none' : 'block';
+          });
+          document.addEventListener('click', (event) => {
+              if (!document.getElementById(menuId).parentElement.contains(event.target)) {
+                  menu.style.display = 'none';
+              }
+          });
+      };
+      toggleMenu('togglePeriods', 'menuPeriods');
+      toggleMenu('toggleVendors', 'menuVendors');
+      toggleMenu('toggleMetrics', 'menuMetrics');
+      toggleMenu('toggleEstados', 'menuEstados');
+  }
+
+  // Menu de Períodos
+  function buildPeriodMenu(){
+    menuPeriods.innerHTML = '';
+    const currentPeriodName = PERIOD_KEY ? PERIOD_KEY.replace('_', '/') : 'PERÍODO';
+    togglePeriods.firstChild.textContent = currentPeriodName;
+
+    periodsList.forEach(key => {
+        const label = document.createElement('label');
+        label.innerHTML = `<input type="radio" name="periodSelect" data-key="${key}" ${PERIOD_KEY === key ? 'checked' : ''}> ${key.replace('_', '/')}`;
+        label.querySelector('input').addEventListener('change', onPeriodToggle);
+        menuPeriods.appendChild(label);
+    });
+  }
+
+  // Lógica de seleção de período
+  function onPeriodToggle(e){
+      const newKey = e.target.dataset.key;
+      if (newKey === PERIOD_KEY) return;
+      
+      PERIOD_KEY = newKey;
+      togglePeriods.firstChild.textContent = newKey.replace('_', '/');
+      menuPeriods.style.display = 'none';
+      
+      stopAutoRefresh();
+      startAutoRefresh();
+      
+      // Chama o carregamento. O parseSellers agora garante que UF esteja preenchido.
+      loadAllDataForPeriod(false);
+  }
+
+  // Menu de Vendedores (Seleciona Todos/Nenhum)
+  function buildVendorMenu(){
+      menuVendors.innerHTML = '';
+      const allKeys = sellersList.map(s => s.key);
+      
+      // All/None toggle (Select All/Deselect All)
+      const allLabel = document.createElement('label');
+      allLabel.innerHTML = `<input type="checkbox" id="checkAllVendors"> Selecionar Todos / Nenhum`;
+      allLabel.querySelector('input').addEventListener('change', (e) => {
+          const isChecked = e.target.checked;
+          selectedKeys.clear();
+          if (isChecked) {
+             allKeys.forEach(k => selectedKeys.add(k));
+          }
+          syncVendorChecks();
+          filterAndRenderCards();
+      });
+      menuVendors.appendChild(allLabel);
+
+      allKeys.forEach(key => {
+          const seller = sellersList.find(x=>x.key===key);
+          const label = document.createElement('label');
+          label.innerHTML = `<input type="checkbox" data-key="${key}" ${selectedKeys.has(key) ? 'checked' : ''}> ${seller.data.NOME} (${seller.data.ESTADO})`;
+          label.querySelector('input').addEventListener('change', onVendorToggle);
+          menuVendors.appendChild(label);
+      });
+      syncVendorChecks();
+  }
+
+  function onVendorToggle(e){
+      const key = e.target.dataset.key;
+      if(e.target.checked) selectedKeys.add(key);
+      else selectedKeys.delete(key);
+      filterAndRenderCards();
+      syncVendorChecks();
+  }
+
+  function syncVendorChecks(){
+      const checks = menuVendors.querySelectorAll('input[type="checkbox"]');
+      let vendorsChecked = 0;
+      let totalVendors = 0;
+      
+      checks.forEach(check => {
+          if(check.id === 'checkAllVendors') return;
+          totalVendors++;
+          const key = check.dataset.key;
+          check.checked = selectedKeys.has(key);
+          if(check.checked) vendorsChecked++;
+      });
+      const allCheck = document.getElementById('checkAllVendors');
+      if(allCheck) allCheck.checked = (vendorsChecked === totalVendors && totalVendors > 0); // Atualiza o estado do Select All
+      
+      toggleVendors.firstChild.textContent = vendorsChecked === 0 ? 'VENDEDORES' : 
+                                            vendorsChecked === totalVendors ? 'TODOS VENDEDORES' :
+                                            `${vendorsChecked} VENDEDORES`;
+  }
+
+  // Menu de Métricas (Inicia com todas ativas)
+  function buildMetricsMenu(){
+      const menuMetrics = document.getElementById('menuMetrics');
+      menuMetrics.innerHTML = '';
+      const allMetricKeys = METRICS.map(m => m.key);
+
+      // All/None toggle para Métricas
+      const allToggle = document.createElement('label');
+      allToggle.innerHTML = `<input type="checkbox" id="checkAllMetrics"> Selecionar Todas / Nenhuma`;
+      allToggle.querySelector('input').checked = selectedMetrics.size === METRICS.length;
+      allToggle.querySelector('input').addEventListener('change', (e) => {
+          const isChecked = e.target.checked;
+          selectedMetrics.clear();
+          if (isChecked) {
+              allMetricKeys.forEach(k => selectedMetrics.add(k));
+          }
+          menuMetrics.querySelectorAll('input[type="checkbox"]').forEach(c => {
+              if (c.id !== 'checkAllMetrics') c.checked = isChecked;
+          });
+          updateAllCardsIndicators();
+          syncMetricChecks();
+      });
+      menuMetrics.appendChild(allToggle);
+
+      METRICS.forEach(metric => {
+          const label = document.createElement('label');
+          label.innerHTML = `<input type="checkbox" data-key="${metric.key}" ${selectedMetrics.has(metric.key) ? 'checked' : ''}> ${metric.label}`;
+          label.querySelector('input').addEventListener('change', onMetricToggle);
+          menuMetrics.appendChild(label);
+      });
+      syncMetricChecks();
+  }
+
+  function onMetricToggle(e){
+      const key = e.target.dataset.key;
+      if(e.target.checked) selectedMetrics.add(key);
+      else selectedMetrics.delete(key);
+      updateAllCardsIndicators(); 
+      syncMetricChecks();
+  }
+
+  function syncMetricChecks(){
+      const checks = document.getElementById('menuMetrics').querySelectorAll('input[type="checkbox"]');
+      const toggleMetrics = document.getElementById('toggleMetrics');
+      let metricsChecked = 0;
+      let totalMetrics = 0;
+
+      checks.forEach(check => {
+          if(check.id === 'checkAllMetrics') return; 
+          totalMetrics++;
+          if(check.checked) metricsChecked++;
+      });
+      
+      const allCheck = document.getElementById('checkAllMetrics');
+      if (allCheck) allCheck.checked = (metricsChecked === totalMetrics); 
+
+      toggleMetrics.firstChild.textContent = metricsChecked === 0 ? 'MÉTRICAS' : 
+                                            metricsChecked === totalMetrics ? 'TODAS MÉTRICAS' :
+                                            `${metricsChecked} MÉTRICAS`;
+  }
+  
+  // Menu de Estados (Inicia com todas UF ativas)
+  function buildEstadosMenu(){
+      menuEstados.innerHTML = '';
+      const allEstados = new Set(sellersList.map(s => s.data.ESTADO).filter(e => e));
+      const uniqueEstados = Array.from(allEstados).sort();
+
+      // All/None toggle
+      const allLabel = document.createElement('label');
+      allLabel.innerHTML = `<input type="checkbox" id="checkAllEstados"> Selecionar Todos / Nenhum`;
+      allLabel.querySelector('input').addEventListener('change', (e) => {
+          const isChecked = e.target.checked;
+          selectedEstados.clear();
+          if (isChecked) {
+            uniqueEstados.forEach(e => selectedEstados.add(e));
+          }
+          syncEstadoChecks();
+          filterAndRenderCards();
+      });
+      menuEstados.appendChild(allLabel);
+
+      uniqueEstados.forEach(estado => {
+          const label = document.createElement('label');
+          // selectedEstados JÁ FOI populado na parseSellers, garantindo que venha tudo marcado
+          label.innerHTML = `<input type="checkbox" data-key="${estado}" ${selectedEstados.has(estado) ? 'checked' : ''}> ${estado}`;
+          label.querySelector('input').addEventListener('change', onEstadoToggle);
+          menuEstados.appendChild(label);
+      });
+      syncEstadoChecks();
+  }
+  
+  function onEstadoToggle(e){
+      const key = e.target.dataset.key;
+      if(e.target.checked) selectedEstados.add(key);
+      else selectedEstados.delete(key);
+      filterAndRenderCards();
+      syncEstadoChecks();
+  }
+
+  function syncEstadoChecks(){
+      const checks = menuEstados.querySelectorAll('input[type="checkbox"]');
+      let estadosChecked = 0;
+      let totalEstados = 0;
+      
+      checks.forEach(check => {
+          if(check.id === 'checkAllEstados') return;
+          totalEstados++;
+          const key = check.dataset.key;
+          check.checked = selectedEstados.has(key);
+          if(check.checked) estadosChecked++;
+      });
+      const allCheck = document.getElementById('checkAllEstados');
+      if(allCheck) allCheck.checked = (estadosChecked === totalEstados && totalEstados > 0);
+
+      toggleEstados.firstChild.textContent = estadosChecked === 0 ? 'UF' : 
+                                            estadosChecked === totalEstados ? 'TODAS UF' :
+                                            `${estadosChecked} UF`;
+  }
+  
+  // Combina filtros e renderiza cards
+  function filterAndRenderCards(){
+      // Filtra apenas se um período foi carregado
+      if (PERIOD_KEY === null || sellersList.length === 0) {
+        cardsEl.innerHTML = '';
+        return;
+      }
+      
+      // Se não houver vendedor selecionado, não renderiza nada (COMUNICADO: Vendedores devem iniciar vazios)
+      if (selectedKeys.size === 0) {
+        cardsEl.innerHTML = '';
+        return;
+      }
+      
+      // Se não houver estado selecionado, não renderiza nada (ESTE BLOCO SÓ ATUA SE O USUÁRIO DESMARCAR TUDO)
+      if (selectedEstados.size === 0) {
+        cardsEl.innerHTML = '';
+        return;
+      }
+
+      // Filtra os vendedores que estão ativos na seleção E que correspondem ao estado ativo.
+      const filteredKeys = sellersList
+          .filter(s => selectedKeys.has(s.key) && selectedEstados.has(s.data.ESTADO))
+          .map(s => s.key);
+          
+      renderCards(filteredKeys);
+  }
+  
+  // ----------------------------------------------------------------------
+  // ** CONTROLE DE ATUALIZAÇÃO **
+  // ----------------------------------------------------------------------
+  
+  let autoRefreshTimer = null;
+
+  function startAutoRefresh(){
+      if(autoRefreshTimer) stopAutoRefresh();
+      if(PERIOD_KEY === null) return;
+      
+      autoRefreshTimer = setInterval(autoRefreshData, REFRESH_INTERVAL_MS);
+      console.log(`Auto-refresh iniciado para o período ${PERIOD_KEY}.`);
+  }
+
+  function stopAutoRefresh(){
+      if(autoRefreshTimer){
+          clearInterval(autoRefreshTimer);
+          autoRefreshTimer = null;
+          console.log('Auto-refresh parado.');
+      }
+  }
+
+  // Apenas consulta e atualiza o visual (sem reconstruir menus de seleção)
+  function autoRefreshData(){
+      loadAllDataForPeriod(true); 
+  }
+
+  // ----------------------------------------------------------------------
+  // ** INICIALIZAÇÃO **
+  // ----------------------------------------------------------------------
+  setupToggles();
+  buildMetricsMenu(); // Metrics é estático e pode ser montado na inicialização
+  fetchPeriods(); // Inicia buscando apenas os períodos.
+
+  // Ação do botão ATUALIZAR
+  btnRefresh.addEventListener('click', () => {
+    loadAllDataForPeriod(false); 
+  });
+
+})();
+</script>
+</body>
+</html>
