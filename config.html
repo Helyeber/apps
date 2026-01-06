@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GESTÃO DE METAS - ALPHALUMI</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- SDK Firebase OTIMIZADO para Realtime Database público -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary-color: #7209b7;
+            --dark-bg: #121212;
+            --dark-surface: #1e1e1e;
+            --dark-card: #252525;
+            --dark-border: #333333;
+            --text-primary: #f0f0f0;
+            --text-secondary: #b0b0b0;
+            --success-color: #2ecc71;
+            --danger-color: #e74c3c;
+            --warning-color: #f39c12;
+            --info-color: #3498db;
+            --radius-sm: 4px;
+            --radius-md: 6px;
+        }
+        
+        * {
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+        
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-primary);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+        }
+        
+        .container-main {
+            max-width: 1400px;
+            padding: 20px;
+        }
+        
+        .app-header {
+            border-bottom: 1px solid var(--dark-border);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, var(--dark-surface) 0%, var(--dark-card) 100%);
+            border-radius: var(--radius-md);
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .app-header h1 {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 2.2rem;
+            margin-bottom: 5px;
+        }
+        
+        .app-header .subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+        
+        .card-dark {
+            background-color: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: var(--radius-md);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .tab-pane {
+            padding: 25px;
+        }
+        
+        .nav-tabs {
+            border-bottom: 1px solid var(--dark-border);
+            margin-bottom: 0;
+        }
+        
+        .nav-tabs .nav-link {
+            color: var(--text-secondary);
+            background-color: transparent;
+            border: 1px solid transparent;
+            border-radius: var(--radius-md) var(--radius-md) 0 0;
+            padding: 12px 24px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .nav-tabs .nav-link:hover {
+            color: var(--text-primary);
+            border-color: var(--dark-border) var(--dark-border) var(--dark-border);
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        .nav-tabs .nav-link.active {
+            color: var(--primary-color);
+            background-color: var(--dark-card);
+            border-color: var(--dark-border) var(--dark-border) var(--dark-card);
+            font-weight: 600;
+        }
+        
+        .form-label {
+            color: var(--text-secondary);
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .form-control, .form-select {
+            background-color: var(--dark-surface);
+            border: 1px solid var(--dark-border);
+            color: var(--text-primary);
+            border-radius: var(--radius-sm);
+            padding: 10px 12px;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            background-color: var(--dark-surface);
+            border-color: var(--primary-color);
+            color: var(--text-primary);
+            box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
+        }
+        
+        .btn {
+            border-radius: var(--radius-sm);
+            font-weight: 500;
+            padding: 10px 20px;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary:hover, .btn-primary:focus {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+            border-color: var(--success-color);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color);
+            border-color: var (--danger-color);
+        }
+        
+        .btn-outline-secondary {
+            color: var(--text-secondary);
+            border-color: var(--dark-border);
+        }
+        
+        .btn-outline-secondary:hover {
+            background-color: var(--dark-border);
+            border-color: var(--dark-border);
+            color: var(--text-primary);
+        }
+        
+        .table-responsive {
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 1px solid var(--dark-border);
+        }
+        
+        .table-dark-custom {
+            background-color: var(--dark-surface);
+            color: var(--text-primary);
+            margin-bottom: 0;
+        }
+        
+        .table-dark-custom thead th {
+            background-color: var(--dark-card);
+            border-bottom: 2px solid var(--dark-border);
+            color: var(--text-secondary);
+            font-weight: 600;
+            padding: 15px;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .table-dark-custom tbody td {
+            border-top: 1px solid var(--dark-border);
+            padding: 12px 15px;
+            vertical-align: middle;
+        }
+        
+        .table-dark-custom tbody tr:hover {
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+        
+        .list-group-item-dark {
+            background-color: var(--dark-surface);
+            color: var(--text-primary);
+            border: 1px solid var(--dark-border);
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .list-group-item-dark:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+        }
+        
+        .badge-custom {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 5px 10px;
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        /* Modal de notificação personalizado */
+        .notification-modal {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            max-width: 400px;
+            width: 90%;
+            display: none;
+        }
+        
+        .notification-card {
+            background-color: var(--dark-card);
+            border-radius: var(--radius-md);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--dark-border);
+        }
+        
+        .notification-title {
+            font-weight: 600;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .notification-body {
+            padding: 20px;
+        }
+        
+        .notification-success {
+            border-left-color: var(--success-color);
+        }
+        
+        .notification-error {
+            border-left-color: var(--danger-color);
+        }
+        
+        .notification-warning {
+            border-left-color: var(--warning-color);
+        }
+        
+        .notification-info {
+            border-left-color: var(--info-color);
+        }
+        
+        .btn-close-custom {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        
+        .btn-close-custom:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+        }
+        
+        /* Acesso negado */
+        .access-denied {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 70vh;
+            text-align: center;
+        }
+        
+        .access-denied h2 {
+            color: var(--danger-color);
+            margin-bottom: 15px;
+        }
+        
+        .access-denied p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+        
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .container-main {
+                padding: 15px;
+            }
+            
+            .app-header {
+                padding: 20px;
+            }
+            
+            .app-header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .nav-tabs .nav-link {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+            
+            .tab-pane {
+                padding: 20px 15px;
+            }
+            
+            .table-dark-custom thead th,
+            .table-dark-custom tbody td {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+            
+            .notification-modal {
+                left: 5%;
+                right: 5%;
+                max-width: 90%;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .btn {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            
+            .d-flex.gap-2 {
+                flex-direction: column;
+            }
+            
+            .nav-tabs {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+            
+            .table-responsive {
+                font-size: 0.85rem;
+            }
+        }
+        
+        /* Animações */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .slide-in-right {
+            animation: slideInRight 0.3s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="container container-main">
+        <!-- Modal de notificação -->
+        <div id="notificationModal" class="notification-modal">
+            <div class="notification-card" id="notificationCard">
+                <div class="notification-header">
+                    <div class="notification-title" id="notificationTitle">
+                        <i class="bi bi-check-circle-fill"></i> Sucesso
+                    </div>
+                    <button type="button" class="btn-close-custom" onclick="hideNotification()">
+                        <i class="bi bi-x"></i>
+                    </button>
+                </div>
+                <div class="notification-body">
+                    <p id="notificationMessage">Mensagem de notificação</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTAINER PRINCIPAL (SÓ EXIBIDO SE AUTORIZADO) -->
+        <div id="appContainer" style="display: none;">
+            <div class="app-header fade-in">
+                <h1><i class="bi bi-graph-up-arrow"></i> GESTÃO DE METAS</h1>
+                <div class="subtitle">ALPHALUMI - Painel Administrativo</div>
+            </div>
+
+            <ul class="nav nav-tabs" id="abasAdmin" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="aba-metas" data-bs-toggle="tab" data-bs-target="#metas" type="button">
+                        <i class="bi bi-sliders"></i> Metas Padrão
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="aba-periodos" data-bs-toggle="tab" data-bs-target="#periodos" type="button">
+                        <i class="bi bi-calendar-range"></i> Períodos
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="aba-editor" data-bs-toggle="tab" data-bs-target="#editor" type="button">
+                        <i class="bi bi-table"></i> Editor em Massa
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content card-dark" id="abasAdminConteudo">
+                <!-- ABA 1: METAS PADRÃO -->
+                <div class="tab-pane fade show active" id="metas" role="tabpanel">
+                    <h3 class="mb-4"><i class="bi bi-sliders"></i> Editar Metas Padrão</h3>
+                    <form id="formMetasPadrao">
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-4">
+                                <label class="form-label">META (R$)</label>
+                                <input type="number" step="0.01" class="form-control" id="inputMeta" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">META_CLIENTE</label>
+                                <input type="number" step="1" class="form-control" id="inputMetaCliente" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">META_PRECO (R$)</label>
+                                <input type="number" step="0.01" class="form-control" id="inputMetaPreco" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">META_FUME_MAX (R$)</label>
+                                <input type="number" step="0.01" class="form-control" id="inputMetaFumeMax" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">PERCENT_15D</label>
+                                <input type="number" step="0.001" class="form-control" id="inputPercent15D" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">PERCENT_DEVOLUCAO</label>
+                                <input type="number" step="0.0001" class="form-control" id="inputPercentDevolucao" required>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-wrap gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save"></i> Salvar Metas Padrão
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="carregarMetasPadrao()">
+                                <i class="bi bi-arrow-clockwise"></i> Carregar Valores Atuais
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- ABA 2: PERÍODOS -->
+                <div class="tab-pane fade" id="periodos" role="tabpanel">
+                    <h3 class="mb-4"><i class="bi bi-calendar-range"></i> Gerenciar Períodos</h3>
+                    <div class="mb-4">
+                        <button class="btn btn-success mb-2" onclick="criarInterfaceNovoPeriodo()">
+                            <i class="bi bi-plus-circle"></i> Criar Novo Período
+                        </button>
+                        <button class="btn btn-outline-secondary mb-2" onclick="carregarListaPeriodos()">
+                            <i class="bi bi-arrow-clockwise"></i> Atualizar Lista
+                        </button>
+                    </div>
+                    
+                    <div id="containerListaPeriodos" class="mb-4">
+                        <div class="card-dark p-3">
+                            <p class="mb-0 text-center">Carregando lista de períodos...</p>
+                        </div>
+                    </div>
+                    
+                    <div id="containerEditarPeriodo" class="card-dark p-4" style="display: none;">
+                        <h4 class="mb-3">Editando Período: <span id="tituloPeriodoSelecionado" class="text-primary"></span></h4>
+                        <form id="formEditarPeriodo">
+                            <h5 class="mb-3 border-bottom pb-2">Parâmetros do Período</h5>
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-3">
+                                    <label class="form-label">DIA_META_INICIO</label>
+                                    <input type="date" class="form-control" id="editDiaInicio" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">DIA_META_FIM</label>
+                                    <input type="date" class="form-control" id="editDiaFim" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">DIA_META_15D</label>
+                                    <input type="date" class="form-control" id="editDia15d" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">DIAS_UTEIS</label>
+                                    <input type="number" class="form-control" id="editDiasUteis" required>
+                                </div>
+                            </div>
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-12">
+                                    <label class="form-label">PRODUTOS_FILTRO (separados por vírgula)</label>
+                                    <input type="text" class="form-control" id="editProdutosFiltro" placeholder="Ex: produto1,produto2,produto3">
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex flex-wrap gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-save"></i> Salvar Alterações
+                                </button>
+                                <button type="button" class="btn btn-danger" onclick="excluirPeriodoAtual()">
+                                    <i class="bi bi-trash"></i> Excluir Este Período
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="fecharFormularioEdicao()">
+                                    <i class="bi bi-x-circle"></i> Cancelar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- ABA 3: EDITOR EM MASSA -->
+                <div class="tab-pane fade" id="editor" role="tabpanel">
+                    <h3 class="mb-4"><i class="bi bi-table"></i> Editor em Massa de Metas por Vendedor</h3>
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label">Selecionar Período:</label>
+                            <select class="form-select" id="seletorPeriodoEditor">
+                                <option value="">-- Selecione um período --</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 d-flex align-items-end">
+                            <button class="btn btn-primary w-100" onclick="carregarMetasPeriodo()" id="btnCarregarMetas">
+                                <i class="bi bi-cloud-download"></i> Carregar Metas
+                            </button>
+                        </div>
+                    </div>
+                    <div id="containerTabelaEditor" class="card-dark p-3">
+                        <p class="mb-0 text-center text-secondary">Selecione um período e clique em "Carregar Metas" para editar os valores.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MENSAGEM DE ACESSO NEGADO -->
+        <div id="acessoNegadoContainer" class="access-denied" style="display: none;">
+            <div class="card-dark p-5 text-center">
+                <div class="mb-4">
+                    <i class="bi bi-shield-lock-fill" style="font-size: 4rem; color: var(--danger-color);"></i>
+                </div>
+                <h2>Perfil não autorizado</h2>
+                <p class="mb-4">Acesso requer autorização específica.</p>
+                <button class="btn btn-outline-secondary" onclick="window.location.href='/'">
+                    <i class="bi bi-arrow-left"></i> Voltar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== VERIFICAÇÃO DE PARÂMETRO DE URL ====================
+        const urlParams = new URLSearchParams(window.location.search);
+        const userParam = urlParams.get('user');
+        const acessoAutorizado = (userParam === 'full');
+        
+        if (acessoAutorizado) {
+            document.getElementById('appContainer').style.display = 'block';
+        } else {
+            document.getElementById('acessoNegadoContainer').style.display = 'block';
+            throw new Error("Acesso não autorizado");
+        }
+
+        // ==================== SISTEMA DE NOTIFICAÇÃO ====================
+        function mostrarNotificacao(titulo, mensagem, tipo = 'success') {
+            const modal = document.getElementById('notificationModal');
+            const card = document.getElementById('notificationCard');
+            const titleElement = document.getElementById('notificationTitle');
+            const messageElement = document.getElementById('notificationMessage');
+            
+            // Remove classes de tipo anteriores
+            card.classList.remove('notification-success', 'notification-error', 'notification-warning', 'notification-info');
+            
+            // Define ícone e cor baseado no tipo
+            let iconClass = 'bi-info-circle-fill';
+            let typeClass = 'notification-info';
+            
+            switch(tipo) {
+                case 'success':
+                    iconClass = 'bi-check-circle-fill';
+                    typeClass = 'notification-success';
+                    break;
+                case 'error':
+                    iconClass = 'bi-exclamation-circle-fill';
+                    typeClass = 'notification-error';
+                    break;
+                case 'warning':
+                    iconClass = 'bi-exclamation-triangle-fill';
+                    typeClass = 'notification-warning';
+                    break;
+                case 'info':
+                    iconClass = 'bi-info-circle-fill';
+                    typeClass = 'notification-info';
+                    break;
+            }
+            
+            // Aplica tipo e conteúdo
+            card.classList.add(typeClass);
+            titleElement.innerHTML = `<i class="bi ${iconClass}"></i> ${titulo}`;
+            messageElement.textContent = mensagem;
+            
+            // Mostra a notificação com animação
+            modal.style.display = 'block';
+            modal.classList.add('slide-in-right');
+            
+            // Fecha automaticamente após 5 segundos
+            setTimeout(() => {
+                hideNotification();
+            }, 5000);
+        }
+        
+        function hideNotification() {
+            const modal = document.getElementById('notificationModal');
+            modal.style.display = 'none';
+            modal.classList.remove('slide-in-right');
+        }
+
+        // ==================== CONFIGURAÇÃO FIREBASE PÚBLICO ====================
+        const firebaseConfig = {
+            apiKey: "dummy-key-for-public-db",
+            authDomain: "none",
+            databaseURL: "https://bd-comercial-alpha-default-rtdb.firebaseio.com",
+            projectId: "bd-comercial-alpha",
+            storageBucket: "none",
+            messagingSenderId: "none",
+            appId: "none"
+        };
+        
+        let app;
+        let database;
+        
+        try {
+            if (!firebase.apps.length) {
+                app = firebase.initializeApp(firebaseConfig);
+            } else {
+                app = firebase.app();
+            }
+            database = firebase.database();
+            console.log("Firebase inicializado com sucesso!");
+            
+            // ==================== FUNÇÕES PRINCIPAIS ====================
+            function mostrarStatus(mensagem, isErro = false) {
+                const tipo = isErro ? 'error' : 'success';
+                const titulo = isErro ? 'Erro' : 'Sucesso';
+                mostrarNotificacao(titulo, mensagem, tipo);
+            }
+
+            // ABA 1: METAS PADRÃO
+            const CAMINHO_METAS = 'empresas/ALPHALUMI/METAS';
+
+            function carregarMetasPadrao() {
+                console.log("Carregando metas padrão...");
+                database.ref(CAMINHO_METAS).get().then((snapshot) => {
+                    console.log("Dados recebidos:", snapshot.val());
+                    if (snapshot.exists()) {
+                        const data = snapshot.val();
+                        document.getElementById('inputMeta').value = data.META || '';
+                        document.getElementById('inputMetaCliente').value = data.META_CLIENTE || data.limite_clientes || '';
+                        document.getElementById('inputMetaPreco').value = data.META_PRECO || data.PRECO_MEDIO || '';
+                        document.getElementById('inputMetaFumeMax').value = data.META_FUME_MAX || '';
+                        document.getElementById('inputPercent15D').value = data.PERCENT_15D || '';
+                        document.getElementById('inputPercentDevolucao').value = data.PERCENT_DEVOLUCAO || '';
+                        mostrarStatus('Metas padrão carregadas com sucesso!');
+                    } else {
+                        mostrarStatus('Nenhuma meta padrão encontrada.', true);
+                    }
+                }).catch((error) => {
+                    console.error("Erro ao carregar metas:", error);
+                    mostrarStatus('Erro ao carregar: ' + error.message, true);
+                });
+            }
+
+            document.getElementById('formMetasPadrao').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const dadosAtualizados = {
+                    META: parseFloat(document.getElementById('inputMeta').value) || 0,
+                    META_CLIENTE: parseFloat(document.getElementById('inputMetaCliente').value) || 0,
+                    META_PRECO: parseFloat(document.getElementById('inputMetaPreco').value) || 0,
+                    META_FUME_MAX: parseFloat(document.getElementById('inputMetaFumeMax').value) || 0,
+                    PERCENT_15D: parseFloat(document.getElementById('inputPercent15D').value) || 0,
+                    PERCENT_DEVOLUCAO: parseFloat(document.getElementById('inputPercentDevolucao').value) || 0
+                };
+                
+                database.ref(CAMINHO_METAS).update(dadosAtualizados)
+                    .then(() => {
+                        mostrarStatus('Metas padrão salvas com sucesso!');
+                        console.log("Metas salvas:", dadosAtualizados);
+                    })
+                    .catch((error) => {
+                        console.error("Erro ao salvar:", error);
+                        mostrarStatus('Erro ao salvar: ' + error.message, true);
+                    });
+            });
+
+            // ABA 2: PERÍODOS
+            function carregarListaPeriodos() {
+                console.log("Carregando lista de períodos...");
+                database.ref('performance_mensal/ALPHALUMI').get().then((snapshot) => {
+                    console.log("Períodos recebidos:", snapshot.val());
+                    const container = document.getElementById('containerListaPeriodos');
+                    
+                    if (snapshot.exists()) {
+                        const periodos = Object.keys(snapshot.val());
+                        periodos.sort().reverse();
+                        
+                        if (periodos.length === 0) {
+                            container.innerHTML = '<div class="card-dark p-3"><p class="mb-0 text-center">Nenhum período encontrado.</p></div>';
+                            return;
+                        }
+                        
+                        let html = '<h5 class="mb-3">Períodos Existentes:</h5><div class="list-group">';
+                        
+                        periodos.forEach(chavePeriodo => {
+                            html += `
+                                <div class="list-group-item-dark" onclick="abrirEdicaoPeriodo('${chavePeriodo}')">
+                                    <span><strong>${chavePeriodo}</strong></span>
+                                    <span class="badge-custom">Editar</span>
+                                </div>
+                            `;
+                        });
+                        
+                        html += '</div>';
+                        container.innerHTML = html;
+                        mostrarStatus(`${periodos.length} período(s) carregado(s).`);
+                    } else {
+                        container.innerHTML = '<div class="card-dark p-3"><p class="mb-0 text-center">Nenhum período encontrado no banco de dados.</p></div>';
+                    }
+                }).catch((error) => {
+                    console.error("Erro ao carregar períodos:", error);
+                    mostrarStatus('Erro ao carregar lista: ' + error.message, true);
+                });
+            }
+
+            function abrirEdicaoPeriodo(chavePeriodo) {
+                console.log("Editando período:", chavePeriodo);
+                document.getElementById('tituloPeriodoSelecionado').textContent = chavePeriodo;
+                document.getElementById('containerEditarPeriodo').style.display = 'block';
+                
+                // Scroll suave para o formulário
+                document.getElementById('containerEditarPeriodo').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                
+                database.ref(`performance_mensal/ALPHALUMI/${chavePeriodo}`).get().then((snapshot) => {
+                    if (snapshot.exists()) {
+                        const dados = snapshot.val();
+                        const params = dados.parametros_do_periodo || {};
+                        
+                        document.getElementById('editDiaInicio').value = params.DIA_META_INICIO || '';
+                        document.getElementById('editDiaFim').value = params.DIA_META_FIM || '';
+                        document.getElementById('editDia15d').value = params.DIA_META_15D || '';
+                        document.getElementById('editDiasUteis').value = params.DIAS_UTEIS || 0;
+                        document.getElementById('editProdutosFiltro').value = params.PRODUTOS_FILTRO || '';
+                        
+                        mostrarStatus(`Período ${chavePeriodo} carregado para edição.`);
+                    } else {
+                        mostrarStatus('Período não encontrado.', true);
+                    }
+                }).catch((error) => {
+                    console.error("Erro ao carregar período:", error);
+                    mostrarStatus('Erro ao carregar: ' + error.message, true);
+                });
+            }
+
+            document.getElementById('formEditarPeriodo').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const chavePeriodo = document.getElementById('tituloPeriodoSelecionado').textContent;
+                
+                const dadosAtualizados = {
+                    parametros_do_periodo: {
+                        DIA_META_INICIO: document.getElementById('editDiaInicio').value,
+                        DIA_META_FIM: document.getElementById('editDiaFim').value,
+                        DIA_META_15D: document.getElementById('editDia15d').value,
+                        DIAS_UTEIS: parseInt(document.getElementById('editDiasUteis').value) || 0,
+                        PRODUTOS_FILTRO: document.getElementById('editProdutosFiltro').value || "",
+                        PRODUTOS_FLOAT: "",
+                        TEMPO_ATUALIZACAO_MINUTOS: 5
+                    }
+                };
+                
+                database.ref(`performance_mensal/ALPHALUMI/${chavePeriodo}`).update(dadosAtualizados)
+                    .then(() => {
+                        mostrarStatus(`Período ${chavePeriodo} atualizado com sucesso!`);
+                        console.log("Período salvo:", dadosAtualizados);
+                    })
+                    .catch((error) => {
+                        console.error("Erro ao salvar:", error);
+                        mostrarStatus('Erro ao salvar: ' + error.message, true);
+                    });
+            });
+
+            function fecharFormularioEdicao() {
+                document.getElementById('containerEditarPeriodo').style.display = 'none';
+            }
+
+            function excluirPeriodoAtual() {
+                const chavePeriodo = document.getElementById('tituloPeriodoSelecionado').textContent;
+                mostrarNotificacao('Confirmação', `Tem certeza que deseja excluir o período ${chavePeriodo}?`, 'warning');
+                
+                // Criar diálogo de confirmação personalizado
+                setTimeout(() => {
+                    if (confirm(`Excluir o período ${chavePeriodo}?`)) {
+                        database.ref(`performance_mensal/ALPHALUMI/${chavePeriodo}`).remove()
+                            .then(() => {
+                                mostrarStatus(`Período ${chavePeriodo} excluído com sucesso.`);
+                                fecharFormularioEdicao();
+                                carregarListaPeriodos();
+                            })
+                            .catch((error) => {
+                                console.error("Erro ao excluir:", error);
+                                mostrarStatus('Erro ao excluir: ' + error.message, true);
+                            });
+                    }
+                }, 100);
+            }
+
+            function criarInterfaceNovoPeriodo() {
+                const chave = prompt("Chave do período (AAAA_MM):");
+                if (!chave || !/^\d{4}_\d{2}$/.test(chave)) {
+                    mostrarStatus('Formato inválido. Use AAAA_MM', true);
+                    return;
+                }
+                
+                const inicio = prompt("Data INÍCIO (AAAA-MM-DD):");
+                const fim = prompt("Data FIM (AAAA-MM-DD):");
+                const fim15d = prompt("Data 15D (AAAA-MM-DD):");
+
+                if (!inicio || !fim || !fim15d) {
+                    mostrarStatus('Todas as datas são obrigatórias.', true);
+                    return;
+                }
+
+                const diasUteis = prompt("Dias úteis do período:");
+                const produtosFiltro = prompt("Produtos filtro (separados por vírgula):") || "";
+
+                const novoPeriodo = {
+                    parametros_do_periodo: {
+                        DIA_META_INICIO: inicio,
+                        DIA_META_FIM: fim,
+                        DIA_META_15D: fim15d,
+                        DIAS_UTEIS: parseInt(diasUteis) || 0,
+                        PRODUTOS_FILTRO: produtosFiltro,
+                        PRODUTOS_FLOAT: "",
+                        TEMPO_ATUALIZACAO_MINUTOS: 5
+                    }
+                };
+
+                database.ref('performance_mensal/ALPHALUMI/' + chave).set(novoPeriodo)
+                    .then(() => {
+                        mostrarStatus(`Período ${chave} criado com sucesso!`);
+                        carregarListaPeriodos();
+                        abrirEdicaoPeriodo(chave);
+                    })
+                    .catch((error) => {
+                        console.error("Erro ao criar:", error);
+                        mostrarStatus('Erro: ' + error.message, true);
+                    });
+            }
+
+            // ABA 3: EDITOR EM MASSA
+            function carregarPeriodosParaDropdown() {
+                database.ref('performance_mensal/ALPHALUMI').get().then((snapshot) => {
+                    const seletor = document.getElementById('seletorPeriodoEditor');
+                    seletor.innerHTML = '<option value="">-- Selecione um período --</option>';
+                    
+                    if (snapshot.exists()) {
+                        const periodos = Object.keys(snapshot.val());
+                        periodos.sort().reverse();
+                        
+                        periodos.forEach(p => {
+                            const opcao = document.createElement('option');
+                            opcao.value = p;
+                            opcao.textContent = p;
+                            seletor.appendChild(opcao);
+                        });
+                    }
+                    
+                    seletor.addEventListener('change', function() {
+                        if (this.value) {
+                            carregarMetasPeriodo();
+                        }
+                    });
+                }).catch((error) => {
+                    console.error("Erro ao carregar períodos para dropdown:", error);
+                });
+            }
+
+            function carregarMetasPeriodo() {
+                const periodoSelecionado = document.getElementById('seletorPeriodoEditor').value;
+                if (!periodoSelecionado) {
+                    mostrarStatus('Selecione um período primeiro.', true);
+                    return;
+                }
+                
+                console.log("Carregando metas para período:", periodoSelecionado);
+                
+                database.ref(`performance_mensal/ALPHALUMI/${periodoSelecionado}`).get().then((snapshot) => {
+                    const container = document.getElementById('containerTabelaEditor');
+                    
+                    if (snapshot.exists()) {
+                        const periodoData = snapshot.val();
+                        
+                        const vendedoresKeys = Object.keys(periodoData).filter(key => 
+                            !isNaN(key) && key !== 'parametros_do_periodo'
+                        );
+                        
+                        if (vendedoresKeys.length === 0) {
+                            container.innerHTML = '<div class="alert alert-warning">Nenhum vendedor encontrado para este período.</div>';
+                            return;
+                        }
+                        
+                        let html = `
+                            <h5>Editando Metas - Período: ${periodoSelecionado}</h5>
+                            <div class="table-responsive mt-3">
+                                <table class="table table-dark-custom">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>NOME</th>
+                                            <th>META (R$)</th>
+                                            <th>META_CLIENTE</th>
+                                            <th>META_PRECO (R$)</th>
+                                            <th>META_FUME_MAX (R$)</th>
+                                            <th>PERCENT_15D</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                        `;
+                        
+                        vendedoresKeys.forEach(vendedorKey => {
+                            const vendedor = periodoData[vendedorKey];
+                            
+                            html += `
+                                <tr id="row-${vendedorKey}">
+                                    <td><strong>${vendedorKey}</strong></td>
+                                    <td>${vendedor.NOME || 'Sem nome'}</td>
+                                    <td><input type="number" step="0.01" class="form-control form-control-sm" id="${vendedorKey}-META" value="${vendedor.META || ''}"></td>
+                                    <td><input type="number" step="1" class="form-control form-control-sm" id="${vendedorKey}-META_CLIENTE" value="${vendedor.META_CLIENTE || ''}"></td>
+                                    <td><input type="number" step="0.01" class="form-control form-control-sm" id="${vendedorKey}-META_PRECO" value="${vendedor.META_PRECO || ''}"></td>
+                                    <td><input type="number" step="0.01" class="form-control form-control-sm" id="${vendedorKey}-META_FUME_MAX" value="${vendedor.META_FUME_MAX || ''}"></td>
+                                    <td><input type="number" step="0.001" class="form-control form-control-sm" id="${vendedorKey}-PERCENT_15D" value="${vendedor.PERCENT_15D || ''}"></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-success" onclick="salvarVendedor('${periodoSelecionado}', '${vendedorKey}')">
+                                            <i class="bi bi-save"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+                        
+                        html += `
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="mt-4 d-flex flex-wrap gap-2">
+                                <button class="btn btn-primary" onclick="salvarTodosVendedores('${periodoSelecionado}')">
+                                    <i class="bi bi-save-all"></i> Salvar Todas as Alterações
+                                </button>
+                                <button class="btn btn-outline-secondary" onclick="carregarMetasPeriodo()">
+                                    <i class="bi bi-arrow-clockwise"></i> Recarregar
+                                </button>
+                                <button class="btn btn-info" onclick="aplicarMetasPadraoParaTodos('${periodoSelecionado}')">
+                                    <i class="bi bi-clipboard-data"></i> Aplicar Metas Padrão a Todos
+                                </button>
+                            </div>
+                            <div class="mt-3 alert alert-dark border">
+                                <small><strong>Nota:</strong> As alterações são salvas diretamente no Firebase. Use "Recarregar" para ver os valores atuais.</small>
+                            </div>
+                        `;
+                        
+                        container.innerHTML = html;
+                        mostrarStatus(`Metas de ${vendedoresKeys.length} vendedor(es) carregadas para edição.`);
+                        
+                    } else {
+                        container.innerHTML = '<div class="card-dark p-3"><p class="mb-0 text-center">Nenhum dado encontrado para este período.</p></div>';
+                    }
+                }).catch((error) => {
+                    console.error("Erro ao carregar metas do período:", error);
+                    mostrarStatus('Erro ao carregar: ' + error.message, true);
+                });
+            }
+
+            // Funções para salvar dados dos vendedores
+            window.salvarVendedor = function(periodo, vendedorKey) {
+                const dadosAtualizados = {
+                    META: parseFloat(document.getElementById(`${vendedorKey}-META`).value) || 0,
+                    META_CLIENTE: parseFloat(document.getElementById(`${vendedorKey}-META_CLIENTE`).value) || 0,
+                    META_PRECO: parseFloat(document.getElementById(`${vendedorKey}-META_PRECO`).value) || 0,
+                    META_FUME_MAX: parseFloat(document.getElementById(`${vendedorKey}-META_FUME_MAX`).value) || 0,
+                    PERCENT_15D: parseFloat(document.getElementById(`${vendedorKey}-PERCENT_15D`).value) || 0
+                };
+                
+                Object.keys(dadosAtualizados).forEach(key => {
+                    if (dadosAtualizados[key] === 0) {
+                        dadosAtualizados[key] = null;
+                    }
+                });
+                
+                database.ref(`performance_mensal/ALPHALUMI/${periodo}/${vendedorKey}`).update(dadosAtualizados)
+                    .then(() => {
+                        mostrarStatus(`Metas do vendedor ${vendedorKey} salvas com sucesso!`);
+                        const linha = document.getElementById(`row-${vendedorKey}`);
+                        linha.style.backgroundColor = 'rgba(46, 204, 113, 0.1)';
+                        setTimeout(() => { linha.style.backgroundColor = ''; }, 1000);
+                    })
+                    .catch((error) => {
+                        console.error("Erro ao salvar:", error);
+                        mostrarStatus('Erro ao salvar: ' + error.message, true);
+                    });
+            };
+
+            window.salvarTodosVendedores = function(periodo) {
+                const periodoSelecionado = periodo || document.getElementById('seletorPeriodoEditor').value;
+                if (!periodoSelecionado) return;
+                
+                const updates = {};
+                const linhas = document.querySelectorAll(`#containerTabelaEditor tbody tr[id^="row-"]`);
+                
+                if (linhas.length === 0) {
+                    mostrarStatus('Nenhum vendedor para salvar.', true);
+                    return;
+                }
+                
+                linhas.forEach(linha => {
+                    const vendedorKey = linha.id.replace('row-', '');
+                    
+                    updates[`performance_mensal/ALPHALUMI/${periodoSelecionado}/${vendedorKey}/META`] = parseFloat(document.getElementById(`${vendedorKey}-META`).value) || 0;
+                    updates[`performance_mensal/ALPHALUMI/${periodoSelecionado}/${vendedorKey}/META_CLIENTE`] = parseFloat(document.getElementById(`${vendedorKey}-META_CLIENTE`).value) || 0;
+                    updates[`performance_mensal/ALPHALUMI/${periodoSelecionado}/${vendedorKey}/META_PRECO`] = parseFloat(document.getElementById(`${vendedorKey}-META_PRECO`).value) || 0;
+                    updates[`performance_mensal/ALPHALUMI/${periodoSelecionado}/${vendedorKey}/META_FUME_MAX`] = parseFloat(document.getElementById(`${vendedorKey}-META_FUME_MAX`).value) || 0;
+                    updates[`performance_mensal/ALPHALUMI/${periodoSelecionado}/${vendedorKey}/PERCENT_15D`] = parseFloat(document.getElementById(`${vendedorKey}-PERCENT_15D`).value) || 0;
+                });
+                
+                database.ref().update(updates)
+                    .then(() => {
+                        mostrarStatus(`Todas as metas salvas com sucesso! (${linhas.length} vendedores)`);
+                        linhas.forEach(linha => {
+                            linha.style.backgroundColor = 'rgba(46, 204, 113, 0.1)';
+                            setTimeout(() => { linha.style.backgroundColor = ''; }, 2000);
+                        });
+                    })
+                    .catch((error) => {
+                        console.error("Erro ao salvar tudo:", error);
+                        mostrarStatus('Erro ao salvar: ' + error.message, true);
+                    });
+            };
+
+            // Função para aplicar metas padrão a todos os vendedores
+            window.aplicarMetasPadraoParaTodos = function(periodo) {
+                mostrarNotificacao('Confirmação', 'Aplicar metas padrão a TODOS os vendedores deste período? Isso substituirá os valores atuais.', 'warning');
+                
+                setTimeout(() => {
+                    if (confirm('Aplicar metas padrão a TODOS os vendedores deste período? Isso substituirá os valores atuais.')) {
+                        database.ref(CAMINHO_METAS).get().then((snapshot) => {
+                            if (snapshot.exists()) {
+                                const metasPadrao = snapshot.val();
+                                
+                                database.ref(`performance_mensal/ALPHALUMI/${periodo}`).get().then((periodoSnapshot) => {
+                                    if (periodoSnapshot.exists()) {
+                                        const periodoData = periodoSnapshot.val();
+                                        const updates = {};
+                                        const vendedoresKeys = Object.keys(periodoData).filter(key => 
+                                            !isNaN(key) && key !== 'parametros_do_periodo'
+                                        );
+                                        
+                                        vendedoresKeys.forEach(vendedorKey => {
+                                            updates[`performance_mensal/ALPHALUMI/${periodo}/${vendedorKey}/META`] = metasPadrao.META || 0;
+                                            updates[`performance_mensal/ALPHALUMI/${periodo}/${vendedorKey}/META_CLIENTE`] = metasPadrao.META_CLIENTE || 0;
+                                            updates[`performance_mensal/ALPHALUMI/${periodo}/${vendedorKey}/META_PRECO`] = metasPadrao.META_PRECO || 0;
+                                            updates[`performance_mensal/ALPHALUMI/${periodo}/${vendedorKey}/META_FUME_MAX`] = metasPadrao.META_FUME_MAX || 0;
+                                            updates[`performance_mensal/ALPHALUMI/${periodo}/${vendedorKey}/PERCENT_15D`] = metasPadrao.PERCENT_15D || 0;
+                                        });
+                                        
+                                        database.ref().update(updates)
+                                            .then(() => {
+                                                mostrarStatus(`Metas padrão aplicadas a ${vendedoresKeys.length} vendedor(es)!`);
+                                                setTimeout(() => carregarMetasPeriodo(), 500);
+                                            })
+                                            .catch((error) => {
+                                                console.error("Erro ao aplicar metas padrão:", error);
+                                                mostrarStatus('Erro ao aplicar: ' + error.message, true);
+                                            });
+                                    }
+                                });
+                            } else {
+                                mostrarStatus('Não há metas padrão definidas.', true);
+                            }
+                        }).catch((error) => {
+                            console.error("Erro ao carregar metas padrão:", error);
+                            mostrarStatus('Erro ao carregar metas padrão: ' + error.message, true);
+                        });
+                    }
+                }, 100);
+            };
+
+            // ==================== INICIALIZAÇÃO ====================
+            console.log("Inicializando aplicação...");
+            setTimeout(() => {
+                carregarMetasPadrao();
+                carregarListaPeriodos();
+                carregarPeriodosParaDropdown();
+            }, 1000);
+            
+        } catch (error) {
+            console.error("ERRO CRÍTICO no Firebase:", error);
+            document.getElementById('appContainer').innerHTML = 
+                '<div class="card-dark p-4"><div class="alert alert-danger">Erro ao conectar ao banco de dados. Verifique o console (F12).</div></div>';
+        }
+
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
