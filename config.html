@@ -23,37 +23,37 @@
             --danger-color: #e74c3c;
             --warning-color: #f39c12;
             --info-color: #3498db;
-            --radius-sm: 4px;
             --radius-md: 6px;
         }
         
-        * { transition: background-color 0.2s ease, border-color 0.2s ease; }
-        body { background-color: var(--dark-bg); color: var(--text-primary); font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; min-height: 100vh; }
+        body { background-color: var(--dark-bg); color: var(--text-primary); font-family: 'Segoe UI', sans-serif; min-height: 100vh; }
         .container-main { max-width: 1400px; padding: 20px; }
-        .app-header { border-bottom: 1px solid var(--dark-border); padding: 25px; margin-bottom: 30px; background: linear-gradient(135deg, var(--dark-surface) 0%, var(--dark-card) 100%); border-radius: var(--radius-md); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); }
-        .card-dark { background-color: var(--dark-card); border: 1px solid var(--dark-border); border-radius: var(--radius-md); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); }
-        .tab-pane { padding: 25px; }
-        .nav-tabs { border-bottom: 1px solid var(--dark-border); }
-        .nav-tabs .nav-link { color: var(--text-secondary); border: 1px solid transparent; border-radius: var(--radius-md) var(--radius-md) 0 0; padding: 12px 24px; font-weight: 500; }
-        .nav-tabs .nav-link.active { color: var(--primary-color); background-color: var(--dark-card); border-color: var(--dark-border) var(--dark-border) var(--dark-card); }
+        .app-header { background: linear-gradient(135deg, var(--dark-surface) 0%, var(--dark-card) 100%); border-radius: var(--radius-md); padding: 25px; margin-bottom: 30px; border-bottom: 1px solid var(--dark-border); }
+        .card-dark { background-color: var(--dark-card); border: 1px solid var(--dark-border); border-radius: var(--radius-md); }
+        .nav-tabs .nav-link { color: var(--text-secondary); border: none; padding: 12px 24px; }
+        .nav-tabs .nav-link.active { color: var(--primary-color); background-color: var(--dark-card); border-bottom: 3px solid var(--primary-color); font-weight: 600; }
         .form-control, .form-select { background-color: var(--dark-surface); border: 1px solid var(--dark-border); color: var(--text-primary); }
         .form-control:focus { background-color: var(--dark-surface); color: white; border-color: var(--primary-color); box-shadow: none; }
-        .btn { border-radius: var(--radius-sm); font-weight: 500; padding: 10px 20px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
-        .table-dark-custom { background-color: var(--dark-surface); color: var(--text-primary); margin-bottom: 0; }
-        .table-dark-custom thead th { background-color: var(--dark-card); border-bottom: 2px solid var(--dark-border); color: var(--text-secondary); padding: 15px; font-size: 0.85rem; }
-        .notification-modal { position: fixed; top: 20px; right: 20px; z-index: 9999; width: 90%; max-width: 400px; display: none; }
-        .notification-card { background-color: var(--dark-card); border-radius: var(--radius-md); border-left: 4px solid var(--primary-color); box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
-        .img-preview { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-color); }
-        .fade-in { animation: fadeIn 0.3s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .table-dark-custom { color: var(--text-primary); }
+        .table-dark-custom thead th { background-color: var(--dark-card); color: var(--text-secondary); border-bottom: 2px solid var(--dark-border); }
+        
+        /* Avatar Styles */
+        .avatar-wrapper { position: relative; width: 60px; height: 60px; cursor: pointer; border-radius: 50%; overflow: hidden; border: 2px solid var(--primary-color); transition: transform 0.2s; }
+        .avatar-wrapper:hover { transform: scale(1.1); }
+        .avatar-img { width: 100%; height: 100%; object-fit: cover; }
+        .avatar-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: var(--dark-surface); color: var(--text-secondary); font-size: 1.5rem; }
+        
+        .notification-modal { position: fixed; top: 20px; right: 20px; z-index: 9999; display: none; width: 350px; }
+        .notification-card { background: var(--dark-card); border-left: 5px solid var(--primary-color); border-radius: 4px; padding: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        .access-denied { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80vh; }
     </style>
 </head>
 <body>
     <div class="container container-main">
         <div id="notificationModal" class="notification-modal">
-            <div class="notification-card p-3" id="notificationCard">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div id="notificationTitle" class="fw-bold"></div>
+            <div class="notification-card" id="notificationCard">
+                <div class="d-flex justify-content-between align-items-start">
+                    <strong id="notificationTitle">Sucesso</strong>
                     <button class="btn-close btn-close-white" onclick="hideNotification()"></button>
                 </div>
                 <div id="notificationMessage" class="mt-2"></div>
@@ -61,342 +61,247 @@
         </div>
 
         <div id="appContainer" style="display: none;">
-            <div class="app-header fade-in">
-                <h1><i class="bi bi-graph-up-arrow"></i> GESTÃO DE METAS</h1>
-                <div class="subtitle">ALPHALUMI - Painel Administrativo</div>
+            <div class="app-header">
+                <h1><i class="bi bi-gear-fill"></i> ADMINISTRAÇÃO ALPHALUMI</h1>
+                <div class="text-secondary">Controle de Metas e Equipe</div>
             </div>
 
-            <ul class="nav nav-tabs" id="abasAdmin" role="tablist">
+            <ul class="nav nav-tabs mb-0" id="adminTabs" role="tablist">
                 <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#metas">Metas Padrão</button></li>
                 <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#periodos">Períodos</button></li>
                 <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#editor">Editor em Massa</button></li>
-                <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#equipe" onclick="carregarEquipe()">Equipe / Usuários</button></li>
+                <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#equipe" onclick="carregarEquipe()">Funcionários</button></li>
             </ul>
 
-            <div class="tab-content card-dark">
+            <div class="tab-content card-dark p-4">
                 <div class="tab-pane fade show active" id="metas">
-                    <h3 class="mb-4">Editar Metas Padrão</h3>
-                    <form id="formMetasPadrao">
-                        <div class="row g-3 mb-4">
-                            <div class="col-md-4"><label class="form-label">META (R$)</label><input type="number" step="0.01" class="form-control" id="inputMeta"></div>
-                            <div class="col-md-4"><label class="form-label">LIMITE_CLIENTES</label><input type="number" class="form-control" id="inputMetaCliente"></div>
-                            <div class="col-md-4"><label class="form-label">PRECO_MEDIO (R$)</label><input type="number" step="0.01" class="form-control" id="inputMetaPreco"></div>
-                            <div class="col-md-4"><label class="form-label">META_FUME_MAX</label><input type="number" step="0.01" class="form-control" id="inputMetaFumeMax"></div>
-                            <div class="col-md-4"><label class="form-label">PERCENT_15D</label><input type="number" step="0.001" class="form-control" id="inputPercent15D"></div>
-                            <div class="col-md-4"><label class="form-label">PERCENT_DEVOLUCAO</label><input type="number" step="0.0001" class="form-control" id="inputPercentDevolucao"></div>
-                        </div>
-                        <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Salvar Padrão</button>
-                    </form>
+                    <h3>Metas Gerais</h3>
+                    <div id="formMetasContainer">Cargando...</div>
                 </div>
 
                 <div class="tab-pane fade" id="periodos">
-                    <div class="d-flex justify-content-between mb-4">
-                        <h3>Gerenciar Períodos</h3>
-                        <button class="btn btn-success" onclick="criarInterfaceNovoPeriodo()"><i class="bi bi-plus-circle"></i> Novo Período</button>
-                    </div>
-                    <div id="containerListaPeriodos"></div>
-                    <div id="containerEditarPeriodo" class="mt-4 p-4 border rounded" style="display: none;">
-                        <h4 id="tituloPeriodoSelecionado"></h4>
-                        <form id="formEditarPeriodo" class="row g-3">
-                            <div class="col-md-3"><label class="form-label">Início</label><input type="date" class="form-control" id="editDiaInicio"></div>
-                            <div class="col-md-3"><label class="form-label">Fim</label><input type="date" class="form-control" id="editDiaFim"></div>
-                            <div class="col-md-3"><label class="form-label">Meta 15D</label><input type="date" class="form-control" id="editDia15d"></div>
-                            <div class="col-md-3"><label class="form-label">Dias Úteis</label><input type="number" class="form-control" id="editDiasUteis"></div>
-                            <div class="col-12">
-                                <button type="submit" class="btn btn-primary">Salvar Período</button>
-                                <button type="button" class="btn btn-outline-secondary" onclick="fecharFormularioEdicao()">Cancelar</button>
-                            </div>
-                        </form>
-                    </div>
+                    <h3>Gerenciar Ciclos</h3>
+                    <div id="listaPeriodos"></div>
                 </div>
 
                 <div class="tab-pane fade" id="editor">
-                    <div class="row mb-4">
+                    <div class="row g-3 mb-4">
                         <div class="col-md-8">
-                            <select class="form-select" id="seletorPeriodoEditor"></select>
+                            <select class="form-select" id="periodoEditorSelect"></select>
                         </div>
                         <div class="col-md-4">
-                            <button class="btn btn-primary w-100" onclick="carregarMetasPeriodo()">Carregar Vendedores</button>
+                            <button class="btn btn-primary w-100" onclick="carregarTabelaMassa()">Carregar Vendedores</button>
                         </div>
                     </div>
-                    <div id="containerTabelaEditor" class="table-responsive"></div>
+                    <div class="table-responsive">
+                        <table class="table table-dark-custom">
+                            <thead>
+                                <tr>
+                                    <th>Vendedor</th>
+                                    <th>Meta (R$)</th>
+                                    <th>Qtd Clientes</th>
+                                    <th>Preço Médio</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="corpoTabelaMassa"></tbody>
+                        </table>
+                    </div>
+                    <div class="mt-3 text-end">
+                        <button class="btn btn-success" onclick="salvarTudoMassa()">Salvar Todas Alterações</button>
+                    </div>
                 </div>
 
                 <div class="tab-pane fade" id="equipe">
-                    <div class="d-flex justify-content-between mb-4">
-                        <h3>Gestão de Equipe</h3>
-                        <button class="btn btn-success" onclick="prepararNovoFuncionario()"><i class="bi bi-person-plus"></i> Novo Membro</button>
+                    <div class="table-responsive">
+                        <table class="table table-dark-custom">
+                            <thead>
+                                <tr>
+                                    <th>Avatar</th>
+                                    <th>Nome</th>
+                                    <th>E-mail</th>
+                                    <th>Cargo</th>
+                                    <th>Senha</th>
+                                </tr>
+                            </thead>
+                            <tbody id="corpoTabelaEquipe"></tbody>
+                        </table>
                     </div>
-                    
-                    <div id="formFuncionario" class="card-dark p-4 mb-4" style="display:none;">
-                        <h4 id="funcTitulo">Editar Funcionário</h4>
-                        <div class="row g-3">
-                            <div class="col-md-2">
-                                <label class="form-label">ID (Nº)</label>
-                                <input type="number" class="form-control" id="f_id">
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label">Nome Completo</label>
-                                <input type="text" class="form-control" id="f_nome">
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label">Perfil / Permissão</label>
-                                <select class="form-select" id="f_perfil">
-                                    <option value="VEN">Vendedor (VEN)</option>
-                                    <option value="GER">Gerente (GER)</option>
-                                    <option value="ADM">Administrador (ADM)</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label">Foto</label>
-                                <input type="file" class="form-control" id="f_file" accept="image/*" onchange="uploadFotoCloudinary(this)">
-                                <input type="hidden" id="f_url_foto">
-                            </div>
-                            <div class="col-12 d-flex gap-2">
-                                <button class="btn btn-primary" onclick="salvarFuncionario()">Gravar Dados</button>
-                                <button class="btn btn-outline-secondary" onclick="document.getElementById('formFuncionario').style.display='none'">Cancelar</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="listaEquipe" class="table-responsive"></div>
                 </div>
             </div>
         </div>
 
-        <div id="acessoNegadoContainer" class="access-denied text-center mt-5" style="display: none;">
-            <div class="card-dark p-5">
+        <div id="acessoNegadoContainer" class="access-denied" style="display: none;">
+            <div class="card-dark p-5 text-center">
                 <i class="bi bi-shield-lock-fill text-danger" style="font-size: 4rem;"></i>
                 <h2 class="mt-3">Acesso Restrito</h2>
-                <p>Você não tem permissão para acessar esta área.</p>
+                <p>Esta página é exclusiva para administradores autorizados.</p>
+                <p class="text-secondary small">Para entrar, use o parâmetro de URL correto.</p>
             </div>
         </div>
     </div>
 
     <script>
-        // CONFIGURAÇÕES
-        const urlParams = new URLSearchParams(window.location.search);
-        const userParam = urlParams.get('user');
-        const autorizado = (userParam === 'full');
-        const CAMINHO_METAS = 'empresas/ALPHALUMI/METAS';
-        const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dclhoiqdg/image/upload";
-        const CLOUDINARY_PRESET = "my_unsigned_preset";
+        // Configuração Firebase
+        const fbConfig = { databaseURL: "https://bd-comercial-alpha-default-rtdb.firebaseio.com" };
+        firebase.initializeApp(fbConfig);
+        const db = firebase.database();
 
-        const firebaseConfig = {
-            databaseURL: "https://bd-comercial-alpha-default-rtdb.firebaseio.com",
-            projectId: "bd-comercial-alpha"
-        };
-
-        if (autorizado) {
+        // Segurança URL
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('user') === 'full') {
             document.getElementById('appContainer').style.display = 'block';
-            firebase.initializeApp(firebaseConfig);
-            var database = firebase.database();
         } else {
-            document.getElementById('acessoNegadoContainer').style.display = 'block';
+            document.getElementById('acessoNegadoContainer').style.display = 'flex';
         }
 
-        // NOTIFICAÇÕES
-        function mostrarNotificacao(titulo, msg, tipo = 'success') {
-            const card = document.getElementById('notificationCard');
-            card.className = `notification-card p-3 border-start border-4 border-${tipo === 'success' ? 'success' : 'danger'}`;
-            document.getElementById('notificationTitle').innerText = titulo;
+        // --- UTILITÁRIOS ---
+        function notify(title, msg, type = 'success') {
+            const m = document.getElementById('notificationModal');
+            document.getElementById('notificationTitle').innerText = title;
             document.getElementById('notificationMessage').innerText = msg;
-            document.getElementById('notificationModal').style.display = 'block';
-            setTimeout(hideNotification, 4000);
+            m.style.display = 'block';
+            setTimeout(() => m.style.display = 'none', 4000);
         }
 
-        function hideNotification() {
-            document.getElementById('notificationModal').style.display = 'none';
-        }
-
-        // EDITOR EM MASSA - SALVAMENTO CORRIGIDO
-        window.salvarVendedor = function(periodo, id) {
-            const updates = {
-                META: parseFloat(document.getElementById(`${id}-META`).value) || 0,
-                limite_clientes: parseInt(document.getElementById(`${id}-META_CLIENTE`).value) || 0,
-                preco_medio: parseFloat(document.getElementById(`${id}-META_PRECO`).value) || 0,
-                META_FUME_MAX: parseFloat(document.getElementById(`${id}-META_FUME_MAX`).value) || 0,
-                PERCENT_15D: parseFloat(document.getElementById(`${id}-PERCENT_15D`).value) || 0
-            };
-
-            database.ref(`performance_mensal/ALPHALUMI/${periodo}/${id}`).update(updates)
-                .then(() => {
-                    mostrarNotificacao("Sucesso", `ID ${id} atualizado.`);
-                    const row = document.getElementById(`row-${id}`);
-                    row.style.backgroundColor = "#1a3a1a";
-                    setTimeout(() => row.style.backgroundColor = "", 1000);
-                });
-        };
-
-        window.salvarTodosVendedores = function(periodo) {
-            const updates = {};
-            const rows = document.querySelectorAll(`tr[id^="row-"]`);
-            rows.forEach(row => {
-                const id = row.id.replace('row-', '');
-                updates[`performance_mensal/ALPHALUMI/${periodo}/${id}/META`] = parseFloat(document.getElementById(`${id}-META`).value) || 0;
-                updates[`performance_mensal/ALPHALUMI/${periodo}/${id}/limite_clientes`] = parseInt(document.getElementById(`${id}-META_CLIENTE`).value) || 0;
-                updates[`performance_mensal/ALPHALUMI/${periodo}/${id}/preco_medio`] = parseFloat(document.getElementById(`${id}-META_PRECO`).value) || 0;
-                updates[`performance_mensal/ALPHALUMI/${periodo}/${id}/META_FUME_MAX`] = parseFloat(document.getElementById(`${id}-META_FUME_MAX`).value) || 0;
-                updates[`performance_mensal/ALPHALUMI/${periodo}/${id}/PERCENT_15D`] = parseFloat(document.getElementById(`${id}-PERCENT_15D`).value) || 0;
-            });
-
-            database.ref().update(updates).then(() => mostrarNotificacao("Sucesso", "Todas as metas gravadas!"));
-        };
-
-        // GESTÃO DE EQUIPE
-        function carregarEquipe() {
-            database.ref('funcionarios/ALPHALUMI').get().then(snap => {
-                const list = document.getElementById('listaEquipe');
-                if (!snap.exists()) return;
-                
-                let html = `<table class="table table-dark-custom mt-3"><thead><tr>
-                    <th>Foto</th><th>ID</th><th>Nome</th><th>Perfil</th><th>Ações</th>
-                </tr></thead><tbody>`;
-                
-                snap.forEach(func => {
-                    const d = func.val();
-                    html += `<tr>
-                        <td><img src="${d.url_foto || 'https://via.placeholder.com/50'}" class="img-preview"></td>
-                        <td>${func.key}</td>
-                        <td>${d.NOME}</td>
-                        <td><span class="badge ${d.PERMISSAO === 'VEN' ? 'bg-primary' : 'bg-warning'}">${d.PERMISSAO}</span></td>
-                        <td><button class="btn btn-sm btn-info" onclick="editarFuncionario('${func.key}')">Editar</button></td>
-                    </tr>`;
-                });
-                list.innerHTML = html + "</tbody></table>";
-            });
-        }
-
-        async function uploadFotoCloudinary(input) {
-            if (!input.files[0]) return;
-            mostrarNotificacao("Upload", "Enviando imagem...", "info");
+        // --- EDITOR EM MASSA ---
+        async function carregarTabelaMassa() {
+            const periodo = document.getElementById('periodoEditorSelect').value;
+            if(!periodo) return notify('Aviso', 'Selecione um período', 'warning');
             
-            const formData = new FormData();
-            formData.append("file", input.files[0]);
-            formData.append("upload_preset", CLOUDINARY_PRESET);
+            const snapshot = await db.ref(`performance_mensal/ALPHALUMI/${periodo}`).once('value');
+            const funcsSnapshot = await db.ref(`funcionarios/ALPHALUMI`).once('value');
+            const dados = snapshot.val() || {};
+            const funcs = funcsSnapshot.val() || {};
+            
+            let html = '';
+            Object.keys(dados).forEach(id => {
+                // REGRA: Apenas permissão 'user' (vendedores)
+                if(funcs[id] && funcs[id].permissao === 'user') {
+                    const d = dados[id];
+                    html += `
+                        <tr data-id="${id}">
+                            <td>${d.NOME}</td>
+                            <td><input type="number" class="form-control meta-val" value="${d.META || 0}"></td>
+                            <td><input type="number" class="form-control cliente-val" value="${d.limite_clientes || 0}"></td>
+                            <td><input type="number" step="0.01" class="form-control preco-val" value="${d.PRECO_MEDIO || 0}"></td>
+                            <td><button class="btn btn-sm btn-outline-primary" onclick="salvarLinhaMassa('${id}')">Salvar</button></td>
+                        </tr>`;
+                }
+            });
+            document.getElementById('corpoTabelaMassa').innerHTML = html;
+        }
 
-            try {
-                const res = await fetch(CLOUDINARY_URL, { method: "POST", body: formData });
-                const data = await res.json();
-                document.getElementById('f_url_foto').value = data.secure_url;
-                mostrarNotificacao("Upload OK", "Imagem processada com sucesso.");
-            } catch (e) {
-                mostrarNotificacao("Erro", "Falha no upload.", "error");
+        async function salvarLinhaMassa(id) {
+            const periodo = document.getElementById('periodoEditorSelect').value;
+            const tr = document.querySelector(`tr[data-id="${id}"]`);
+            const updates = {
+                META: parseFloat(tr.querySelector('.meta-val').value),
+                limite_clientes: parseInt(tr.querySelector('.cliente-val').value),
+                PRECO_MEDIO: parseFloat(tr.querySelector('.preco-val').value)
+            };
+            
+            await db.ref(`performance_mensal/ALPHALUMI/${periodo}/${id}`).update(updates);
+            notify('Sucesso', 'Dados do vendedor atualizados!');
+        }
+
+        async function salvarTudoMassa() {
+            const periodo = document.getElementById('periodoEditorSelect').value;
+            const rows = document.querySelectorAll('#corpoTabelaMassa tr');
+            const promises = Array.from(rows).map(tr => {
+                const id = tr.dataset.id;
+                const updates = {
+                    META: parseFloat(tr.querySelector('.meta-val').value),
+                    limite_clientes: parseInt(tr.querySelector('.cliente-val').value),
+                    PRECO_MEDIO: parseFloat(tr.querySelector('.preco-val').value)
+                };
+                return db.ref(`performance_mensal/ALPHALUMI/${periodo}/${id}`).update(updates);
+            });
+            await Promise.all(promises);
+            notify('Sucesso', 'Todas as metas foram atualizadas!');
+        }
+
+        // --- FUNCIONÁRIOS & CLOUDINARY ---
+        async function carregarEquipe() {
+            const snap = await db.ref('funcionarios/ALPHALUMI').once('value');
+            const funcs = snap.val() || {};
+            let html = '';
+            
+            Object.keys(funcs).forEach(id => {
+                const f = funcs[id];
+                const avatar = f.url_foto ? `<img src="${f.url_foto}" class="avatar-img">` : `<i class="bi bi-person-fill"></i>`;
+                
+                html += `
+                    <tr>
+                        <td>
+                            <div class="avatar-wrapper" onclick="triggerUpload('${id}')">
+                                <div class="avatar-placeholder" id="avatar-${id}">${avatar}</div>
+                            </div>
+                            <input type="file" id="file-${id}" style="display:none" onchange="uploadFoto('${id}', this)">
+                        </td>
+                        <td>${f.nome}</td>
+                        <td>${f.email}</td>
+                        <td><span class="badge bg-secondary">${f.permissao.toUpperCase()}</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-warning" onclick="resetSenha('${id}')">Reset Pass</button>
+                        </td>
+                    </tr>`;
+            });
+            document.getElementById('corpoTabelaEquipe').innerHTML = html;
+        }
+
+        async function resetSenha(id) {
+            if(confirm('Resetar senha para 123456?')) {
+                await db.ref(`funcionarios/ALPHALUMI/${id}`).update({ senha_hash: "123456" });
+                notify('Senha Resetada', 'O usuário agora acessa com 123456');
             }
         }
 
-        function editarFuncionario(id) {
-            database.ref(`funcionarios/ALPHALUMI/${id}`).get().then(snap => {
-                const d = snap.val();
-                document.getElementById('f_id').value = id;
-                document.getElementById('f_id').disabled = true;
-                document.getElementById('f_nome').value = d.NOME;
-                document.getElementById('f_perfil').value = d.PERMISSAO || 'VEN';
-                document.getElementById('f_url_foto').value = d.url_foto || '';
-                document.getElementById('formFuncionario').style.display = 'block';
-                document.getElementById('funcTitulo').innerText = "Editar Funcionário";
-            });
-        }
+        function triggerUpload(id) { document.getElementById(`file-${id}`).click(); }
 
-        function prepararNovoFuncionario() {
-            document.getElementById('f_id').value = "";
-            document.getElementById('f_id').disabled = false;
-            document.getElementById('f_nome').value = "";
-            document.getElementById('f_url_foto').value = "";
-            document.getElementById('formFuncionario').style.display = 'block';
-            document.getElementById('funcTitulo').innerText = "Novo Funcionário";
-        }
-
-        function salvarFuncionario() {
-            const id = document.getElementById('f_id').value;
-            const dados = {
-                NOME: document.getElementById('f_nome').value,
-                PERMISSAO: document.getElementById('f_perfil').value,
-                url_foto: document.getElementById('f_url_foto').value
-            };
-
-            if(!id || !dados.NOME) return alert("Preencha ID e Nome");
-
-            // Grava no nó do funcionário
-            database.ref(`funcionarios/ALPHALUMI/${id}`).update(dados).then(() => {
-                // Sincroniza foto no período atual (opcional, mas solicitado)
-                const periodoAtual = document.getElementById('seletorPeriodoEditor').value;
-                if(periodoAtual) {
-                    database.ref(`performance_mensal/ALPHALUMI/${periodoAtual}/${id}`).update({
-                        NOME: dados.NOME,
-                        url_foto: dados.url_foto
-                    });
-                }
-                mostrarNotificacao("Sucesso", "Funcionário salvo!");
-                document.getElementById('formFuncionario').style.display = 'none';
-                carregarEquipe();
-            });
-        }
-
-        // FILTRO DE VENDEDORES (REGRA ADM/GER)
-        function carregarMetasPeriodo() {
-            const periodo = document.getElementById('seletorPeriodoEditor').value;
-            if (!periodo) return;
-
-            // Buscamos os funcionários primeiro para saber quem é VEN
-            database.ref('funcionarios/ALPHALUMI').get().then(funcSnap => {
-                const listaVendedores = [];
-                funcSnap.forEach(f => {
-                    if (f.val().PERMISSAO === 'VEN') listaVendedores.push(f.key);
-                });
-
-                database.ref(`performance_mensal/ALPHALUMI/${periodo}`).get().then(snap => {
-                    const container = document.getElementById('containerTabelaEditor');
-                    let html = `<table class="table table-dark-custom"><thead><tr>
-                        <th>ID</th><th>Nome</th><th>Meta R$</th><th>Meta Cli</th><th>Preço Méd</th><th>Ação</th>
-                    </tr></thead><tbody>`;
-
-                    snap.forEach(vendedor => {
-                        const id = vendedor.key;
-                        // REGRA: Só mostra se for número E estiver na lista de permissão VEN
-                        if (!isNaN(id) && listaVendedores.includes(id)) {
-                            const v = vendedor.val();
-                            html += `<tr id="row-${id}">
-                                <td>${id}</td>
-                                <td>${v.NOME || '---'}</td>
-                                <td><input type="number" class="form-control form-control-sm" id="${id}-META" value="${v.META || 0}"></td>
-                                <td><input type="number" class="form-control form-control-sm" id="${id}-META_CLIENTE" value="${v.limite_clientes || 0}"></td>
-                                <td><input type="number" class="form-control form-control-sm" id="${id}-META_PRECO" value="${v.preco_medio || 0}"></td>
-                                <input type="hidden" id="${id}-META_FUME_MAX" value="${v.META_FUME_MAX || 0}">
-                                <input type="hidden" id="${id}-PERCENT_15D" value="${v.PERCENT_15D || 0}">
-                                <td><button class="btn btn-sm btn-success" onclick="salvarVendedor('${periodo}', '${id}')"><i class="bi bi-save"></i></button></td>
-                            </tr>`;
-                        }
-                    });
-
-                    html += `</tbody></table><button class="btn btn-primary mt-3" onclick="salvarTodosVendedores('${periodo}')">Salvar Todos</button>`;
-                    container.innerHTML = html;
-                });
-            });
-        }
-
-        // Inicialização de Dropdowns e Metas Padrão
-        function init() {
-            database.ref(CAMINHO_METAS).get().then(s => {
-                if(s.exists()){
-                    const d = s.val();
-                    document.getElementById('inputMeta').value = d.META;
-                    document.getElementById('inputMetaCliente').value = d.limite_clientes || d.META_CLIENTE;
-                    document.getElementById('inputMetaPreco').value = d.preco_medio || d.META_PRECO;
-                }
-            });
+        async function uploadFoto(id, input) {
+            if (!input.files || !input.files[0]) return;
             
-            database.ref('performance_mensal/ALPHALUMI').get().then(snap => {
-                const sel = document.getElementById('seletorPeriodoEditor');
-                Object.keys(snap.val() || {}).reverse().forEach(p => {
-                    const opt = document.createElement('option');
-                    opt.value = p; opt.innerText = p;
-                    sel.appendChild(opt);
+            const file = input.files[0];
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', 'my_unsigned_preset');
+
+            try {
+                notify('Upload', 'Enviando imagem...', 'info');
+                const res = await fetch('https://api.cloudinary.com/v1_1/dclhoiqdg/image/upload', {
+                    method: 'POST', body: formData
                 });
-            });
+                const data = await res.json();
+                const url = data.secure_url;
+
+                // Atualiza nó do funcionário
+                await db.ref(`funcionarios/ALPHALUMI/${id}`).update({ url_foto: url });
+                
+                // Atualiza no período atual se houver
+                const periodoAtual = document.getElementById('periodoEditorSelect').value;
+                if(periodoAtual) {
+                    await db.ref(`performance_mensal/ALPHALUMI/${periodoAtual}/${id}`).update({ URL_FOTO: url });
+                }
+
+                carregarEquipe();
+                notify('Sucesso', 'Foto atualizada com sucesso!');
+            } catch (err) {
+                notify('Erro', 'Falha no upload', 'error');
+            }
         }
 
-        setTimeout(init, 1000);
+        // Inicialização de dropdowns
+        async function init() {
+            const snap = await db.ref('performance_mensal/ALPHALUMI').once('value');
+            const periodos = Object.keys(snap.val() || {}).sort().reverse();
+            const select = document.getElementById('periodoEditorSelect');
+            periodos.forEach(p => {
+                const opt = new Option(p, p);
+                select.add(opt);
+            });
+        }
+        init();
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
