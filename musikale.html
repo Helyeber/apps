@@ -3,1204 +3,437 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jingle Personalizado - Gerador de Música</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <title>Meu Jingle Engraçado</title>
     <style>
-        :root {
-            --primary: #4F46E5;
-            --primary-dark: #4338CA;
-            --secondary: #10B981;
-            --light: #F9FAFB;
-            --dark: #1F2937;
-            --gray: #6B7280;
-            --light-gray: #E5E7EB;
-            --border-radius: 12px;
-            --shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-            --transition: all 0.3s ease;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #f5f7ff 0%, #f0f4ff 100%);
-            color: var(--dark);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 900px;
-            width: 100%;
-            margin: 0 auto;
-        }
-
-        .card {
-            background-color: white;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            padding: 40px;
-            margin-bottom: 20px;
-            transition: var(--transition);
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .logo {
-            font-size: 2.5rem;
-            color: var(--primary);
-            margin-bottom: 10px;
-        }
-
-        h1 {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 700;
-            font-size: 2.2rem;
-            color: var(--dark);
-            margin-bottom: 10px;
-        }
-
-        .subtitle {
-            color: var(--gray);
-            font-size: 1.1rem;
-            max-width: 600px;
-            margin: 0 auto 30px;
-            line-height: 1.6;
-        }
-
-        .progress-container {
-            margin-bottom: 40px;
-        }
-
-        .progress-bar {
-            height: 8px;
-            background-color: var(--light-gray);
-            border-radius: 10px;
-            overflow: hidden;
-            margin-bottom: 15px;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            width: 12.5%;
-            border-radius: 10px;
-            transition: width 0.5s ease;
-        }
-
-        .progress-text {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.9rem;
-            color: var(--gray);
-        }
-
-        .question-container {
-            margin-bottom: 30px;
-        }
-
-        .question-number {
-            font-size: 0.9rem;
-            color: var(--primary);
-            font-weight: 600;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .question-text {
-            font-family: 'Poppins', sans-serif;
-            font-size: 1.4rem;
-            font-weight: 600;
-            margin-bottom: 25px;
-            line-height: 1.4;
-        }
-
-        .options-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-
-        .option {
-            padding: 18px 20px;
-            border: 2px solid var(--light-gray);
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            font-weight: 500;
-        }
-
-        .option:hover {
-            border-color: var(--primary);
-            background-color: rgba(79, 70, 229, 0.03);
-        }
-
-        .option.selected {
-            border-color: var(--primary);
-            background-color: rgba(79, 70, 229, 0.08);
-        }
-
-        .option-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: rgba(79, 70, 229, 0.1);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-right: 15px;
-            color: var(--primary);
-            font-weight: 600;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 16px 32px;
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            border-radius: var(--border-radius);
-            font-family: 'Poppins', sans-serif;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: var(--transition);
-            text-align: center;
-        }
-
-        .btn:hover {
-            background-color: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(79, 70, 229, 0.2);
-        }
-
-        .btn:disabled {
-            background-color: var(--light-gray);
-            color: var(--gray);
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .btn-secondary {
-            background-color: transparent;
-            color: var(--primary);
-            border: 2px solid var(--primary);
-        }
-
-        .btn-secondary:hover {
-            background-color: rgba(79, 70, 229, 0.05);
-        }
-
-        .navigation {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 40px;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .name-input-container {
-            margin-top: 20px;
-        }
-
-        .input-label {
-            display: block;
-            margin-bottom: 10px;
-            font-weight: 500;
-            color: var(--dark);
-        }
-
-        .name-input {
-            width: 100%;
-            padding: 16px 20px;
-            border: 2px solid var(--light-gray);
-            border-radius: var(--border-radius);
-            font-size: 1rem;
-            transition: var(--transition);
-        }
-
-        .name-input:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
-        .loading-container {
-            text-align: center;
-            padding: 40px 20px;
-        }
-
-        .loading-spinner {
-            width: 60px;
-            height: 60px;
-            border: 5px solid rgba(79, 70, 229, 0.1);
-            border-top: 5px solid var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 25px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .result-container {
-            text-align: center;
-        }
-
-        .music-title {
-            font-family: 'Poppins', sans-serif;
-            font-size: 1.8rem;
-            color: var(--primary);
-            margin-bottom: 15px;
-        }
-
-        .music-player {
-            margin: 30px 0;
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .download-section {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 30px;
-            flex-wrap: wrap;
-        }
-
-        .info-message {
-            background-color: rgba(16, 185, 129, 0.1);
-            border-left: 4px solid var(--secondary);
-            padding: 16px;
-            border-radius: 4px;
-            margin: 20px 0;
-            text-align: left;
-        }
-
-        .error-message {
-            background-color: rgba(239, 68, 68, 0.1);
-            border-left: 4px solid #EF4444;
-            padding: 16px;
-            border-radius: 4px;
-            margin: 20px 0;
-            text-align: left;
-        }
-
-        footer {
-            text-align: center;
-            margin-top: 30px;
-            color: var(--gray);
-            font-size: 0.9rem;
-        }
-
-        .step-indicator {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-        }
-
-        .step {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background-color: var(--light-gray);
-            margin: 0 5px;
-        }
-
-        .step.active {
-            background-color: var(--primary);
-        }
-
-        @media (max-width: 768px) {
-            .card {
-                padding: 25px;
-            }
-            
-            h1 {
-                font-size: 1.8rem;
-            }
-            
-            .options-container {
-                grid-template-columns: 1fr;
-            }
-            
-            .navigation {
-                flex-direction: column;
-                gap: 15px;
-            }
-            
-            .btn {
-                width: 100%;
-            }
+        :root { --roxo: #8B5CF6; --rosa: #EC4899; --amarelo: #FBBF24; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+        body { background: linear-gradient(135deg, #F3E8FF 0%, #FFE4E6 100%); min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .container { max-width: 600px; width: 100%; }
+        .card { background: white; border-radius: 24px; padding: 40px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15); margin-bottom: 20px; }
+        .hidden { display: none !important; }
+        
+        /* Cabeçalho */
+        .header { text-align: center; margin-bottom: 40px; }
+        .logo { font-size: 3rem; margin-bottom: 10px; }
+        h1 { color: var(--roxo); font-size: 2.2rem; margin-bottom: 10px; }
+        .subtitle { color: #6B7280; font-size: 1.1rem; }
+        
+        /* Quiz */
+        .progress { height: 6px; background: #E5E7EB; border-radius: 3px; margin: 30px 0; overflow: hidden; }
+        .progress-bar { height: 100%; background: linear-gradient(90deg, var(--roxo), var(--rosa)); width: 0%; transition: width 0.4s; }
+        .question-box { margin-bottom: 30px; }
+        .question-num { color: var(--roxo); font-weight: 600; margin-bottom: 8px; }
+        .question-text { font-size: 1.4rem; color: #1F2937; margin-bottom: 25px; line-height: 1.4; }
+        
+        /* Opções */
+        .options { display: flex; flex-direction: column; gap: 12px; margin-bottom: 30px; }
+        .option { padding: 18px 20px; border: 2px solid #E5E7EB; border-radius: 16px; cursor: pointer; transition: all 0.2s; background: #F9FAFB; }
+        .option:hover { border-color: var(--roxo); transform: translateY(-2px); }
+        .option.selected { border-color: var(--roxo); background: #F5F3FF; }
+        .option-emoji { font-size: 1.5rem; margin-right: 10px; }
+        
+        /* Botões */
+        .btn { background: var(--roxo); color: white; border: none; padding: 16px 32px; border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: block; width: 100%; }
+        .btn:hover { background: #7C3AED; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3); }
+        .btn:disabled { background: #D1D5DB; cursor: not-allowed; transform: none; box-shadow: none; }
+        .btn-secondary { background: white; color: var(--roxo); border: 2px solid var(--roxo); }
+        
+        /* Telas */
+        .screen { transition: opacity 0.3s; }
+        .loading { text-align: center; padding: 40px 0; }
+        .spinner { width: 50px; height: 50px; border: 4px solid #E5E7EB; border-top: 4px solid var(--roxo); border-radius: 50%; margin: 0 auto 25px; animation: spin 1s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        
+        /* Resultado */
+        .player { background: #F8FAFC; border-radius: 16px; padding: 25px; margin: 30px 0; }
+        audio { width: 100%; border-radius: 10px; }
+        .actions { display: flex; gap: 15px; justify-content: center; margin-top: 30px; }
+        .action-btn { width: auto; min-width: 180px; text-align: center; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
+        .action-btn i { margin-right: 8px; }
+        
+        /* Responsivo */
+        @media (max-width: 640px) {
+            .card { padding: 25px; }
+            h1 { font-size: 1.8rem; }
+            .actions { flex-direction: column; }
+            .action-btn { width: 100%; }
         }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="container">
-        <div class="card" id="intro-card">
+        <!-- TELA 1: INTRODUÇÃO -->
+        <div class="card screen" id="screen-intro">
             <div class="header">
-                <div class="logo">
-                    <i class="fas fa-music"></i>
-                </div>
-                <h1>Crie Seu Jingle Personalizado</h1>
-                <p class="subtitle">
-                    Responda 8 perguntas rápidas sobre seu estilo e personalidade, e nosso sistema criará um jingle engraçado e caricato especialmente para você usando inteligência artificial.
-                </p>
-                <button class="btn" id="start-btn">Começar Quiz</button>
+                <div class="logo">🎵</div>
+                <h1>Jingle da Minha Cara</h1>
+                <p class="subtitle">Responda 5 perguntinhas e ganhe uma música ENGRAÇADA cantada sobre você!</p>
             </div>
+            <button class="btn" id="btn-start">Começar Diversão ➔</button>
         </div>
 
-        <div class="card hidden" id="quiz-card">
-            <div class="progress-container">
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progress-fill"></div>
-                </div>
-                <div class="progress-text">
-                    <span>Progresso</span>
-                    <span id="progress-percentage">12.5%</span>
-                </div>
+        <!-- TELA 2: QUIZ -->
+        <div class="card screen hidden" id="screen-quiz">
+            <div class="progress">
+                <div class="progress-bar" id="progress-bar"></div>
             </div>
-
-            <div id="question-1" class="question-container">
-                <div class="question-number">Pergunta 1 de 8</div>
-                <h2 class="question-text">Como você descreveria sua energia no dia a dia?</h2>
-                <div class="options-container">
-                    <div class="option" data-value="explosiva">
-                        <div class="option-icon">⚡</div>
-                        <div>Explosiva - Sempre acelerado e cheio de gás!</div>
-                    </div>
-                    <div class="option" data-value="calma">
-                        <div class="option-icon">🌊</div>
-                        <div>Calma - Relaxado, sem pressa, na minha vibe</div>
-                    </div>
-                    <div class="option" data-value="impulsiva">
-                        <div class="option-icon">🎢</div>
-                        <div>Impulsiva - Altos e baixos, depende do dia</div>
-                    </div>
-                    <div class="option" data-value="equilibrada">
-                        <div class="option-icon">⚖️</div>
-                        <div>Equilibrada - Nem muita, nem pouca, no ponto</div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="question-2" class="question-container hidden">
-                <div class="question-number">Pergunta 2 de 8</div>
-                <h2 class="question-text">Qual estilo musical mais combina com você?</h2>
-                <div class="options-container">
-                    <div class="option" data-value="pop">
-                        <div class="option-icon">🎤</div>
-                        <div>Pop - Alegre, cativante e cheio de melodia</div>
-                    </div>
-                    <div class="option" data-value="rock">
-                        <div class="option-icon">🎸</div>
-                        <div>Rock - Atitude, guitarra e muita energia</div>
-                    </div>
-                    <div class="option" data-value="funk">
-                        <div class="option-icon">🎧</div>
-                        <div>Funk - Batida forte, dançante e descontraído</div>
-                    </div>
-                    <div class="option" data-value="sertanejo">
-                        <div class="option-icon">🎵</div>
-                        <div>Sertanejo - Emocional, tradicional e brasileiro</div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="question-3" class="question-container hidden">
-                <div class="question-number">Pergunta 3 de 8</div>
-                <h2 class="question-text">Como você reage a situações inesperadas?</h2>
-                <div class="options-container">
-                    <div class="option" data-value="improvisa">
-                        <div class="option-icon">🎭</div>
-                        <div>Improviso - Giro a situação a meu favor</div>
-                    </div>
-                    <div class="option" data-value="planeja">
-                        <div class="option-icon">📋</div>
-                        <div>Planejo - Penso antes de agir, mantenho o controle</div>
-                    </div>
-                    <div class="option" data-value="ri">
-                        <div class="option-icon">😂</div>
-                        <div>Dou risada - Levo na brincadeira, não levo a sério</div>
-                    </div>
-                    <div class="option" data-value="estressa">
-                        <div class="option-icon">😅</div>
-                        <div>Fico estressado - Preciso de um momento para processar</div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="question-4" class="question-container hidden">
-                <div class="question-number">Pergunta 4 de 8</div>
-                <h2 class="question-text">Qual animal melhor representa sua personalidade?</h2>
-                <div class="options-container">
-                    <div class="option" data-value="leao">
-                        <div class="option-icon">🦁</div>
-                        <div>Leão - Liderança, coragem e imponência</div>
-                    </div>
-                    <div class="option" data-value="golfinho">
-                        <div class="option-icon">🐬</div>
-                        <div>Golfinho - Inteligente, brincalhão e social</div>
-                    </div>
-                    <div class="option" data-value="coruja">
-                        <div class="option-icon">🦉</div>
-                        <div>Coruja - Sábio, observador e tranquilo</div>
-                    </div>
-                    <div class="option" data-value="macaco">
-                        <div class="option-icon">🐵</div>
-                        <div>Macaco - Travesso, ágil e cheio de energia</div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="question-5" class="question-container hidden">
-                <div class="question-number">Pergunta 5 de 8</div>
-                <h2 class="question-text">Em uma festa, você é mais...</h2>
-                <div class="options-container">
-                    <div class="option" data-value="dancarino">
-                        <div class="option-icon">💃</div>
-                        <div>Dançarino - No centro da pista, comandando a festa</div>
-                    </div>
-                    <div class="option" data-value="conversador">
-                        <div class="option-icon">🗣️</div>
-                        <div>Conversador - Nas laterais, socializando com todos</div>
-                    </div>
-                    <div class="option" data-value="observador">
-                        <div class="option-icon">👀</div>
-                        <div>Observador - Analisando a cena de um canto</div>
-                    </div>
-                    <div class="option" data-value="animador">
-                        <div class="option-icon">🎉</div>
-                        <div>Animador - Criando brincadeiras e jogos</div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="question-6" class="question-container hidden">
-                <div class="question-number">Pergunta 6 de 8</div>
-                <h2 class="question-text">Qual superpoder você gostaria de ter?</h2>
-                <div class="options-container">
-                    <div class="option" data-value="velocidade">
-                        <div class="option-icon">⚡</div>
-                        <div>Super Velocidade - Fazer tudo rapidamente</div>
-                    </div>
-                    <div class="option" data-value="leitura">
-                        <div class="option-icon">📖</div>
-                        <div>Leitura de Mentes - Saber o que os outros pensam</div>
-                    </div>
-                    <div class="option" data-value="invisibilidade">
-                        <div class="option-icon">👻</div>
-                        <div>Invisibilidade - Passar despercebido quando quiser</div>
-                    </div>
-                    <div class="option" data-value="voar">
-                        <div class="option-icon">🦸</div>
-                        <div>Voar - Liberdade para ir a qualquer lugar</div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="question-7" class="question-container hidden">
-                <div class="question-number">Pergunta 7 de 8</div>
-                <h2 class="question-text">Qual é seu estilo de humor?</h2>
-                <div class="options-container">
-                    <div class="option" data-value="sarcastico">
-                        <div class="option-icon">😏</div>
-                        <div>Sarcástico - Ironia fina e comentários ácidos</div>
-                    </div>
-                    <div class="option" data-value="palhaco">
-                        <div class="option-icon">🤡</div>
-                        <div>Palhaço - Piadas bobas e situações engraçadas</div>
-                    </div>
-                    <div class="option" data-value="absurdo">
-                        <div class="option-icon">🤪</div>
-                        <div>Absurdo - Humor nonsense e situações surreais</div>
-                    </div>
-                    <div class="option" data-value="timido">
-                        <div class="option-icon">😊</div>
-                        <div>Tímido - Risadinhas discretas e humor leve</div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="question-8" class="question-container hidden">
-                <div class="question-number">Pergunta 8 de 8</div>
-                <h2 class="question-text">Como você enfrenta desafios?</h2>
-                <div class="options-container">
-                    <div class="option" data-value="coragem">
-                        <div class="option-icon">🦸</div>
-                        <div>Com coragem - Enfrento de frente, sem medo</div>
-                    </div>
-                    <div class="option" data-value="estrategia">
-                        <div class="option-icon">♟️</div>
-                        <div>Com estratégia - Planejo cada movimento</div>
-                    </div>
-                    <div class="option" data-value="criatividade">
-                        <div class="option-icon">🎨</div>
-                        <div>Com criatividade - Encontro soluções inovadoras</div>
-                    </div>
-                    <div class="option" data-value="humor">
-                        <div class="option-icon">😄</div>
-                        <div>Com humor - Levo na brincadeira, descontraio</div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="name-input" class="hidden name-input-container">
-                <div class="question-number">Último Passo</div>
-                <h2 class="question-text">Qual é o seu nome?</h2>
-                <div class="info-message">
-                    Seu nome será incluído no jingle de forma engraçada e caricata. Pode ser seu nome real ou um apelido divertido!
-                </div>
-                <label class="input-label" for="user-name">Digite seu nome:</label>
-                <input type="text" id="user-name" class="name-input" placeholder="Ex: João, Maria, Zé, Ana..." maxlength="50">
-                <div class="error-message hidden" id="name-error">Por favor, digite seu nome para continuar.</div>
-            </div>
-
-            <div class="navigation">
-                <button class="btn btn-secondary" id="prev-btn">Anterior</button>
-                <button class="btn" id="next-btn">Próxima Pergunta</button>
-            </div>
-
-            <div class="step-indicator">
-                <div class="step active" data-step="1"></div>
-                <div class="step" data-step="2"></div>
-                <div class="step" data-step="3"></div>
-                <div class="step" data-step="4"></div>
-                <div class="step" data-step="5"></div>
-                <div class="step" data-step="6"></div>
-                <div class="step" data-step="7"></div>
-                <div class="step" data-step="8"></div>
-                <div class="step" data-step="9"></div>
-            </div>
-        </div>
-
-        <div class="card hidden" id="loading-card">
-            <div class="loading-container">
-                <div class="loading-spinner"></div>
-                <h2 class="question-text">Criando seu jingle personalizado...</h2>
-                <p class="subtitle">Isso pode levar de 30 segundos a 3 minutos. Estamos combinando suas respostas com inteligência artificial para criar uma música engraçada e única para você!</p>
-                <div class="info-message">
-                    <strong>Informação:</strong> Estamos usando a API do Suno AI para gerar sua música. O processo inclui criação de letras, composição musical e produção de áudio.
-                </div>
-            </div>
-        </div>
-
-        <div class="card hidden" id="result-card">
-            <div class="result-container">
-                <div class="logo">
-                    <i class="fas fa-music"></i>
-                </div>
-                <h1>Seu Jingle Está Pronto!</h1>
-                <p class="subtitle">
-                    Baseado nas suas respostas, criamos um jingle caricato e divertido especialmente para você.
-                </p>
+            
+            <div class="question-box">
+                <div class="question-num" id="question-num">Pergunta 1 de 5</div>
+                <div class="question-text" id="question-text">Qual animal te representa?</div>
                 
-                <div id="result-content">
-                    <h3 class="music-title" id="generated-title">Jingle para [Nome]</h3>
-                    
-                    <div class="info-message">
-                        <strong>Detalhes da criação:</strong> 
-                        <div id="music-details">Estilo: Pop • Energia: Alta • Duração: 2 minutos</div>
-                    </div>
-                    
-                    <div class="music-player" id="music-player">
-                        <!-- Player será inserido aqui dinamicamente -->
-                        <p>Seu áudio será carregado aqui em breve...</p>
-                    </div>
-                    
-                    <div class="download-section">
-                        <a href="#" class="btn" id="download-btn" target="_blank">
-                            <i class="fas fa-download"></i> Baixar MP3
-                        </a>
-                        <button class="btn btn-secondary" id="new-quiz-btn">
-                            <i class="fas fa-redo"></i> Criar Novo Jingle
-                        </button>
-                    </div>
-                    
-                    <div class="info-message" id="api-info">
-                        <strong>Nota técnica:</strong> Esta aplicação usa a API do Suno AI (modelo V4_5ALL) para geração de música. As músicas são mantidas nos servidores do Suno por 15 dias.
-                    </div>
+                <div class="options" id="options">
+                    <!-- Opções preenchidas por JavaScript -->
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 15px;">
+                <button class="btn btn-secondary" id="btn-prev" style="flex: 1;">← Voltar</button>
+                <button class="btn" id="btn-next" style="flex: 2;" disabled>Próxima →</button>
+            </div>
+        </div>
+
+        <!-- TELA 3: NOME -->
+        <div class="card screen hidden" id="screen-name">
+            <div class="header">
+                <div class="logo">✨</div>
+                <h2>Quase lá!</h2>
+                <p class="subtitle">Como devemos te chamar na música?</p>
+            </div>
+            
+            <input type="text" id="input-name" placeholder="Digite seu nome ou apelido..." 
+                   style="width: 100%; padding: 18px; border: 2px solid #E5E7EB; border-radius: 12px; font-size: 1.1rem; margin: 25px 0;">
+            
+            <button class="btn" id="btn-create">🎤 Criar Minha Música!</button>
+        </div>
+
+        <!-- TELA 4: CARREGANDO -->
+        <div class="card screen hidden" id="screen-loading">
+            <div class="loading">
+                <div class="spinner"></div>
+                <h2 style="color: var(--roxo); margin-bottom: 15px;">Criando sua música...</h2>
+                <p class="subtitle">A IA está escrevendo letras engraçadas, compondo a melodia e preparando a voz!</p>
+                <div style="background: #F0F9FF; padding: 15px; border-radius: 12px; margin-top: 25px; border-left: 4px solid var(--roxo);">
+                    <strong>Dica:</strong> A música pode levar de 30 segundos a 2 minutos para ficar pronta.
                 </div>
             </div>
         </div>
 
-        <footer>
-            <p>Jingle Personalizado • Usa API do Suno AI • Criado para diversão e entretenimento</p>
-            <p><small>As músicas geradas são caricaturas engraçadas baseadas nas respostas fornecidas</small></p>
-        </footer>
+        <!-- TELA 5: RESULTADO -->
+        <div class="card screen hidden" id="screen-result">
+            <div class="header">
+                <div class="logo">🎉</div>
+                <h1>Sua música está pronta!</h1>
+                <p class="subtitle">Uma obra-prima musical sobre você:</p>
+            </div>
+            
+            <h3 id="song-title" style="text-align: center; color: var(--rosa); margin: 20px 0;">Jingle do [Nome]</h3>
+            
+            <div class="player">
+                <audio controls id="audio-player" style="width: 100%;">
+                    Seu navegador não suporta o player de áudio.
+                </audio>
+            </div>
+            
+            <div class="actions">
+                <a class="btn action-btn" id="btn-download">
+                    <i class="fas fa-download"></i> Baixar MP3
+                </a>
+                <button class="btn btn-secondary action-btn" id="btn-restart">
+                    <i class="fas fa-redo"></i> Fazer outra
+                </button>
+            </div>
+        </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Elementos DOM
-            const introCard = document.getElementById('intro-card');
-            const quizCard = document.getElementById('quiz-card');
-            const loadingCard = document.getElementById('loading-card');
-            const resultCard = document.getElementById('result-card');
-            const startBtn = document.getElementById('start-btn');
-            const nextBtn = document.getElementById('next-btn');
-            const prevBtn = document.getElementById('prev-btn');
-            const progressFill = document.getElementById('progress-fill');
-            const progressPercentage = document.getElementById('progress-percentage');
-            const userNameInput = document.getElementById('user-name');
-            const nameError = document.getElementById('name-error');
-            const nameInputSection = document.getElementById('name-input');
-            const downloadBtn = document.getElementById('download-btn');
-            const newQuizBtn = document.getElementById('new-quiz-btn');
+        // CONFIGURAÇÃO DA API (AGORA DIRETO DO FRONTEND)
+        const API_KEY = '85496f40a8f28f52c5cdba0b1c293034'; // Sua chave direto aqui
+        const API_URL = 'https://api.sunoapi.org/api/v1/generate';
+        
+        // Estado da aplicação
+        const appState = {
+            step: 0,
+            answers: [],
+            userName: '',
+            audioUrl: '',
+            currentQuestion: 0
+        };
+
+        // Perguntas otimizadas para gerar bom prompt
+        const questions = [
+            {
+                text: "Qual animal te representa?",
+                emoji: "🐾",
+                options: [
+                    { text: "Macaco bagunceiro e divertido", emoji: "🐵", value: "macaco bagunceiro" },
+                    { text: "Leão líder e corajoso", emoji: "🦁", value: "leão corajoso" },
+                    { text: "Golfinho brincalhão", emoji: "🐬", value: "golfinho brincalhão" },
+                    { text: "Coruja sábia e tranquila", emoji: "🦉", value: "coruja sábia" }
+                ]
+            },
+            {
+                text: "Qual sua energia no dia a dia?",
+                emoji: "⚡",
+                options: [
+                    { text: "Acelerado, sempre ligado no 220V", emoji: "🚀", value: "energia máxima acelerada" },
+                    { text: "Relax, na minha tranquilidade", emoji: "😎", value: "calmo e relaxado" },
+                    { text: "Altos e baixos, depende do dia", emoji: "🎢", value: "energia variável" },
+                    { text: "Foco total, nada me distrai", emoji: "🎯", value: "focado e determinado" }
+                ]
+            },
+            {
+                text: "Qual estilo musical combina com você?",
+                emoji: "🎵",
+                options: [
+                    { text: "Pop animado e contagiante", emoji: "🎤", value: "pop animado" },
+                    { text: "Funk dançante e descontraído", emoji: "🕺", value: "funk dançante" },
+                    { text: "Sertanejo emocionado", emoji: "🎸", value: "sertanejo" },
+                    { text: "Rock com atitude", emoji: "🤘", value: "rock com atitude" }
+                ]
+            },
+            {
+                text: "Qual seu poder secreto?",
+                emoji: "🦸",
+                options: [
+                    { text: "Fazer amigos em qualquer lugar", emoji: "🤝", value: "fazer amigos facilmente" },
+                    { text: "Encontrar comida sem precisar procurar", emoji: "🍕", value: "encontrar comida" },
+                    { text: "Dormir em qualquer situação", emoji: "😴", value: "dormir em qualquer lugar" },
+                    { text: "Fazer piadas na hora certa", emoji: "😂", value: "fazer piadas engraçadas" }
+                ]
+            },
+            {
+                text: "Como você enfrenta desafios?",
+                emoji: "🏔️",
+                options: [
+                    { text: "Com coragem, enfrento de frente", emoji: "💪", value: "com coragem e determinação" },
+                    { text: "Com criatividade, invento soluções", emoji: "💡", value: "com criatividade" },
+                    { text: "Com humor, descontraio a situação", emoji: "😄", value: "com humor e leveza" },
+                    { text: "Com calma, penso antes de agir", emoji: "🧘", value: "com calma e planejamento" }
+                ]
+            }
+        ];
+
+        // Elementos DOM
+        const screens = ['intro', 'quiz', 'name', 'loading', 'result'].map(id => document.getElementById(`screen-${id}`));
+        const progressBar = document.getElementById('progress-bar');
+        const questionNum = document.getElementById('question-num');
+        const questionText = document.getElementById('question-text');
+        const optionsEl = document.getElementById('options');
+        const audioPlayer = document.getElementById('audio-player');
+        const songTitle = document.getElementById('song-title');
+        
+        // Botões
+        document.getElementById('btn-start').addEventListener('click', () => showScreen('quiz'));
+        document.getElementById('btn-prev').addEventListener('click', prevQuestion);
+        document.getElementById('btn-next').addEventListener('click', nextQuestion);
+        document.getElementById('btn-create').addEventListener('click', createMusic);
+        document.getElementById('btn-restart').addEventListener('click', restartApp);
+        document.getElementById('input-name').addEventListener('input', function() {
+            document.getElementById('btn-create').disabled = !this.value.trim();
+        });
+
+        // Inicializar
+        function init() {
+            updateQuestion();
+        }
+
+        // Mostrar tela específica
+        function showScreen(screenId) {
+            screens.forEach(screen => screen.classList.add('hidden'));
+            document.getElementById(`screen-${screenId}`).classList.remove('hidden');
             
-            // Estado do quiz
-            let currentQuestion = 1;
-            let totalQuestions = 8;
-            let userAnswers = {};
-            let userName = '';
-            let generatedTaskId = '';
-            let generatedAudioUrl = '';
-            let generatedDownloadUrl = '';
+            if (screenId === 'quiz') updateQuestion();
+            if (screenId === 'result' && appState.audioUrl) {
+                audioPlayer.src = appState.audioUrl;
+                songTitle.textContent = `Jingle do ${appState.userName}`;
+                document.getElementById('btn-download').href = appState.audioUrl;
+                document.getElementById('btn-download').download = `jingle-${appState.userName.replace(/\s+/g, '-')}.mp3`;
+            }
+        }
+
+        // Atualizar pergunta atual
+        function updateQuestion() {
+            const q = questions[appState.currentQuestion];
+            const progress = ((appState.currentQuestion + 1) / questions.length) * 100;
             
-            // Configuração da API (use a chave fornecida pelo usuário)
-            const API_KEY = '85496f40a8f28f52c5cdba0b1c293034';
-            const API_URL = 'https://api.sunoapi.org/api/v1/generate';
-            const API_STATUS_URL = 'https://api.sunoapi.org/api/v1/generate/';
+            progressBar.style.width = `${progress}%`;
+            questionNum.textContent = `Pergunta ${appState.currentQuestion + 1} de ${questions.length}`;
+            questionText.textContent = q.text;
             
-            // Iniciar o quiz
-            startBtn.addEventListener('click', function() {
-                introCard.classList.add('hidden');
-                quizCard.classList.remove('hidden');
-                updateProgress();
-                updateStepIndicator();
+            // Limpar e adicionar opções
+            optionsEl.innerHTML = '';
+            q.options.forEach((opt, idx) => {
+                const div = document.createElement('div');
+                div.className = `option ${appState.answers[appState.currentQuestion] === idx ? 'selected' : ''}`;
+                div.innerHTML = `<span class="option-emoji">${opt.emoji}</span>${opt.text}`;
+                div.addEventListener('click', () => selectOption(idx));
+                optionsEl.appendChild(div);
             });
             
-            // Navegação entre perguntas
-            nextBtn.addEventListener('click', function() {
-                if (currentQuestion === totalQuestions) {
-                    // Mostrar entrada de nome na última pergunta
-                    showNameInput();
-                } else if (currentQuestion === totalQuestions + 1) {
-                    // Verificar se o nome foi fornecido
-                    if (validateNameInput()) {
-                        // Iniciar geração da música
-                        startMusicGeneration();
-                    }
+            // Atualizar botões
+            document.getElementById('btn-prev').disabled = appState.currentQuestion === 0;
+            document.getElementById('btn-next').disabled = appState.answers[appState.currentQuestion] === undefined;
+        }
+
+        function selectOption(idx) {
+            optionsEl.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            optionsEl.children[idx].classList.add('selected');
+            appState.answers[appState.currentQuestion] = idx;
+            document.getElementById('btn-next').disabled = false;
+        }
+
+        function nextQuestion() {
+            if (appState.currentQuestion < questions.length - 1) {
+                appState.currentQuestion++;
+                updateQuestion();
+            } else {
+                showScreen('name');
+            }
+        }
+
+        function prevQuestion() {
+            if (appState.currentQuestion > 0) {
+                appState.currentQuestion--;
+                updateQuestion();
+            }
+        }
+
+        // FUNÇÃO PRINCIPAL: Criar música usando API diretamente
+        async function createMusic() {
+            appState.userName = document.getElementById('input-name').value.trim();
+            if (!appState.userName) return alert("Digite seu nome!");
+            
+            showScreen('loading');
+            
+            // 1. Construir prompt descritivo (para o modo não-customizado)
+            const prompt = buildPrompt();
+            console.log("Prompt enviado para a IA do Suno:", prompt);
+            
+            // 2. Configuração SIMPLES para o modo não-customizado
+            const requestData = {
+                customMode: false,       // MODO NÃO-CUSTOMIZADO - Suno gera letra automaticamente!
+                prompt: prompt,          // Apenas isso! A IA cria letra e música
+                model: "V4_5ALL"         // Modelo recomendado
+            };
+            
+            try {
+                // 3. Fazer requisição DIRETA para a API (sem backend)
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${API_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestData)
+                });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`API respondeu com erro ${response.status}: ${errorText}`);
+                }
+                
+                const result = await response.json();
+                
+                if (result.code === 200) {
+                    const taskId = result.data.taskId;
+                    console.log("Música em produção! Task ID:", taskId);
+                    
+                    // 4. Verificar status até a música ficar pronta
+                    await waitForMusic(taskId);
+                    
                 } else {
-                    // Ir para próxima pergunta
-                    goToNextQuestion();
-                }
-            });
-            
-            prevBtn.addEventListener('click', function() {
-                if (currentQuestion === totalQuestions + 1) {
-                    // Voltar da entrada de nome para a última pergunta
-                    hideNameInput();
-                } else if (currentQuestion > 1) {
-                    // Voltar para pergunta anterior
-                    goToPreviousQuestion();
-                }
-            });
-            
-            // Selecionar opções de resposta
-            document.querySelectorAll('.option').forEach(option => {
-                option.addEventListener('click', function() {
-                    const questionId = this.closest('.question-container').id;
-                    const questionNum = parseInt(questionId.split('-')[1]);
-                    const selectedValue = this.getAttribute('data-value');
-                    
-                    // Remover seleção anterior nesta pergunta
-                    const options = this.parentElement.querySelectorAll('.option');
-                    options.forEach(opt => opt.classList.remove('selected'));
-                    
-                    // Selecionar nova opção
-                    this.classList.add('selected');
-                    
-                    // Salvar resposta
-                    userAnswers[`question${questionNum}`] = selectedValue;
-                    
-                    // Habilitar botão próximo
-                    nextBtn.disabled = false;
-                });
-            });
-            
-            // Funções de navegação
-            function goToNextQuestion() {
-                // Validar se resposta foi selecionada
-                if (!userAnswers[`question${currentQuestion}`]) {
-                    alert('Por favor, selecione uma resposta antes de continuar.');
-                    return;
+                    throw new Error(result.msg || "Erro desconhecido da API");
                 }
                 
-                // Esconder pergunta atual
-                document.getElementById(`question-${currentQuestion}`).classList.add('hidden');
+            } catch (error) {
+                console.error("Erro detalhado:", error);
                 
-                // Avançar
-                currentQuestion++;
-                
-                // Mostrar próxima pergunta
-                if (currentQuestion <= totalQuestions) {
-                    document.getElementById(`question-${currentQuestion}`).classList.remove('hidden');
-                    updateProgress();
-                    updateStepIndicator();
-                    
-                    // Atualizar texto do botão próximo se for a última pergunta
-                    if (currentQuestion === totalQuestions) {
-                        nextBtn.textContent = 'Continuar';
-                    }
+                // Modo de demonstração se a API falhar
+                if (error.message.includes('CORS') || error.message.includes('401')) {
+                    alert("API bloqueada pelo navegador (problema de CORS). Veja o console para detalhes.");
+                    simulateSuccess(); // Modo de demonstração
+                } else {
+                    alert(`Erro: ${error.message}\n\nVeja o console (F12) para mais detalhes.`);
+                    showScreen('name');
                 }
-                
-                // Habilitar/desabilitar botão anterior
-                prevBtn.disabled = currentQuestion === 1;
-                
-                // Desabilitar botão próximo até selecionar uma opção
-                nextBtn.disabled = true;
             }
+        }
+
+        // Construir prompt descritivo para a IA do Suno
+        function buildPrompt() {
+            const name = appState.userName;
+            const traits = appState.answers.map((ansIdx, qIdx) => {
+                return questions[qIdx].options[ansIdx].value;
+            }).join(', ');
             
-            function goToPreviousQuestion() {
-                // Esconder pergunta atual
-                if (currentQuestion <= totalQuestions) {
-                    document.getElementById(`question-${currentQuestion}`).classList.add('hidden');
-                }
-                
-                // Retroceder
-                currentQuestion--;
-                
-                // Mostrar pergunta anterior
-                document.getElementById(`question-${currentQuestion}`).classList.remove('hidden');
-                updateProgress();
-                updateStepIndicator();
-                
-                // Atualizar texto do botão próximo
-                nextBtn.textContent = currentQuestion === totalQuestions ? 'Continuar' : 'Próxima Pergunta';
-                
-                // Habilitar/desabilitar botão anterior
-                prevBtn.disabled = currentQuestion === 1;
-                
-                // Habilitar botão próximo (já temos uma resposta selecionada)
-                nextBtn.disabled = false;
-            }
+            // Prompt para o modo não-customizado (até 500 caracteres)
+            return `Crie uma música ENGRAÇADA e ANIMADA sobre ${name}. 
+            ${name} é uma pessoa ${traits}. 
+            A música deve ser divertida, exagerada e caricata, com letras criativas que mencionem essas características de forma humorada. 
+            Estilo musical: pop animado brasileiro com toques de comédia. 
+            A música deve fazer todos rirem e ser super cativante!`;
+        }
+
+        // Verificar status da música periodicamente
+        async function waitForMusic(taskId) {
+            const maxAttempts = 30; // 30 tentativas (cerca de 1.5 minuto)
+            const checkUrl = `https://api.sunoapi.org/api/v1/generate/${taskId}`;
             
-            function showNameInput() {
-                // Esconder última pergunta
-                document.getElementById(`question-${currentQuestion}`).classList.add('hidden');
-                
-                // Mostrar entrada de nome
-                nameInputSection.classList.remove('hidden');
-                
-                // Atualizar estado
-                currentQuestion = totalQuestions + 1;
-                updateProgress();
-                updateStepIndicator();
-                
-                // Atualizar botões
-                prevBtn.disabled = false;
-                nextBtn.textContent = 'Criar Meu Jingle!';
-                nextBtn.disabled = userNameInput.value.trim() === '';
-                
-                // Focar no campo de nome
-                userNameInput.focus();
-            }
-            
-            function hideNameInput() {
-                // Esconder entrada de nome
-                nameInputSection.classList.add('hidden');
-                
-                // Mostrar última pergunta novamente
-                document.getElementById(`question-${totalQuestions}`).classList.remove('hidden');
-                
-                // Atualizar estado
-                currentQuestion = totalQuestions;
-                updateProgress();
-                updateStepIndicator();
-                
-                // Atualizar botões
-                prevBtn.disabled = currentQuestion === 1;
-                nextBtn.textContent = 'Continuar';
-                nextBtn.disabled = false;
-            }
-            
-            function validateNameInput() {
-                const name = userNameInput.value.trim();
-                
-                if (name === '') {
-                    nameError.classList.remove('hidden');
-                    return false;
-                }
-                
-                nameError.classList.add('hidden');
-                userName = name;
-                return true;
-            }
-            
-            // Atualizar barra de progresso
-            function updateProgress() {
-                const percentage = (currentQuestion / (totalQuestions + 1)) * 100;
-                progressFill.style.width = `${percentage}%`;
-                progressPercentage.textContent = `${Math.round(percentage)}%`;
-            }
-            
-            // Atualizar indicador de etapas
-            function updateStepIndicator() {
-                document.querySelectorAll('.step').forEach(step => {
-                    const stepNum = parseInt(step.getAttribute('data-step'));
-                    step.classList.toggle('active', stepNum <= currentQuestion);
-                });
-            }
-            
-            // Evento para campo de nome
-            userNameInput.addEventListener('input', function() {
-                nextBtn.disabled = this.value.trim() === '';
-            });
-            
-            // Iniciar geração de música
-            async function startMusicGeneration() {
-                // Esconder quiz e mostrar loading
-                quizCard.classList.add('hidden');
-                loadingCard.classList.remove('hidden');
+            for (let i = 0; i < maxAttempts; i++) {
+                await new Promise(resolve => setTimeout(resolve, 3000)); // Espera 3 segundos
                 
                 try {
-                    // Criar prompt baseado nas respostas
-                    const prompt = createPromptFromAnswers();
-                    const style = determineMusicStyle();
-                    const title = `Jingle Engraçado para ${userName}`;
-                    
-                    // Dados para a API
-                    const requestData = {
-                        customMode: true,
-                        instrumental: false, // Queremos letra (vocal)
-                        model: "V4_5ALL", // Modelo recomendado na documentação
-                        prompt: prompt,
-                        style: style,
-                        title: title,
-                        vocalGender: determineVocalGender(),
-                        styleWeight: 0.7,
-                        weirdnessConstraint: 0.8, // Um pouco mais alto para mais criatividade
-                        audioWeight: 0.7
-                    };
-                    
-                    console.log('Enviando requisição para a API do Suno:', requestData);
-                    
-                    // Fazer requisição para a API do Suno
-                    const response = await fetch(API_URL, {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${API_KEY}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(requestData)
+                    const statusRes = await fetch(checkUrl, {
+                        headers: { 'Authorization': `Bearer ${API_KEY}` }
                     });
                     
-                    if (!response.ok) {
-                        throw new Error(`Erro na API: ${response.status}`);
-                    }
-                    
-                    const result = await response.json();
-                    
-                    if (result.code !== 200) {
-                        throw new Error(`API retornou erro: ${result.msg}`);
-                    }
-                    
-                    // Salvar taskId para verificação posterior
-                    generatedTaskId = result.data.taskId;
-                    console.log('Task ID recebido:', generatedTaskId);
-                    
-                    // Iniciar verificação de status
-                    checkMusicStatus(generatedTaskId);
-                    
-                } catch (error) {
-                    console.error('Erro ao gerar música:', error);
-                    
-                    // Em ambiente de demonstração, simular sucesso após alguns segundos
-                    simulateMusicGeneration();
-                    
-                    // Para produção real, você mostraria uma mensagem de erro
-                    // showError(`Falha ao criar música: ${error.message}`);
-                }
-            }
-            
-            // Verificar status da música
-            async function checkMusicStatus(taskId) {
-                console.log('Verificando status da música...');
-                
-                try {
-                    // Na API real, você faria uma requisição GET para verificar o status
-                    // const response = await fetch(`${API_STATUS_URL}${taskId}`, {
-                    //     headers: {
-                    //         'Authorization': `Bearer ${API_KEY}`
-                    //     }
-                    // });
-                    
-                    // Como esta é uma demonstração, vamos simular o processo
-                    setTimeout(() => {
-                        // Simular URLs de áudio geradas
-                        generatedAudioUrl = `https://example.sunoapi.ai/stream/${taskId}.mp3`;
-                        generatedDownloadUrl = `https://example.sunoapi.ai/download/${taskId}.mp3`;
+                    if (statusRes.ok) {
+                        const statusData = await statusRes.json();
+                        console.log("Status da música:", statusData);
                         
-                        // Mostrar resultado
-                        showResult();
-                    }, 5000); // Simular 5 segundos de processamento
-                    
-                } catch (error) {
-                    console.error('Erro ao verificar status:', error);
-                    simulateMusicGeneration();
-                }
-            }
-            
-            // Simular geração de música para demonstração
-            function simulateMusicGeneration() {
-                console.log('Simulando geração de música para demonstração...');
-                
-                setTimeout(() => {
-                    // URLs de exemplo para demonstração
-                    generatedAudioUrl = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
-                    generatedDownloadUrl = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
-                    
-                    // Mostrar resultado
-                    showResult();
-                }, 3000);
-            }
-            
-            // Criar prompt baseado nas respostas
-            function createPromptFromAnswers() {
-                // Mapear respostas para características
-                const energyMap = {
-                    'explosiva': 'com energia explosiva e acelerada',
-                    'calma': 'com uma vibe calma e relaxada',
-                    'impulsiva': 'com altos e baixos emocionais',
-                    'equilibrada': 'com equilíbrio e moderação'
-                };
-                
-                const musicMap = {
-                    'pop': 'no estilo pop alegre e cativante',
-                    'rock': 'no estilo rock com atitude e energia',
-                    'funk': 'no estilo funk dançante e descontraído',
-                    'sertanejo': 'no estilo sertanejo emocional e tradicional'
-                };
-                
-                const reactionMap = {
-                    'improvisa': 'que improvisa em qualquer situação',
-                    'planeja': 'que planeja tudo cuidadosamente',
-                    'ri': 'que leva tudo na brincadeira',
-                    'estressa': 'que fica um pouco estressado com imprevistos'
-                };
-                
-                const animalMap = {
-                    'leao': 'com a coragem de um leão',
-                    'golfinho': 'com a alegria de um golfinho',
-                    'coruja': 'com a sabedoria de uma coruja',
-                    'macaco': 'com a energia de um macaco'
-                };
-                
-                const partyMap = {
-                    'dancarino': 'que adora dançar no centro da pista',
-                    'conversador': 'que prefere conversar nas laterais',
-                    'observador': 'que observa tudo de um canto',
-                    'animador': 'que anima a festa com brincadeiras'
-                };
-                
-                const powerMap = {
-                    'velocidade': 'que gostaria de ter super velocidade',
-                    'leitura': 'que gostaria de ler mentes',
-                    'invisibilidade': 'que gostaria de ser invisível',
-                    'voar': 'que gostaria de voar como um super-herói'
-                };
-                
-                const humorMap = {
-                    'sarcastico': 'com humor sarcástico e irônico',
-                    'palhaco': 'com humor de palhaço e piadas bobas',
-                    'absurdo': 'com humor absurdo e nonsense',
-                    'timido': 'com humor tímido e discreto'
-                };
-                
-                const challengeMap = {
-                    'coragem': 'que enfrenta desafios com coragem',
-                    'estrategia': 'que enfrenta desafios com estratégia',
-                    'criatividade': 'que enfrenta desafios com criatividade',
-                    'humor': 'que enfrenta desafios com bom humor'
-                };
-                
-                // Construir prompt
-                let prompt = `Crie uma música engraçada e caricata sobre ${userName}, `;
-                prompt += `${energyMap[userAnswers.question1]}, `;
-                prompt += `${musicMap[userAnswers.question2]}, `;
-                prompt += `${reactionMap[userAnswers.question3]}, `;
-                prompt += `${animalMap[userAnswers.question4]}, `;
-                prompt += `${partyMap[userAnswers.question5]}, `;
-                prompt += `${powerMap[userAnswers.question6]}, `;
-                prompt += `${humorMap[userAnswers.question7]}, `;
-                prompt += `${challengeMap[userAnswers.question8]}. `;
-                prompt += `A música deve ser divertida, exagerada e incluir o nome ${userName} várias vezes no refrão. `;
-                prompt += `Inclua elementos cômicos e caricatos que representem essas características de forma exagerada. `;
-                prompt += `A letra deve ser engraçada e memorável, perfeita para um jingle pessoal.`;
-                
-                return prompt;
-            }
-            
-            // Determinar estilo musical baseado nas respostas
-            function determineMusicStyle() {
-                const musicStyle = userAnswers.question2;
-                const styleMap = {
-                    'pop': 'Pop, Dance, Upbeat',
-                    'rock': 'Rock, Electric Guitar, Energetic',
-                    'funk': 'Funk, Groovy, Brazilian Funk',
-                    'sertanejo': 'Sertanejo, Brazilian Country, Emotional'
-                };
-                
-                // Adicionar elemento cômico baseado no humor
-                const humor = userAnswers.question7;
-                let comicElement = '';
-                
-                if (humor === 'palhaco') {
-                    comicElement = ', Comedic, Silly';
-                } else if (humor === 'absurdo') {
-                    comicElement = ', Nonsense, Absurd';
-                } else if (humor === 'sarcastico') {
-                    comicElement = ', Ironic, Witty';
-                }
-                
-                return styleMap[musicStyle] + comicElement;
-            }
-            
-            // Determinar gênero vocal baseado nas respostas
-            function determineVocalGender() {
-                // Esta é uma simplificação - em uma aplicação real, você perguntaria ao usuário
-                // ou usaria uma lógica mais sofisticada
-                const animal = userAnswers.question4;
-                
-                // Leão e macaco -> masculino; Golfinho e coruja -> pode ser qualquer um
-                if (animal === 'leao' || animal === 'macaco') {
-                    return 'm';
-                } else {
-                    // Alternar aleatoriamente para demonstração
-                    return Math.random() > 0.5 ? 'm' : 'f';
-                }
-            }
-            
-            // Mostrar resultado com música gerada
-            function showResult() {
-                loadingCard.classList.add('hidden');
-                resultCard.classList.remove('hidden');
-                
-                // Atualizar título
-                document.getElementById('generated-title').textContent = `Jingle Engraçado para ${userName}`;
-                
-                // Atualizar detalhes
-                const style = determineMusicStyle().split(',')[0];
-                document.getElementById('music-details').textContent = 
-                    `Estilo: ${style} • Energia: ${getEnergyLevel()} • Duração: 2-3 minutos`;
-                
-                // Criar player de áudio
-                const musicPlayer = document.getElementById('music-player');
-                musicPlayer.innerHTML = `
-                    <audio controls autoplay style="width: 100%; border-radius: 8px;">
-                        <source src="${generatedAudioUrl}" type="audio/mpeg">
-                        Seu navegador não suporta o elemento de áudio.
-                    </audio>
-                    <p style="margin-top: 10px; font-size: 0.9rem; color: var(--gray);">
-                        Se o áudio não carregar automaticamente, <a href="${generatedAudioUrl}" target="_blank">clique aqui para ouvir</a>.
-                    </p>
-                `;
-                
-                // Configurar botão de download
-                downloadBtn.href = generatedDownloadUrl;
-                downloadBtn.download = `jingle-${userName.toLowerCase().replace(/\s+/g, '-')}.mp3`;
-                
-                // Adicionar evento ao botão de novo quiz
-                newQuizBtn.addEventListener('click', resetQuiz);
-            }
-            
-            // Obter nível de energia baseado nas respostas
-            function getEnergyLevel() {
-                const energy = userAnswers.question1;
-                const energyLevels = {
-                    'explosiva': 'Muito Alta',
-                    'calma': 'Baixa',
-                    'impulsiva': 'Variável',
-                    'equilibrada': 'Média'
-                };
-                return energyLevels[energy] || 'Média';
-            }
-            
-            // Mostrar erro
-            function showError(message) {
-                loadingCard.innerHTML = `
-                    <div class="loading-container">
-                        <div style="font-size: 3rem; color: #EF4444; margin-bottom: 20px;">
-                            <i class="fas fa-exclamation-triangle"></i>
-                        </div>
-                        <h2 class="question-text">Erro ao criar jingle</h2>
-                        <p class="subtitle">${message}</p>
-                        <div class="error-message">
-                            <strong>Possíveis causas:</strong> Problema na API, limite de créditos excedido ou prompt muito longo.
-                        </div>
-                        <button class="btn" id="retry-btn" style="margin-top: 30px;">Tentar Novamente</button>
-                    </div>
-                `;
-                
-                document.getElementById('retry-btn').addEventListener('click', resetQuiz);
-            }
-            
-            // Reiniciar quiz
-            function resetQuiz() {
-                // Resetar estado
-                currentQuestion = 1;
-                userAnswers = {};
-                userName = '';
-                generatedTaskId = '';
-                generatedAudioUrl = '';
-                generatedDownloadUrl = '';
-                
-                // Resetar UI
-                document.querySelectorAll('.question-container').forEach((q, idx) => {
-                    if (idx === 0) {
-                        q.classList.remove('hidden');
-                    } else {
-                        q.classList.add('hidden');
+                        if (statusData.code === 200 && statusData.data && statusData.data.status === 'complete') {
+                            // Música pronta!
+                            const audioUrl = statusData.data.audioUrl || statusData.data.streamUrl;
+                            if (audioUrl) {
+                                appState.audioUrl = audioUrl;
+                                showScreen('result');
+                                return;
+                            }
+                        }
                     }
-                });
-                
-                document.querySelectorAll('.option').forEach(opt => {
-                    opt.classList.remove('selected');
-                });
-                
-                nameInputSection.classList.add('hidden');
-                userNameInput.value = '';
-                nameError.classList.add('hidden');
-                
-                // Atualizar botões
-                nextBtn.textContent = 'Próxima Pergunta';
-                nextBtn.disabled = true;
-                prevBtn.disabled = true;
-                
-                // Mostrar quiz novamente
-                resultCard.classList.add('hidden');
-                quizCard.classList.remove('hidden');
-                updateProgress();
-                updateStepIndicator();
+                } catch (err) {
+                    console.log("Erro ao verificar status:", err);
+                }
             }
             
-            // Inicializar
-            updateProgress();
-            updateStepIndicator();
-            prevBtn.disabled = true;
-            nextBtn.disabled = true;
-        });
+            // Se chegou aqui, timeout
+            alert("A música está demorando mais que o normal. Tente novamente em alguns instantes!");
+            showScreen('name');
+        }
+
+        // Modo de demonstração (se a API não funcionar)
+        function simulateSuccess() {
+            setTimeout(() => {
+                appState.audioUrl = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3';
+                alert("Modo demonstração: Em produção real, aqui estaria sua música gerada pela IA do Suno!");
+                showScreen('result');
+            }, 2000);
+        }
+
+        function restartApp() {
+            appState.currentQuestion = 0;
+            appState.answers = [];
+            appState.userName = '';
+            appState.audioUrl = '';
+            document.getElementById('input-name').value = '';
+            audioPlayer.src = '';
+            showScreen('intro');
+        }
+
+        // Iniciar
+        init();
     </script>
 </body>
 </html>
